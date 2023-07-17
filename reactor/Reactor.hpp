@@ -12,9 +12,15 @@ class Reactor {
 		int kqueue_;
 		struct kevent* event_;
 
-		Server target_;
-		EventHandler event_success_;
-		EventHandler event_error_;
+		Server server_;
+		EventHandler success_handler_;
+		EventHandler error_handler_;
+
+	public:
+		void init(Server server, EventHandler success_handler, EventHandler error_handler);
+		void addSocket(int socket);
+
+		void run(void);
 };
 
 #endif

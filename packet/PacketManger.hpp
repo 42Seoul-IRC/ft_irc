@@ -12,8 +12,11 @@ class PacketManager {
 		char* password_;
 		ClientManager client_manager_;
 		ChannelManager channel_manager_;
-		typedef void (PacketManager::*RecvPacketFunction)(int, Message&);
+		typedef void (PacketManager::*RecvPacketFunction)(Packet);
 		std::map<std::string, RecvPacketFunction> recv_function_map_;
+	
+	public:
+		void init(char *password);
 };
 
 #endif

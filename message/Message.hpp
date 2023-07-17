@@ -5,7 +5,7 @@
 #include <vector>
 
 class Message {
-	private:
+	public:
 		std::string prefix_;
 		std::string command_;
 		std::vector<std::string> params_;
