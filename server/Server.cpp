@@ -24,10 +24,10 @@ void Server::successHandler(int socket)
 	{
 		int client_socket = server_socket_.accept();
 		if (client_socket == -1)
-			std::runtime_error("Socket accept error");
+			throw std::runtime_error("Socket accept error");
 		
 		if (fcntl(client_socket, F_SETFL, O_NONBLOCK) == -1)
-			std::runtime_error("Client fcntl error");
+			throw std::runtime_error("Client fcntl error");
 
 		if (session_manager_.registerSession(client_socket) == -1)
 		{
@@ -50,7 +50,7 @@ void Server::errorHandler(int socket)
 {
 	if (server_socket_.getSocket() == socket)
 	{
-		std::runtime_error("Server socket event error");
+		throw std::runtime_error("Server socket event error");
 	}
 	else
 	{

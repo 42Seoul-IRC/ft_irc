@@ -3,7 +3,7 @@
 void Reactor::init(Server server, EventHandler success_handler, EventHandler error_handler)
 {
 	if ((kqueue_ = kqueue()) == -1)
-		std::runtime_error("Kqueue error");
+		throw std::runtime_error("Kqueue error");
 	
 	server_ = server;
 	success_handler_ = success_handler;
@@ -31,7 +31,7 @@ void Reactor::run(void)
 			struct kevent* cur_event = &events[i];
 
 			if (cur_event->flags & EV_ERROR)
-				error_handler_(cur_event->ident);
+				(this->error_handler_)(cur_event->ident);
 			if (cur_event->flags & EV_ERROR)
 				error_handler_(cur_event->ident);
 			if (cur_event->filter == EVFILT_WRITE)
