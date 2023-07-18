@@ -14,12 +14,9 @@ class Message {
 		std::string trailing_;
 		bool hasTrailing_;
 
-		static Message parse(const std::string &str);
-
-	private:
 		static Message parseMessage(const std::string &str);
 };
 
-// std::ostream& operator<<(std:);
+std::ostream& operator<<(std::ostream& outstream, const Message& msg);
 
 #endif

@@ -2,7 +2,7 @@
 
 Server::Server()
 {
-	
+
 }
 
 void Server::init(char* port, char* password)
@@ -105,7 +105,9 @@ void Server::successHandler(int socket)
 			buffer[size] = '\0';
 			
 			//for debug
-			std::cout << buffer << std::endl;
+			Message msg = Message::parseMessage(buffer);
+			
+			std::cout <<  msg << std::endl;
 			//end
 
 			// parser -> Command.execute

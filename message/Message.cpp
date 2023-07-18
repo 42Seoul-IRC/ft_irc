@@ -1,14 +1,5 @@
 #include "Message.hpp"
 
-Message Message::parse(const std::string &str)
-{
-	Message message;
-
-	message.parseMessage(str);
-
-	return message;
-}
-
 Message Message::parseMessage(const std::string &str) 
 {
 	Message message;
@@ -31,4 +22,21 @@ Message Message::parseMessage(const std::string &str)
 	std::getline(iss, message.trailing_);
 
 	return message;
+}
+
+std::ostream& operator<<(std::ostream& outstream, const Message& msg)
+{
+	outstream << "prefix : " << msg.prefix_ << std::endl;
+	outstream << "command : " << msg.command_ << std::endl;
+	outstream << "parameters : ";
+	for (std::vector<std::string>::const_iterator it = msg.params_.begin(); it != msg.params_.end(); it++) 
+	{
+		outstream<< *it;
+		if (it + 1 != msg.params_.end()) outstream << ", ";
+	}
+	outstream << std::endl;
+	outstream << "trailing : " << msg.trailing_ << std::endl;
+	outstream << std::endl;
+
+	return (outstream);
 }
