@@ -10,6 +10,8 @@ class Message {
 		std::string command_;
 		std::vector<std::string> params_;
 		std::string trailing_;
+		//parse
+		//send
 };
 
 #endif

@@ -4,7 +4,7 @@
 #include "../message/Message.hpp"
 
 struct Packet {
-	int session_index;
+	int client_socket;
 	Message message;
 };
 

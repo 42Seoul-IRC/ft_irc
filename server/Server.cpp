@@ -6,16 +6,61 @@ void Server::init(char* port, char* password)
 	{
 		server_socket_.bind(port);
 		server_socket_.listen();
+		if ((kqueue_ = kqueue()) == -1)
+			throw std::runtime_error("Kqueue error");
 	}
 	catch (std::exception &e)
 	{
 		std::cerr << e.what() << std::endl;
 	}
 
-	socket_reactor_.init(&Server::successHandler, &Server::errorHandler);
+	// socket_reactor_.init(server_socket_.getSocket());
+	// socket_reactor_.init(&Server::successHandler, &Server::errorHandler);
 	socket_reactor_.addSocket(server_socket_.getSocket());
 
 	packet_manager_.init(password);
+}
+
+void Server::addSocket(int socket)
+{
+	struct kevent event;
+	EV_SET(&event, socket, EVFILT_READ | EVFILT_WRITE, EV_ADD, 0, 0, 0);
+	kevent(kqueue_, &event, 1, 0, 0, 0);
+}
+
+void Server::run(void)
+{
+	while(true)
+	{
+		const int MAX_EVENT = 100;
+
+		struct kevent events[MAX_EVENT];
+		int num = kevent(kqueue_, 0, 0, events, MAX_EVENT, 0);
+
+		for (int i = 0; i < num; i++)
+		{
+			struct kevent* cur_event = &events[i];
+			
+			if (cur_event->flags & EV_ERROR)
+				errorHandler(cur_event->ident);
+			if (cur_event->flags & EV_EOF)
+				errorHandler(cur_event->ident);
+			if (cur_event->filter == EVFILT_WRITE)
+				errorHandler(cur_event->ident);
+			if (cur_event->filter == EVFILT_READ)
+				successHandler(cur_event->ident);
+		}
+		process();
+	}
+}
+
+void Server::process(void)
+{
+	for (std::deque<Packet>::iterator it = packet_queue.begin(); it != packet_queue.end(); it++)
+	{
+		packet_manager_.execute(*it);
+	}
+	packet_queue.clear();
 }
 
 void Server::successHandler(int socket)
@@ -26,22 +71,29 @@ void Server::successHandler(int socket)
 		if (client_socket == -1)
 			throw std::runtime_error("Socket accept error");
 		
-		if (fcntl(client_socket, F_SETFL, O_NONBLOCK) == -1)
+		if (::fcntl(client_socket, F_SETFL, O_NONBLOCK) == -1)
 			throw std::runtime_error("Client fcntl error");
 
-		if (session_manager_.registerSession(client_socket) == -1)
+		try
 		{
-			close(client_socket);
-			return ;
+			packet_manager_.client_manager_.addClientBySocket(client_socket);
+			addSocket(client_socket);
 		}
-		socket_reactor_.addSocket(client_socket);
+		catch(const std::exception& e)
+		{
+			std::cerr << e.what() << std::endl;
+			close(client_socket);
+		}
 	}
 	else
 	{
-		Session* session = session_manager_.getSessionBySocket(socket);
-		if (session)
+		Client * client = packet_manager_.client_manager_.getClientBySocket(socket);
+		if (client)
 		{
-			session->readString();
+			char buffer[512];
+			// 들어오는 명령어 recv()
+			// recv() 결과로 파싱
+			// 파싱하여 명령어 실행
 		}
 	}
 }
@@ -54,36 +106,17 @@ void Server::errorHandler(int socket)
 	}
 	else
 	{
-		Session* session = session_manager_.getSessionBySocket(socket);
-		if (session)
+		Client * client = packet_manager_.client_manager_.getClientBySocket(socket);
+		if (client)
 		{
 			Message message;
 			message.command_ = "QUIT";
 
-			packet_manager_.process(session.getSessionIndex(), message);
-			session_manager_.removeSessionBySocket(socket);
+			packet_manager_.execute(socket, message);
 		}
 		else
 		{
 			close(socket);
 		}
 	}
-}
-
-void Server::start(void)
-{
-	while(true)
-	{
-		socket_reactor_.run();
-		process();
-	}
-}
-
-void Server::process(void)
-{
-	for (std::deque<Packet>::iterator it = packet_queue.begin(); it != packet_queue.end(); it++)
-	{
-		packet_manager_.process(*it);
-	}
-	packet_queue.clear();
 }

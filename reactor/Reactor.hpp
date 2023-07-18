@@ -2,24 +2,22 @@
 # define REACTOR_HPP
 
 #include <sys/event.h>
-
-#include "../server/Server.hpp"
+#include <sys/socket.h>
+#include <fcntl.h>
+#include <stdexcept>
 
 class Reactor {
-	typedef void (Server::*EventHandler)(int);
-
 	private:
-		int kqueue_;
-		struct kevent* event_;
-
-		Server server_;
-		EventHandler success_handler_;
-		EventHandler error_handler_;
+		
+		int server_socket_;
+		// std::map<int, Client> clinets;
+		// std::map<int, string> 
 
 	public:
-		void init(Server server, EventHandler success_handler, EventHandler error_handler);
+		void init(int server_socket);
 		void addSocket(int socket);
-
+		// void successHandler(int socket);
+		// void errorHandler(int socket);
 		void run(void);
 };
 

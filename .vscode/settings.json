@@ -1,5 +1,11 @@
 {
 	"files.associations": {
+		"*.json.liquid": "json",
+		"*.yaml.liquid": "yaml",
+		"*.md.liquid": "markdown",
+		"*.js.liquid": "liquid-javascript",
+		"*.css.liquid": "liquid-css",
+		"*.scss.liquid": "liquid-scss",
 		"ios": "cpp",
 		"iosfwd": "cpp",
 		"deque": "cpp",
@@ -65,6 +71,11 @@
 		"chrono": "cpp",
 		"compare": "cpp",
 		"concepts": "cpp",
-		"algorithm": "cpp"
+		"algorithm": "cpp",
+		"__functional_base": "cpp",
+		"functional": "cpp",
+		"iostream": "cpp",
+		"iterator": "cpp",
+		"utility": "cpp"
 	}
 }

@@ -6,12 +6,10 @@
 
 class Client {
 	private:
-		int session_index_;
-		std::string name_;
+		int client_socket;
 		std::string nickname_;
 		std::string username_;
 		std::string hostname_;
-		std::string servername_;
 		std::set<std::string> channels_;
 		bool is_authenticated_;
 };
