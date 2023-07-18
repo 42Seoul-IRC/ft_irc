@@ -8,9 +8,12 @@ class Session;
 
 class SessionManager {
 	private:
-		std::map<int, int> session_index_map_;
-		std::vector<Session*> sessions_;
-		std::vector<int> session_index_pool_;
+		std::map<int, Session*> session_map_;
+
+	public:
+		Session *getSessionBySocket(int socket);
+		void	addSessionBySocket(int socket);
+		void	removeSessionBySocket(int socket);
 };
 
 #endif
