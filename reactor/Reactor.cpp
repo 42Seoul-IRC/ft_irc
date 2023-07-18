@@ -32,7 +32,7 @@ void Reactor::run(void)
 
 			if (cur_event->flags & EV_ERROR)
 				(this->error_handler_)(cur_event->ident);
-			if (cur_event->flags & EV_ERROR)
+			if (cur_event->flags & EV_EOF)
 				error_handler_(cur_event->ident);
 			if (cur_event->filter == EVFILT_WRITE)
 				error_handler_(cur_event->ident);
