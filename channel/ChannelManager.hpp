@@ -4,10 +4,10 @@
 #include <map>
 #include <string>
 
-class Channel;
+#include "Channel.hpp"
 
 class ChannelManager {
-	private:
+	public:
 		std::map<std::string, Channel*> channels_;
 };
 

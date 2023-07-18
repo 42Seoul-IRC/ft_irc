@@ -11,9 +11,9 @@ class Socket {
 	private:
 		int socket_;
 
-		Socket(void);
 
 	public:
+		Socket(void);
 		void bind(char* port);
 		void listen(void);
 

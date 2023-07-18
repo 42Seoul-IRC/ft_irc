@@ -3,6 +3,8 @@
 
 #include <string>
 #include <vector>
+#include <sstream>
+#include <iostream>
 
 class Message {
 	public:
@@ -10,8 +12,14 @@ class Message {
 		std::string command_;
 		std::vector<std::string> params_;
 		std::string trailing_;
-		//parse
-		//send
+		bool hasTrailing_;
+
+		static Message parse(const std::string &str);
+
+	private:
+		static Message parseMessage(const std::string &str);
 };
+
+// std::ostream& operator<<(std:);
 
 #endif

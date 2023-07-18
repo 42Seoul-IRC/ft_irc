@@ -6,14 +6,15 @@
 #include <map>
 
 #include "../client/Client.hpp"
+#include "ChannelMode.hpp"
 
 class Channel {
-	private:
+	public:
 		std::string channel_name_;
 		std::string topic_;
 		std::string password_;
 		std::set<std::string> operators_;
-		std::map<std::string, Client*> clients_; //혹시나 더 좋은 구조가 있을까?
+		std::set<std::string> clients_; // 필요한  경우, 바로 map<std::string, *client> 사용할 것!
 		std::set<std::string> invited_clients_;
 		int limit_;
 		int mode_;

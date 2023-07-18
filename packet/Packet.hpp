@@ -3,7 +3,8 @@
 
 #include "../message/Message.hpp"
 
-struct Packet {
+struct Packet 
+{
 	int client_socket;
 	Message message;
 };

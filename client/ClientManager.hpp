@@ -3,15 +3,14 @@
 
 #include <list>
 #include <map>
-
-class Client;
+#include "Client.hpp"
 
 class ClientManager {
-	private:
-		std::map<int, Client*> client_pool_;
-		std::map<std::string, Client*> clients_;
 	public:
-		void	addClientBySocket(int socket); // new client
+		std::map<int, Client*> socket_clients_;
+		std::map<std::string, Client*> nick_clients_;
+		
+		void	addClientBySocket(int socket);
 		Client	*getClientBySocket(int socket);
 };
 

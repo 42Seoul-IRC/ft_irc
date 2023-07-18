@@ -1,5 +1,10 @@
 #include "Server.hpp"
 
+Server::Server()
+{
+	
+}
+
 void Server::init(char* port, char* password)
 {
 	try
@@ -12,11 +17,10 @@ void Server::init(char* port, char* password)
 	catch (std::exception &e)
 	{
 		std::cerr << e.what() << std::endl;
+		return ;
 	}
 
-	// socket_reactor_.init(server_socket_.getSocket());
-	// socket_reactor_.init(&Server::successHandler, &Server::errorHandler);
-	socket_reactor_.addSocket(server_socket_.getSocket());
+	addSocket(server_socket_.getSocket());
 
 	packet_manager_.init(password);
 }
@@ -91,9 +95,24 @@ void Server::successHandler(int socket)
 		if (client)
 		{
 			char buffer[512];
-			// 들어오는 명령어 recv()
-			// recv() 결과로 파싱
-			// 파싱하여 명령어 실행
+
+			memset(buffer, 0, sizeof(buffer));
+			int size = recv(socket, buffer, sizeof(buffer) - 1, 0);
+			if (size < 1)
+			{
+				packet_manager_.removeClientBySocket(socket);
+			}
+			buffer[size] = '\0';
+			
+			//for debug
+			std::cout << buffer << std::endl;
+			//end
+
+			// parser -> Command.execute
+		}
+		else
+		{
+			close(socket);
 		}
 	}
 }
@@ -111,8 +130,10 @@ void Server::errorHandler(int socket)
 		{
 			Message message;
 			message.command_ = "QUIT";
+			
+			struct Packet quit = {socket, message};
 
-			packet_manager_.execute(socket, message);
+			packet_manager_.execute(quit);
 		}
 		else
 		{
