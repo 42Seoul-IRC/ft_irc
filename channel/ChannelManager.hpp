@@ -9,6 +9,10 @@
 class ChannelManager {
 	public:
 		std::map<std::string, Channel*> channels_;
+
+		void	addChannelByName(const std::string& name);
+		Channel	*getChannelByName(const std::string& name);
+		void	deleteChannelByName(const std::string& name);
 };
 
 #endif
