@@ -12,6 +12,7 @@ class ClientManager {
 		
 		void	addClientBySocket(int socket);
 		Client	*getClientBySocket(int socket);
+		void	printAllClients();
 };
 
 #endif

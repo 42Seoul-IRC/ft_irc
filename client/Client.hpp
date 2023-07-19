@@ -14,8 +14,13 @@ class Client {
 		// bool is_authenticated_;
 	public:
 		Client(int socket);
+
+		int			getSocket();
 		std::string	getNickName();
+		std::string	getUserName();
+		std::string	getHostName();
 		std::set<std::string> getChannels();
+
 };
 
 #endif
