@@ -10,7 +10,7 @@ void PacketManager::init(char *password)
 	recv_function_map_["JOIN"] = &PacketManager::join;
 	recv_function_map_["PRIVMSG"] = &PacketManager::privmsg;
 	recv_function_map_["PART"] = &PacketManager::part;
-	recv_function_map_["PONG"] = &PacketManager::pong;
+	recv_function_map_["PING"] = &PacketManager::ping;
 	recv_function_map_["QUIT"] = &PacketManager::quit;
 	recv_function_map_["KICK"] = &PacketManager::kick;
 	recv_function_map_["INVITE"] = &PacketManager::invite;
@@ -40,6 +40,9 @@ void	PacketManager::removeClientBySocket(int socket)
 
 void PacketManager::execute(struct Packet packet)
 {
-	(void)packet;
-	
+	std::map<std::string, RecvPacketFunction>::iterator it = recv_function_map_.find(packet.message.command_);
+	if (it != recv_function_map_.end())
+	{
+		(this->*(it->second))(packet);
+	}
 }

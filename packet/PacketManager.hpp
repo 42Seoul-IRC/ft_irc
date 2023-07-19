@@ -25,12 +25,14 @@ class PacketManager {
 		void	pass(struct Packet& packet);
 		void	nick(struct Packet& packet);
 		void	user(struct Packet& packet);
-		void	join(struct Packet& packet);
 		void	privmsg(struct Packet& packet);
-		void	part(struct Packet& packet);
-		void	pong(struct Packet& packet);
+		void	ping(struct Packet& packet);
 		void	quit(struct Packet& packet);
+
+		void	join(struct Packet& packet);
+		void	part(struct Packet& packet);
 		void	kick(struct Packet& packet);
+
 		void	invite(struct Packet& packet);
 		void	topic(struct Packet& packet);
 		void	mode(struct Packet& packet);
