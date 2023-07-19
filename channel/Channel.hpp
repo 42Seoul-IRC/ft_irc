@@ -18,6 +18,30 @@ class Channel {
 		std::set<std::string> invited_clients_;
 		int limit_;
 		int mode_;
+
+		Channel(const std::string& name);
+		~Channel();
+
+		void	setTopic(const std::string& name);
+		const std::string&	getTopic(void);
+
+		void	setPassword(const std::string& name);
+		bool	checkPassword(const std::string& pw);
+		void	clearPassword(void);
+
+		void	addClient(const std::string& client_name);
+		void	inviteClient(const std::string& client_name);
+		void	deleteClient(const std::string& client_name);
+		bool	checkClientIsOperator(const std::string& client_name);
+		bool	checkClientIsInvited(const std::string& client_name);
+
+		void	flipPrivilege(const std::string& client_name);
+
+		bool	checkChannelCapacity(void);
+
+		const int getChannelMode(void);
+		void	setChannelMode(int channel_mode);
+
 };
 
 #endif
