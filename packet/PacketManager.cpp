@@ -3,6 +3,8 @@
 void PacketManager::init(char *password)
 {
 	password_ = password;
+	recv_function_map_["PASS"] = &PacketManager::pass;
+	recv_function_map_["NICK"] = &PacketManager::nick;
 }
 
 void	PacketManager::removeClientBySocket(int socket)
@@ -27,6 +29,9 @@ void	PacketManager::removeClientBySocket(int socket)
 
 void PacketManager::execute(struct Packet packet)
 {
-	(void)packet;
-	
+	std::map<std::string, RecvPacketFunction>::iterator it = recv_function_map_.find(packet.message.command_);
+	if (it != recv_function_map_.end())
+	{
+		(this->*(it->second))(packet);
+	}
 }
