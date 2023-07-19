@@ -3,6 +3,19 @@
 void PacketManager::init(char *password)
 {
 	password_ = password;
+
+	recv_function_map_["PASS"] = &PacketManager::pass;
+	recv_function_map_["NICK"] = &PacketManager::nick;
+	recv_function_map_["USER"] = &PacketManager::user;
+	recv_function_map_["JOIN"] = &PacketManager::join;
+	recv_function_map_["PRIVMSG"] = &PacketManager::privmsg;
+	recv_function_map_["PART"] = &PacketManager::part;
+	recv_function_map_["PONG"] = &PacketManager::pong;
+	recv_function_map_["QUIT"] = &PacketManager::quit;
+	recv_function_map_["KICK"] = &PacketManager::kick;
+	recv_function_map_["INVITE"] = &PacketManager::invite;
+	recv_function_map_["TOPIC"] = &PacketManager::topic;
+	recv_function_map_["MODE"] = &PacketManager::mode;
 }
 
 void	PacketManager::removeClientBySocket(int socket)
