@@ -89,3 +89,17 @@ void	ClientManager::removeChannelFromClient(std::string nick, std::string channe
 		return ;
 	nick_clients_.find(nick)->second->deleteChannel(channel);
 }
+
+void	ClientManager::removeClient(int socket)
+{
+	Client	*temp;
+
+	temp = getClientBySocket(socket);
+	if (temp == NULL)
+		return ;
+	removeNickClient(temp->getNickName());
+	socket_clients_.erase(socket);
+	temp->removeClient();
+	
+	delete temp;
+}

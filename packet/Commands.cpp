@@ -6,8 +6,9 @@ void	PacketManager::pass(struct Packet& packet)
 	Message message;
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
 
-	if (client->getIsAuthenticated())
+	if (client->getIsPass())
 	{
+		message.setPrefix("irc.local");
 		message.setCommand(ERR_ALREADYREGISTERED);
 		message.addParam(client->getHostName());
 		message.setTrailing("You may not register");
@@ -20,6 +21,7 @@ void	PacketManager::pass(struct Packet& packet)
 
 	if (packet.message.getParams().size() != 1)
 	{
+		message.setPrefix("irc.local");
 		message.setCommand(ERR_NEEDMOREPARAMS);
 		message.addParam(client->getHostName());
 		message.addParam(packet.message.getCommand());
@@ -33,6 +35,7 @@ void	PacketManager::pass(struct Packet& packet)
 
 	if (packet.message.getParams()[0] != password_)
 	{
+		message.setPrefix("irc.local");
 		message.setCommand(ERR_PASSWDMISMATCH);
 		message.addParam(client->getHostName());
 		message.setTrailing("Password incorrect");
@@ -43,7 +46,7 @@ void	PacketManager::pass(struct Packet& packet)
 		return ;
 	}
 
-	client->setIsAuthenticated(true);
+	client->setIsPass(true);
 }
 
 void	PacketManager::nick(struct Packet& packet)
@@ -52,8 +55,9 @@ void	PacketManager::nick(struct Packet& packet)
 
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
 
-	if (!client->getIsAuthenticated())
+	if (!client->getIsPass())
 	{
+		message.setPrefix("irc.local");
 		message.setCommand(ERR_NOTREGISTERED);
 		message.addParam(client->getHostName());
 		message.setTrailing("You have not registered");
@@ -66,6 +70,7 @@ void	PacketManager::nick(struct Packet& packet)
 
 	if (packet.message.getParams().size() != 1)
 	{
+		message.setPrefix("irc.local");
 		message.setCommand(ERR_NONICKNAMEGIVEN);
 		message.addParam(client->getHostName());
 		message.setTrailing("No nickname given");
@@ -80,6 +85,7 @@ void	PacketManager::nick(struct Packet& packet)
 	std::string new_nick = packet.message.getParams()[0];
 	if (!client_manager_.isValidNickname(new_nick))
 	{
+		message.setPrefix("irc.local");
 		message.setCommand(ERR_ERRONEUSNICKNAME);
 		message.addParam(client->getHostName());
 		message.addParam(new_nick);
@@ -93,6 +99,7 @@ void	PacketManager::nick(struct Packet& packet)
 
 	if (!client_manager_.isUsedNickname(new_nick))
 	{
+		message.setPrefix("irc.local");
 		message.setCommand(ERR_NICKNAMEINUSE);
 		message.addParam(client->getHostName());
 		message.addParam(new_nick);
@@ -109,19 +116,12 @@ void	PacketManager::nick(struct Packet& packet)
 	{
 		client_manager_.addNickClient(new_nick, client);
 		client->setNickName(new_nick);
-
-		message.setCommand(RPL_WELCOME);
-		message.addParam(client->getHostName());
-		message.setTrailing("Welcome to the Internet Relay Network " + new_nick + "!" + client->getHostName() + "@" + client->getHost());
-
-		struct Packet packet = {client->getSocket(), message};
-		sendPacket(packet);
 	}
 	else
 	{
-		message.setPrefix(old_nick);
+		message.setPrefix(client->getHost());
 		message.setCommand("NICK");
-		message.addParam(new_nick);
+		message.setTrailing(new_nick);
 
 		client_manager_.removeNickClient(old_nick);
 		client_manager_.addNickClient(new_nick, client);
@@ -142,8 +142,9 @@ void	PacketManager::user(struct Packet& packet)
 
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
 
-	if (!client->getIsAuthenticated())
+	if (!client->getIsPass() || client->getNickName() == "")
 	{
+		message.setPrefix("irc.local");
 		message.setCommand(ERR_NOTREGISTERED);
 		message.addParam(client->getHostName());
 		message.setTrailing("You have not registered");
@@ -156,6 +157,7 @@ void	PacketManager::user(struct Packet& packet)
 
 	if (packet.message.getParams().size() != 4)
 	{
+		message.setPrefix("irc.local");
 		message.setCommand(ERR_NEEDMOREPARAMS);
 		message.addParam(client->getHostName());
 		message.addParam(packet.message.getCommand());
@@ -169,6 +171,7 @@ void	PacketManager::user(struct Packet& packet)
 
 	if (client->getUserName() != "")
 	{
+		message.setPrefix("irc.local");
 		message.setCommand(ERR_ALREADYREGISTERED);
 		message.addParam(client->getHostName());
 		message.setTrailing("You may not register");
@@ -181,6 +184,15 @@ void	PacketManager::user(struct Packet& packet)
 
 	client->setUserName(packet.message.getParams()[0]);
 	client->setHostName(packet.message.getParams()[3]);
+
+	message.setCommand(RPL_WELCOME);
+	message.addParam(client->getHostName());
+	message.setTrailing("Welcome to the Internet Relay Network " + client->getHost());
+
+	struct Packet packet = {client->getSocket(), message};
+	sendPacket(packet);
+
+	client->setIsAuthenticated(true);
 }
 
 void	PacketManager::privmsg(struct Packet& packet)
@@ -203,6 +215,7 @@ void	PacketManager::privmsg(struct Packet& packet)
 
 	if (packet.message.getParams().size() != 1)
 	{
+		message.setPrefix("irc.local");
 		message.setCommand(ERR_NORECIPIENT);
 		message.addParam(client->getHostName());
 		message.setTrailing("No recipient given" + packet.message.getCommand());
@@ -215,6 +228,7 @@ void	PacketManager::privmsg(struct Packet& packet)
 
 	if (packet.message.getTrailing() == "")
 	{
+		message.setPrefix("irc.local");
 		message.setCommand(ERR_NOTEXTTOSEND);
 		message.addParam(client->getHostName());
 		message.setTrailing("No text to send");
@@ -225,76 +239,119 @@ void	PacketManager::privmsg(struct Packet& packet)
 		return ;
 	}
 
-	if (packet.message.getParams()[0][0] == '#')
+	std::vector<std::string> targets = Message::split(packet.message.getParams()[0], ",");
+	for (std::vector<std::string>::iterator it = targets.begin(); it != targets.end(); it++)
 	{
-		Channel *channel = channel_manager_.getChannelByName(packet.message.getParams()[0]);
-		if (!channel)
+		message.clear();
+		if (packet.message.getParams()[0][0] == '#')
 		{
-			message.setCommand(ERR_NOSUCHCHANNEL);
-			message.addParam(client->getHostName());
+			Channel *channel = channel_manager_.getChannelByName(packet.message.getParams()[0]);
+			if (!channel)
+			{
+				message.setPrefix("irc.local");
+				message.setCommand(ERR_NOSUCHCHANNEL);
+				message.addParam(client->getHostName());
+				message.addParam(packet.message.getParams()[0]);
+				message.setTrailing("No such channel");
+
+				struct Packet packet = {client->getSocket(), message};
+				sendPacket(packet);
+
+				return ;
+			}
+
+			if (!channel_manager_.checkClientIsInChannel(packet.message.getParams()[0], client->getNickName()))
+			{
+				message.setPrefix("irc.local");
+				message.setCommand(ERR_CANNOTSENDTOCHAN);
+				message.addParam(client->getHostName());
+				message.addParam(packet.message.getParams()[0]);
+				message.setTrailing("Cannot send to channel");
+
+				struct Packet packet = {client->getSocket(), message};
+				sendPacket(packet);
+
+				return ;
+			}
+
+			message.setPrefix(client->getHost());
+			message.setCommand("PRIVMSG");
 			message.addParam(packet.message.getParams()[0]);
-			message.setTrailing("No such channel");
+			message.setTrailing(packet.message.getTrailing());
 
-			struct Packet packet = {client->getSocket(), message};
-			sendPacket(packet);
-
-			return ;
+			sendPacket(message, channel, client->getNickName());
 		}
-
-		if (!channel_manager_.checkClientIsInChannel(packet.message.getParams()[0], client->getNickName()))
+		else
 		{
-			message.setCommand(ERR_CANNOTSENDTOCHAN);
-			message.addParam(client->getHostName());
+			Client *target_client = client_manager_.getClientByNick(packet.message.getParams()[0]);
+			if (!target_client)
+			{
+				message.setPrefix(client->getHost());
+				message.setCommand(ERR_NOSUCHNICK);
+				message.addParam(client->getHostName());
+				message.addParam(packet.message.getParams()[0]);
+				message.setTrailing("No such nick");
+
+				struct Packet packet = {client->getSocket(), message};
+				sendPacket(packet);
+
+				return ;
+			}
+
+			message.setPrefix(client->getHost());
+			message.setCommand("PRIVMSG");
 			message.addParam(packet.message.getParams()[0]);
-			message.setTrailing("Cannot send to channel");
+			message.setTrailing(packet.message.getTrailing());
 
-			struct Packet packet = {client->getSocket(), message};
+			struct Packet packet = {target_client->getSocket(), message};
 			sendPacket(packet);
-
-			return ;
 		}
-
-		message.setPrefix(client->getNickName());
-		message.setCommand("PRIVMSG");
-		message.addParam(packet.message.getParams()[0]);
-		message.setTrailing(packet.message.getTrailing());
-
-		sendPacket(message, channel);
-	}
-	else
-	{
-		Client *target_client = client_manager_.getClientByNick(packet.message.getParams()[0]);
-		if (!target_client)
-		{
-			message.setCommand(ERR_NOSUCHNICK);
-			message.addParam(client->getHostName());
-			message.addParam(packet.message.getParams()[0]);
-			message.setTrailing("No such nick");
-
-			struct Packet packet = {client->getSocket(), message};
-			sendPacket(packet);
-
-			return ;
-		}
-
-		message.setPrefix(client->getNickName());
-		message.setCommand("PRIVMSG");
-		message.addParam(packet.message.getParams()[0]);
-		message.setTrailing(packet.message.getTrailing());
-
-		struct Packet packet = {target_client->getSocket(), message};
-		sendPacket(packet);
 	}
 }
 
 void	PacketManager::quit(struct Packet& packet)
 {
-	
+	Message message;
+
+	Client *client = client_manager_.getClientBySocket(packet.client_socket);
+
+	if (!client->getIsAuthenticated())
+	{
+		client->removeClient();
+		return ;
+	}
+
+	std::set<std::string> channels = client->getChannels();
+	for (std::set<std::string>::iterator it = channels.begin(); it != channels.end(); it++)
+	{
+		Channel *channel = channel_manager_.getChannelByName(*it);
+		if (!channel)
+			continue ;
+
+		channel_manager_.deleteClientFromChannel(*it, client->getNickName());
+
+		message.setPrefix(client->getHost());
+		message.setCommand("QUIT");
+		message.setTrailing(packet.message.getTrailing());
+
+		sendPacket(message, channel);
+	}
+
+	client_manager_.removeClient(client->getSocket());
 }
 
 void	PacketManager::ping(struct Packet& packet)
 {
-	
+	Message message;
+
+	if (packet.message.getParams().size() != 1)
+		return ;
+
+	message.setCommand("PONG");
+	message.addParam(packet.message.getParams()[0]);
+
+	struct Packet send_packet = {packet.client_socket, message};
+	sendPacket(send_packet);
 }
 
 

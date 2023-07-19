@@ -27,6 +27,7 @@ public:
 
 	void addChannelToClient(std::string nick, std::string channel);
 	void removeChannelFromClient(std::string nick, std::string channel);
+	void removeClient(int socket);
 };
 
 #endif

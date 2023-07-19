@@ -1,5 +1,9 @@
 #include "Message.hpp"
 
+void	Message::makePrefix(std::string& server_name)
+{
+}
+
 Message Message::parseMessage(const std::string &str) 
 {
 	Message message;
@@ -114,4 +118,29 @@ std::string Message::toString(void) const
 	if (hasTrailing_)
 		str += " :" + trailing_;
 	return (str);
+}
+
+std::vector<std::string> Message::split(std::string str, std::string delimiter)
+{
+	std::vector<std::string> result;
+	size_t pos = 0;
+	std::string token;
+
+	while ((pos = str.find(delimiter)) != std::string::npos)
+	{
+		token = str.substr(0, pos);
+		result.push_back(token);
+		str.erase(0, pos + delimiter.length());
+	}
+	result.push_back(str);
+	return (result);
+}
+
+void Message::clear(void)
+{
+	prefix_.clear();
+	command_.clear();
+	params_.clear();
+	trailing_.clear();
+	hasTrailing_ = false;
 }

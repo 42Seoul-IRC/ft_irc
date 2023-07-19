@@ -66,6 +66,23 @@ void PacketManager::sendPacket(Message message, Channel *channel)
 	}
 }
 
+void PacketManager::sendPacket(Message message, Channel *channel, std::string exclude_nick)
+{
+	for (std::set<std::string>::iterator it = channel->clients_.begin(); it != channel->clients_.end(); it++)
+	{
+		if (*it == exclude_nick)
+			continue;
+
+		int socket = client_manager_.nick_clients_[*it]->getSocket();
+
+		Packet packet = {
+			.client_socket = socket,
+			.message = packet.message
+		};
+		sendPacket(packet);
+	}
+}
+
 std::string PacketManager::getNickBySocket(int socket)
 {
 	//find socket in socket_clients_
