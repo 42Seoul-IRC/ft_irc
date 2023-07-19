@@ -40,9 +40,40 @@ void	PacketManager::removeClientBySocket(int socket)
 
 void PacketManager::execute(struct Packet packet)
 {
-	std::map<std::string, RecvPacketFunction>::iterator it = recv_function_map_.find(packet.message.command_);
+	std::map<std::string, RecvPacketFunction>::iterator it = recv_function_map_.find(packet.message.getCommand());
 	if (it != recv_function_map_.end())
 	{
 		(this->*(it->second))(packet);
 	}
 }
+
+void PacketManager::sendPacket(struct Packet& packet)
+{
+	::send(packet.client_socket, packet.message.toString().c_str(), packet.message.toString().length(), 0);
+}
+
+void PacketManager::sendPacket(Message message, Channel *channel)
+{
+	for (std::set<std::string>::iterator it = channel->clients_.begin(); it != channel->clients_.end(); it++)
+	{
+		int socket = client_manager_.nick_clients_[*it]->getSocket();
+
+		Packet packet = {
+			.client_socket = socket,
+			.message = packet.message
+		};
+		sendPacket(packet);
+	}
+}
+
+std::string PacketManager::getNickBySocket(int socket)
+{
+	//find socket in socket_clients_
+	//send nick
+
+	if (client_manager_.socket_clients_.find(socket) != client_manager_.socket_clients_.end())
+	{
+		return client_manager_.socket_clients_[socket]->getNickName();
+	}
+}
+

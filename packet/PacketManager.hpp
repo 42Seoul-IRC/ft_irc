@@ -1,6 +1,7 @@
 #ifndef PACKET_MANAGER_HPP
 # define PACKET_MANAGER_HPP
 
+#include <sys/socket.h>
 #include <map>
 
 #include "../message/Message.hpp"
@@ -21,6 +22,10 @@ class PacketManager {
 		void init(char *password);
 		void execute(struct Packet packet);
 		void removeClientBySocket(int socket);
+		std::string getNickBySocket(int socket);
+
+		void sendPacket(struct Packet& packet);
+		void sendPacket(Message message, Channel *channel);
 
 		void	pass(struct Packet& packet);
 		void	nick(struct Packet& packet);

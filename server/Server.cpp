@@ -131,7 +131,7 @@ void Server::errorHandler(int socket)
 		if (client)
 		{
 			Message message;
-			message.command_ = "QUIT";
+			message.setCommand("QUT");
 			
 			struct Packet quit = {socket, message};
 
