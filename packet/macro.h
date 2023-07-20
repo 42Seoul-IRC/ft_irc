@@ -5,8 +5,12 @@
 
 #define RPL_WELCOME "001"
 #define RPL_WELCOME_MSG "Welcome to the server"
+#define RPL_NOTOPIC "331"
+#define RPL_NOTOPIC_MSG "No topic is set"
 #define RPL_TOPIC "332"
 #define RPL_TOPIC_MSG "Topic of the channel"
+#define RPL_TOPICWHOTIME "333"
+#define RPL_TOPICWHOTIME_MSG "Topic set by who at when"
 #define RPL_NAMREPLY "353"
 #define RPL_NAMREPLY_MSG "Reply name"
 #define RPL_INVITING "341"
