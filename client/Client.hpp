@@ -16,7 +16,6 @@ class Client {
 
 	public:
 		Client(int socket);
-<<<<<<< HEAD
 		
 		const int	getSocket(void) const;
 		const std::string&	getNickName(void) const;
@@ -35,15 +34,6 @@ class Client {
 		void setIsAuthenticated(bool is_authenticated);
 
 		//bool client exists
-=======
-
-		int			getSocket();
-		std::string	getNickName();
-		std::string	getUserName();
-		std::string	getHostName();
-		std::set<std::string> getChannels();
-
->>>>>>> 95007fd22122f80160a7f867ae0e77431d834e97
 };
 
 #endif
