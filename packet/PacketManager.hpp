@@ -26,6 +26,7 @@ class PacketManager {
 
 		void sendPacket(struct Packet& packet);
 		void sendPacket(Message message, Channel *channel);
+		void sendPacket(Message message, Channel *channel, std::string exclude_nick);
 
 		void	pass(struct Packet& packet);
 		void	nick(struct Packet& packet);

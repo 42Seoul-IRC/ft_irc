@@ -35,6 +35,11 @@ bool    Client::getIsAuthenticated(void) const
     return is_authenticated_;
 }
 
+bool	Client::getIsPass(void) const
+{
+	return is_pass_;
+}
+
 std::string Client::getHost(void) const
 {
     struct sockaddr_in clnt_addr;
@@ -45,7 +50,15 @@ std::string Client::getHost(void) const
 	std::string result(ip);
 	free(ip);
 
-    return result;
+	std::string host_info;
+
+	host_info = getNickName();
+	host_info += "!";
+	host_info += getUserName();
+	host_info += "@";
+	host_info += result;
+
+    return host_info;
 }
 
 void Client::setNickName(const std::string& nickname)
@@ -78,4 +91,20 @@ void Client::deleteChannel(const std::string& channel)
 void    Client::setIsAuthenticated(bool is_authenticated)
 {
     is_authenticated_ = is_authenticated;
+}
+
+void	Client::setIsPass(bool is_pass)
+{
+	is_pass_ = is_pass;
+}
+
+void	Client::removeClient(void)
+{
+	nickname_ = "";
+	username_ = "";
+	hostname_ = "";
+	channels_.clear();
+	is_authenticated_ = false;
+	is_pass_ = false;
+	close(client_socket_);
 }
