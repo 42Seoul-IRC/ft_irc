@@ -394,11 +394,9 @@ void	PacketManager::join(struct Packet& packet)
 		}
 		// broadcast join message
 		message.setCommand("JOIN");
-		message.addParam(client->getHostName());
 		message.setTrailing(*it1);
 
-		struct Packet packet = {client->getSocket(), message};
-		sendPacket(packet);
+		sendPacket(message, channel_manager_.getChannelByName(*it1));
 	}
 }
 
@@ -416,7 +414,13 @@ void	PacketManager::part(struct Packet& packet)
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
 	if (packet.message.getParams().size() < 1)
 	{
-		// ERR_NEEDMOREPARAMS
+		message.setCommand(ERR_NEEDMOREPARAMS);
+		message.addParam(client->getHostName());
+		message.setTrailing("Not enough parameters");
+
+		struct Packet packet = {client->getSocket(), message};
+		sendPacket(packet);
+
 		return ;
 	}
 	std::string client_name = client->getNickName();
@@ -429,15 +433,32 @@ void	PacketManager::part(struct Packet& packet)
 		if (channel_manager_.getChannelByName(*it) == NULL)
 		{
 			// ERR_NOSUCHCHANNEL
+			message.setCommand(ERR_NOSUCHCHANNEL);
+			message.addParam(client->getHostName());
+			message.setTrailing("No such channel");
+
+			struct Packet packet = {client->getSocket(), message};
+			sendPacket(packet);
+
 			continue ;
 		}
 		if (channel_manager_.checkClientIsInChannel(*it, client_name) == false)
 		{
-			// ERR_NOTONCHANNEL
+			message.setCommand(ERR_NOTONCHANNEL);
+			message.addParam(client->getHostName());
+			message.setTrailing("You're not on that channel");
+
+			struct Packet packet = {client->getSocket(), message};
+			sendPacket(packet);
+
 			continue ;
 		}
 
 		//broadcast part message
+		message.setCommand("PART");
+		message.setTrailing(*it);
+
+		sendPacket(message, channel_manager_.getChannelByName(*it));
 
 		channel_manager_.deleteClientFromChannel(*it, client_name);
 		client_manager_.removeChannelFromClient(client_name, *it);
@@ -461,7 +482,13 @@ void	PacketManager::kick(struct Packet& packet)
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
 	if (packet.message.getParams().size() < 2)
 	{
-		// ERR_NEEDMOREPARAMS
+		message.setCommand(ERR_NEEDMOREPARAMS);
+		message.addParam(client->getHostName());
+		message.setTrailing("Not enough parameters");
+
+		struct Packet packet = {client->getSocket(), message};
+		sendPacket(packet);
+
 		return ;
 	}
 	std::string client_name = client->getNickName();
@@ -470,31 +497,64 @@ void	PacketManager::kick(struct Packet& packet)
 	std::string kick_message = packet.message.getTrailing();
 	if (channel_manager_.getChannelByName(channel_name) == NULL)
 	{
-		// ERR_NOSUCHCHANNEL
+		message.setCommand(ERR_NOSUCHCHANNEL);
+		message.addParam(client->getHostName());
+		message.setTrailing("Not such channel");
+
+		struct Packet packet = {client->getSocket(), message};
+		sendPacket(packet);
+
 		return ;
 	}
 	if (client_manager_.getClientByNick(target_user_name) == NULL)
 	{
-		// ERR_NOSUCHNICK
+		message.setCommand(ERR_NOSUCHNICK);
+		message.addParam(client->getHostName());
+		message.setTrailing("No");
+
+		struct Packet packet = {client->getSocket(), message};
+		sendPacket(packet);
+
 		return ;
 	}
 	if (channel_manager_.checkClientIsInChannel(channel_name, client_name) == false)
 	{
-		// ERR_NOTONCHANNEL
+		message.setCommand(ERR_NOTONCHANNEL);
+		message.addParam(client->getHostName());
+		message.setTrailing("You're not on that channel");
+
+		struct Packet packet = {client->getSocket(), message};
+		sendPacket(packet);
 		return ;
 	}
 	if (channel_manager_.checkClientIsOperator(channel_name, client_name) == false)
 	{
 		// ERR_CHANOPRIVSNEEDED
+		message.setCommand(ERR_CHANOPRIVSNEEDED);
+		message.addParam(client->getHostName());
+		message.setTrailing("You're not channel operator");
+
+		struct Packet packet = {client->getSocket(), message};
+		sendPacket(packet);
 		return ;
 	}
 	if (channel_manager_.checkClientIsInChannel(channel_name, target_user_name) == false)
 	{
 		// ERR_USERNOTINCHANNEL
+		message.setCommand(ERR_USERNOTINCHANNEL);
+		message.addParam(client->getHostName());
+		message.setTrailing("They aren't on that channel");
+
+		struct Packet packet = {client->getSocket(), message};
+		sendPacket(packet);
 		return ;
 	}
 
 	//broadcast kick message
+	message.setCommand("KICK");
+	message.setTrailing(target_user_name);
+
+	sendPacket(message, channel_manager_.getChannelByName(channel_name));
 
 	channel_manager_.deleteClientFromChannel(channel_name, target_user_name);
 	client_manager_.removeChannelFromClient(target_user_name, channel_name);
