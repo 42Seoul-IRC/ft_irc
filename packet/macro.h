@@ -3,8 +3,10 @@
 
 // Response Messages
 
+#define SERVER_NAME "irc.webserv"
+
 #define RPL_WELCOME "001"
-#define RPL_WELCOME_MSG "Welcome to the server"
+#define RPL_WELCOME_MSG "Welcome to the server "
 #define RPL_NOTOPIC "331"
 #define RPL_NOTOPIC_MSG "No topic is set"
 #define RPL_TOPIC "332"
@@ -30,8 +32,6 @@
 #define ERR_ERRONEUSNICKNAME_MSG "Erroneous nickname"
 #define ERR_NICKNAMEINUSE "433"
 #define ERR_NICKNAMEINUSE_MSG "Nickname in use"
-#define ERR_NICKCOLLISION "436"
-#define ERR_NICKCOLLISION_MSG "Nickname collision"
 #define ERR_NOORIGIN "409"
 #define ERR_NOORIGIN_MSG "No origin specified"
 #define ERR_NOSUCHNICK "401"
@@ -62,5 +62,7 @@
 #define ERR_ERRONEUSNICKNAME_MSG "Erroneous nickname"
 #define ERR_NORECIPIENT "411"
 #define ERR_NORECIPIENT_MSG "No recipient"
+#define ERR_BADCHANMASK "476"
+#define ERR_BADCHANMASK_MSG "Bad channel mask"
 
 #endif // MACRO_H

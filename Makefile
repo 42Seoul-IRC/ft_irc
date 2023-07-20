@@ -1,7 +1,7 @@
 NAME = ircserv
 
 CC = c++
-CXXFLAGS = -Wall -Wextra -Werror -std=c++98
+CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -g3 -fsanitize=address
 
 SRCS =  channel/Channel.cpp\
 		channel/ChannelManager.cpp\
@@ -9,9 +9,12 @@ SRCS =  channel/Channel.cpp\
 		client/ClientManager.cpp \
 		message/Message.cpp \
 		packet/PacketManager.cpp \
+		packet/PacketMaker.cpp \
+		packet/Commands.cpp \
 		server/Server.cpp \
 		socket/Socket.cpp \
 		main.cpp
+#		packet/CmdMode.cpp \
 
 OBJS = $(SRCS:.cpp=.o)
 

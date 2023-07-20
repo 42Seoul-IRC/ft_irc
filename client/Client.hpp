@@ -19,14 +19,14 @@ class Client {
 	public:
 		Client(int socket);
 		
-		const int	getSocket(void) const;
-		const std::string&	getNickName(void) const;
+		int	getSocket(void) const;
+		std::string	getNickName(void);
 		const std::string&	getUserName(void) const;
 		const std::string&	getHostName(void) const;
 		std::set<std::string>& getChannels(void);
 		bool getIsAuthenticated(void) const;
 		bool getIsPass(void) const;
-		std::string getHost(void) const;
+		std::string getHost(void);
 
 		void setIsPass(bool is_pass);
 		void setIsAuthenticated(bool is_authenticated);

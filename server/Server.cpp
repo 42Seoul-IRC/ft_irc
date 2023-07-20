@@ -60,6 +60,7 @@ void Server::run(void)
 
 void Server::process(void)
 {
+
 	for (std::deque<Packet>::iterator it = packet_queue.begin(); it != packet_queue.end(); it++)
 	{
 		packet_manager_.execute(*it);
@@ -110,7 +111,8 @@ void Server::successHandler(int socket)
 			std::cout <<  msg << std::endl;
 			//end
 
-			// parser -> Command.execute
+			struct Packet packet = {socket, msg};
+			packet_queue.push_back(packet);
 		}
 		else
 		{

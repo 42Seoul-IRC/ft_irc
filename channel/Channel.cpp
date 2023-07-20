@@ -139,7 +139,21 @@ bool	Channel::checkChannelCapacity(void)
 		return false;
 }
 
-const int Channel::getChannelMode(void)
+std::string	Channel::getClientsString(void)
+{
+	std::string result;
+	std::set<std::string>::iterator it = clients_.begin();
+	for (; it != clients_.end(); ++it)
+	{
+		if (operators_.find(*it) != operators_.end())
+			result += "@";
+		result += *it;
+		result += " ";
+	}
+	return result;
+}
+
+int Channel::getChannelMode(void)
 {
 	return mode_;
 }

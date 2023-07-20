@@ -3,14 +3,19 @@
 Client::Client(int socket)
 {
 	client_socket_ = socket;
+	nickname_ = "";
+	username_ = "";
+	hostname_ = "";
+	is_pass_ = false;
+	is_authenticated_ = false;
 }
 
-const int Client::getSocket(void) const
+int Client::getSocket(void) const
 {
     return client_socket_;
 }
 
-const std::string& Client::getNickName(void) const
+std::string Client::getNickName(void)
 {
     return nickname_;
 }
@@ -40,7 +45,7 @@ bool	Client::getIsPass(void) const
 	return is_pass_;
 }
 
-std::string Client::getHost(void) const
+std::string Client::getHost(void)
 {
     struct sockaddr_in clnt_addr;
     socklen_t size = sizeof(clnt_addr);
@@ -50,9 +55,8 @@ std::string Client::getHost(void) const
 	std::string result(ip);
 	free(ip);
 
-	std::string host_info;
+	std::string host_info(getNickName());
 
-	host_info = getNickName();
 	host_info += "!";
 	host_info += getUserName();
 	host_info += "@";

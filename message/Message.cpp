@@ -1,9 +1,5 @@
 #include "Message.hpp"
 
-void	Message::makePrefix(std::string& server_name)
-{
-}
-
 Message Message::parseMessage(const std::string &str) 
 {
 	Message message;
@@ -64,7 +60,7 @@ void Message::setTrailing(const std::string &trailing)
 {
 	trailing_ = trailing;
 	if (trailing_.size() != 0)
-	hasTrailing_ = true;
+		hasTrailing_ = true;
 }
 
 void Message::setHasTrailing (bool hasTrailing)
@@ -99,7 +95,19 @@ bool Message::getHasTrailing() const
 
 void	Message::addParam(const std::string &param)
 {
-	params_.push_back(param);
+	std::string temp(param);
+	params_.push_back(temp);
+}
+
+void	Message::addParam(unsigned long param)
+{
+	//string stream
+	std::stringstream ss(param);
+	std::string str;
+	
+	ss >> str;
+
+	params_.push_back(str);
 }
 
 std::string Message::toString(void) const

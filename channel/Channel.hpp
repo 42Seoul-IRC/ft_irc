@@ -56,10 +56,10 @@ class Channel {
 		void	unsetOperator(const std::string& client_name);
 
 		bool	checkChannelCapacity(void);
+		std::string		getClientsString(void);
 
-		const int getChannelMode(void);
+		int getChannelMode(void);
 		void	setChannelMode(int channel_mode);
-
 		void	changeClientInfo(const std::string& client_name, const std::string& new_name);
 };
 

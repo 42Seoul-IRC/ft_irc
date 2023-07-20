@@ -15,9 +15,6 @@ class Message {
 		bool hasTrailing_;
 
 	public:
-		void	makePrefix(std::string& server_name);
-		void	makePrefix(Client *client);
-
 		static std::vector<std::string> split(std::string str, std::string delimiter);
 		static Message parseMessage(const std::string &str);
 		
@@ -34,6 +31,7 @@ class Message {
 		bool getHasTrailing (void) const;
 
 		void addParam (const std::string &param);
+		void addParam (unsigned long param);
 
 		std::string toString (void) const;
 

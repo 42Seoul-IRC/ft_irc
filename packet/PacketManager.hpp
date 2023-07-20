@@ -10,14 +10,17 @@
 #include "../channel/ChannelManager.hpp"
 
 class PacketManager {
-	private:
+	protected:
 		char* password_;
 		typedef void (PacketManager::*RecvPacketFunction)(struct Packet&);
 		std::map<std::string, RecvPacketFunction> recv_function_map_;
+		
 		ChannelManager channel_manager_;
 	
 	public:
 		ClientManager client_manager_;
+		
+		std::string valid_channel_modes_;
 		
 		void init(char *password);
 		void execute(struct Packet packet);
@@ -41,7 +44,9 @@ class PacketManager {
 
 		void	invite(struct Packet& packet);
 		void	topic(struct Packet& packet);
-		void	mode(struct Packet& packet);
+
+		void	printPacket(struct Packet& packet);
+		// void	mode(struct Packet& packet);
 };
 
 #endif

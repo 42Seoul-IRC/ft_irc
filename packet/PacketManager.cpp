@@ -15,8 +15,9 @@ void PacketManager::init(char *password)
 	recv_function_map_["KICK"] = &PacketManager::kick;
 	recv_function_map_["INVITE"] = &PacketManager::invite;
 	recv_function_map_["TOPIC"] = &PacketManager::topic;
-	recv_function_map_["MODE"] = &PacketManager::mode;
+	// recv_function_map_["MODE"] = &PacketManager::mode;
 
+	valid_channel_modes_ = "itkol";
 }
 
 void	PacketManager::removeClientBySocket(int socket)
@@ -61,7 +62,7 @@ void PacketManager::sendPacket(Message message, Channel *channel)
 
 		Packet packet = {
 			.client_socket = socket,
-			.message = packet.message
+			.message = message
 		};
 		sendPacket(packet);
 	}
@@ -78,7 +79,7 @@ void PacketManager::sendPacket(Message message, Channel *channel, std::string ex
 
 		Packet packet = {
 			.client_socket = socket,
-			.message = packet.message
+			.message = message
 		};
 		sendPacket(packet);
 	}
@@ -93,5 +94,13 @@ std::string PacketManager::getNickBySocket(int socket)
 	{
 		return client_manager_.socket_clients_[socket]->getNickName();
 	}
+	return (std::string(""));
 }
 
+// void	PacketManager::printPacket(struct Packet& packet)
+// {
+// 	std::cout << "PacketManager::printPacket" << std::endl;
+// 	std::cout << "client_socket: " << packet.client_socket << std::endl;
+// 	std::cout << "message: " << packet.message.toString() << std::endl;
+
+// }
