@@ -10,7 +10,7 @@ void	PacketManager::pass(struct Packet& packet)
 
 	if (client->getIsPass())
 	{
-		packet_maker.Err_alreadyregistred(packet);
+		packet_maker.ErrAlreadyRegistred(packet);
 		return ;
 	}
 

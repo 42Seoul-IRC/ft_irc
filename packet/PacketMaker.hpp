@@ -7,7 +7,7 @@
 class PacketMaker : public PacketManager
 {
 	public:
-		void Err_alreadyregistred(struct Packet& packet);
+		void ErrAlreadyRegistred(struct Packet& packet);
 };
 
 #endif

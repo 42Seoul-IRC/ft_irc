@@ -1,6 +1,6 @@
 #include "PacketMaker.hpp"
 
-void PacketMaker::Err_alreadyregistred(struct Packet& packet)
+void PacketMaker::ErrAlreadyRegistred(struct Packet& packet)
 {
 	Message message;
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
