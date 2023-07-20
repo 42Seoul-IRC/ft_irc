@@ -271,7 +271,7 @@ void	PacketManager::join(struct Packet& packet)
 			channel_manager_.createChannelByName(*it1);
 		if (channel_manager_.checkClientIsInChannel(*it1, client_name))
 			continue ;
-		if (channel_manager_.getChannelMode(*it1) & MODE_PASSWORD)
+		if (channel_manager_.getChannelByName(*it1)->isOnChannelMode(MODE_PASSWORD))
 		{
 			if (channel_manager_.checkChannelPassword(*it1, *it2) == false)
 			{
@@ -279,7 +279,7 @@ void	PacketManager::join(struct Packet& packet)
 				continue ;
 			}
 		}
-		if (channel_manager_.getChannelMode(*it1) & MODE_INVITE)
+		if (channel_manager_.getChannelByName(*it1)->isOnChannelMode(MODE_INVITE))
 		{
 			if (channel_manager_.checkClientIsInvited(*it1, client_name) == false)
 			{
@@ -294,7 +294,7 @@ void	PacketManager::join(struct Packet& packet)
 		}
 		channel_manager_.addClientToChannel(*it1, client_name);
 		client_manager_.addChannelToClient(client_name, *it1);
-		if (channel_manager_.getChannelByName(*it1)->getChannelMode() & MODE_TOPIC)
+		if (channel_manager_.getChannelByName(*it1)->isOnChannelMode(MODE_TOPIC))
 		{
 			Packet temp = packet;
 			temp.message.setCommand(*it1);
@@ -494,7 +494,8 @@ void	PacketManager::invite(struct Packet& packet)
 	}
 
 	// - invite 모두가 켜져있는 경우에는, operator가 아닌 사람은 초대할 수 없다. 
-	if ((channel_manager_.getChannelMode(channel_name) & MODE_INVITE) && !channel_manager_.checkClientIsOperator(channel_name, client_nick))
+
+	if ((channel_manager_.getChannelByName(channel_name)->isOnChannelMode(MODE_INVITE) && !channel_manager_.checkClientIsOperator(channel_name, client_nick)))
 	{
 		message.setCommand(ERR_CHANOPRIVSNEEDED);
 		message.addParam(client->getHostName());

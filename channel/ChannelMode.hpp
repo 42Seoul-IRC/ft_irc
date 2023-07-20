@@ -1,12 +1,13 @@
 #ifndef CHANNEL_MODE_HPP
 #define CHANNEL_MODE_HPP
 
-enum ChannelMode
-{
-	MODE_INVITE = 1,
-	MODE_TOPIC = 2,
-	MODE_PASSWORD = 4,
-	MODE_LIMIT = 8,
-};
+
+//define channel mode to macro
+
+#define MODE_INVITE 'i'
+#define MODE_TOPIC 't'
+#define MODE_PASSWORD 'k'
+#define MODE_LIMIT 'l'
+#define MODE_OPERATOR 'o'
 
 #endif

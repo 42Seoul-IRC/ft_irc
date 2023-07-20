@@ -7,7 +7,7 @@ Channel::Channel(const std::string& name)
 	else
 		channel_name_ = name;
 	limit_ = -1;
-	mode_ = 0;
+	mode_ = "nt";
 }
 
 Channel::~Channel()
@@ -153,14 +153,19 @@ std::string	Channel::getClientsString(void)
 	return result;
 }
 
-int Channel::getChannelMode(void)
+
+bool	Channel::isOnChannelMode(char mode)
 {
-	return mode_;
+	if (mode_.find(mode) != std::string::npos)
+		return true;
+	else
+		return false;
 }
 
-void	Channel::setChannelMode(int channel_mode)
+void	Channel::setChannelMode(char mode)
 {
-	mode_ ^= channel_mode;
+	if (!isOnChannelMode(mode))
+		mode_ += mode;
 }
 
 void	Channel::changeClientInfo(const std::string& client_name, const std::string& new_nick)

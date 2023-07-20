@@ -13,17 +13,20 @@ class Channel {
 		std::string channel_name_;
 		unsigned long channel_created_time_;
 
-		std::string topic_;
-		std::string topic_setter_;
-		//write topic settime unix timestamp
-		unsigned long topic_settime_;
 
 		std::string password_;
 		std::set<std::string> operators_;
 		std::set<std::string> clients_; // 필요한  경우, 바로 map<std::string, *client> 사용할 것!
 		std::set<std::string> invited_clients_;
+		
+		
+		std::string mode_;
+		
+		std::string topic_;
+		std::string topic_setter_;
+		unsigned long topic_settime_;
+
 		int limit_;
-		int mode_;
 
 		Channel(const std::string& name);
 		~Channel();
@@ -58,8 +61,9 @@ class Channel {
 		bool	checkChannelCapacity(void);
 		std::string		getClientsString(void);
 
-		int getChannelMode(void);
-		void	setChannelMode(int channel_mode);
+		bool	isOnChannelMode(char mode);
+		void	setChannelMode(char mode);
+
 		void	changeClientInfo(const std::string& client_name, const std::string& new_name);
 };
 
