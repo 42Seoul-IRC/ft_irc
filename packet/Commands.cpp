@@ -592,24 +592,204 @@ void	PacketManager::invite(struct Packet& packet)
 
 	// - invited 리스트에 추가하고
 	channel_manager_.getChannelByName(channel_name)->inviteClient(target_nick);
+
 	
 	// - 메시지를 보낸다.
+	int target_socket = client_manager_.getClientByNick(target_nick)->getSocket();
+	std::string inviting_msg = ":" + client_nick + " INVITE " + target_nick + " " + channel_name;
 	
+	if (send(target_socket, inviting_msg.c_str(), inviting_msg.size(), 0) == -1)
+	{
+		//error
+	}
 
 	//3. send message
 
-	message
+	// - RPL_INVITING
+	message.setCommand(RPL_INVITING);
+	message.addParam(client->getHostName());
+	message.addParam(client_nick);
+	message.addParam(target_nick);
+	message.addParam(channel_name);
+	message.setTrailing("Inviting " + target_nick + " to " + channel_name);
 
-
-
-
+	struct Packet packet = {client->getSocket(), message};
+	sendPacket(packet);
+	return ;
 }
 
 void	PacketManager::topic(struct Packet& packet)
 {
+	//1. error manage
+
+	//### **오류 461: ERR_NEEDMOREPARAMS**
 	
+	// **오류 메시지 형식**: **`<client> <command> :Not enough parameters`오류 이유**: 클라이언트 명령을 구문 분석할 수 없는 이유는 충분한 매개 변수가 제공되지 않았기 때문입니다.
+	// **오류 코드**: **`461`**
+
+	Message message;
+	
+	std::string client_nick = getNickBySocket(packet.client_socket);
+	Client * client = client_manager_.getClientByNick(client_nick);
+
+	if ( packet.message.getParams().size() != 1 || packet.message.getTrailing().size() != 0)
+	{
+		// ERR_NEEDMOREPARAMS
+
+		message.setCommand(ERR_NEEDMOREPARAMS);
+		message.addParam(client->getHostName());
+		message.addParam(client_nick);
+		message.addParam(packet.message.getCommand());	
+		message.setTrailing("Not enough parameters");
+
+		struct Packet packet = {client->getSocket(), message};
+		sendPacket(packet);
+		return ;
+	}	
+
+	std::string channel_name = packet.message.getParams()[0];
+	Channel *channel = channel_manager_.getChannelByName(channel_name);
+
+	// ### **오류 403: ERR_NOSUCHCHANNEL**
+
+	// **오류 메시지 형식**: **`<client> <channel> :No such channel`오류 이유**: 제공된 채널 이름에 대한 채널을 찾을 수 없다는 것을 나타냅니다.
+	// **오류 코드**: **`403`**
+
+	if (!channel_manager_.getChannelByName(channel_name))
+	{
+		message.setCommand(ERR_NOSUCHCHANNEL);
+		message.addParam(client->getHostName());
+		message.addParam(client_nick);
+		message.addParam(channel_name);
+		message.setTrailing(ERR_NOSUCHCHANNEL_MSG);
+
+		struct Packet packet = {client->getSocket(), message};
+		sendPacket(packet);
+		return ;
+	}
+
+	// ### **오류 442: ERR_NOTONCHANNEL**
+	// **오류 메시지 형식**: **`<client> <channel> :You're not on that channel`오류 이유**: 클라이언트가 해당 채널의 일부가 아닌 채널에 영향을 주는 명령을 수행하려고 할 때 반환됩니다.
+	// **오류 코드**: **`442`**
+	
+	if (!channel_manager_.checkClientIsInChannel(channel_name, client_nick))
+	{
+		message.setCommand(ERR_NOTONCHANNEL);
+		message.addParam(client->getHostName());
+		message.addParam(client_nick);
+		message.addParam(channel_name);
+		message.setTrailing(ERR_NOTONCHANNEL_MSG);
+
+		struct Packet packet = {client->getSocket(), message};
+		sendPacket(packet);
+		return ;
+	}
+
+
+	
+
+	// ### **오류 482: ERR_CHANOPRIVSNEEDED**
+
+	// **오류 메시지 형식**: **`<client> <channel> :You're not channel operator`오류 이유**: 클라이언트가 적절한 채널 권한이 없어 명령이 실패했다는 것을 나타냅니다.
+	// **오류 코드**: **`482`**
+
+	if (!channel_manager_.checkClientIsOperator(channel_name, client_nick))
+	{
+		message.setCommand(ERR_CHANOPRIVSNEEDED);
+		message.addParam(client->getHostName());
+		message.addParam(client_nick);
+		message.addParam(channel_name);
+		message.setTrailing(ERR_CHANOPRIVSNEEDED_MSG);
+
+		struct Packet packet = {client->getSocket(), message};
+		sendPacket(packet);
+		return ;
+	}
+
+	//2. business logic
+
+	std::string topic = packet.message.getTrailing();
+	if (topic.empty() != 0)
+	{
+		channel->setTopic(topic);
+		channel->setTopicSetter(client_nick);
+		channel->setTopicSetTime();
+
+		message.setCommand(RPL_TOPIC);
+		message.addParam(client->getHostName());
+		message.addParam(client_nick);
+		message.addParam(channel_name);
+		message.setTrailing(topic);
+
+		struct Packet packet = {client->getSocket(), message};
+		sendPacket(packet);
+
+		Message message2;
+
+		message2.setCommand(RPL_TOPICWHOTIME);
+		message2.addParam(client->getHostName());
+		message2.addParam(client_nick);
+		message2.addParam(channel_name);
+		message2.addParam(channel->getTopicSetter());
+		message2.addParam(channel->getTopicSetTime());
+
+		struct packet packet2 = {client->getSocket(), message2};
+		sendPacket(packet2);	
+	}
+	else
+	{
+		topic = channel->getTopic();
+		if (topic.empty() != 0)
+		{
+			message.setCommand(RPL_TOPIC);
+			message.addParam(client->getHostName());
+			message.addParam(client_nick);
+			message.addParam(channel_name);
+			message.setTrailing(topic);
+
+			struct Packet packet = {client->getSocket(), message};
+			sendPacket(packet);
+
+			Message message2;
+
+			message2.setCommand(RPL_TOPICWHOTIME);
+			message2.addParam(client->getHostName());
+			message2.addParam(client_nick);
+			message2.addParam(channel_name);
+			message2.addParam(channel->getTopicSetter());
+			message2.addParam(channel->getTopicSetTime());
+
+			struct packet packet2 = {client->getSocket(), message2};
+			sendPacket(packet2);
+		} 
+		else
+		{
+			message.setCommand(RPL_NOTOPIC);
+			message.addParam(client->getHostName());
+			message.addParam(client_nick);
+			message.addParam(channel_name);
+			message.setTrailing(RPL_NOTOPIC_MSG);
+
+			struct Packet packet = {client->getSocket(), message};
+			sendPacket(packet);
+		}
+	}
+
+	// ### **응답 331: RPL_NOTOPIC**
+	// **응답 메시지 형식**: **`<client> <channel> :No topic is set`응답 설명**: 클라이언트가 채널에 가입할 때 해당 채널에 설정된 주제가 없음을 알립니다.
+	
+	// ### **응답 332: RPL_TOPIC**
+	// **응답 메시지 형식**: **`<client> <channel> :<topic>`응답 설명**: 클라이언트가 채널에 가입할 때 해당 채널의 현재 주제를 알려줍니다.
+
+	// ### **응답 333: RPL_TOPICWHOTIME**
+
+	// **응답 메시지 형식**: **`<client> <channel> <nick> <setat>`응답 설명**: 주제를 설정한 사람(<nick>)과 주제를 설정한 시간(<setat>은 유닉스 타임스탬프)을 알려줍니다. 이는 RPL_TOPIC(332) 이후에 전송됩니다.
+
+	//3. send message success
+
 }
+
 void	PacketManager::mode(struct Packet& packet)
 {
-		
+
 }
