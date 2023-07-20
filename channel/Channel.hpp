@@ -36,7 +36,7 @@ class Channel {
 		void	setTopicSetter(const std::string& name);
 		std::string&	getTopicSetter(void);
 
-		void	setTopicSetTime(unsigned long time);
+		void	setTopicSetTime();
 		unsigned long	getTopicSetTime(void);
 
 
