@@ -17,6 +17,11 @@ Channel::~Channel()
 	invited_clients_.clear();
 }
 
+void	Channel::setChannelCreatedTime()
+{
+	channel_created_time_ = time(NULL);
+}
+
 void	Channel::setTopic(const std::string& name)
 {
 	topic_ = name;
@@ -26,6 +31,27 @@ const std::string&	Channel::getTopic(void)
 {
 	return topic_;
 }
+
+void	Channel::setTopicSetter(const std::string& name)
+{
+	topic_setter_ = name;
+}
+
+std::string&	Channel::getTopicSetter(void)
+{
+	return topic_setter_;
+}
+
+void	Channel::setTopicSetTime()
+{
+	topic_settime_ = time(NULL);
+}
+
+unsigned long	Channel::getTopicSetTime(void)
+{
+	return topic_settime_;
+}
+
 
 void	Channel::setPassword(const std::string& pw)
 {
