@@ -6,11 +6,11 @@ void	PacketManager::pass(struct Packet& packet)
 	Message message;
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
 
-	ErrorPacket error_packet;
+	PacketMaker packet_maker;
 
 	if (client->getIsPass())
 	{
-		error_packet.Err_alreadyregistred(packet);
+		packet_maker.Err_alreadyregistred(packet);
 		return ;
 	}
 
