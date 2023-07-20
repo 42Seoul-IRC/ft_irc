@@ -1,4 +1,4 @@
-#include "PacketManager.hpp"
+#include "PacketMaker.hpp"
 #include "macro.h"
 
 void	PacketManager::pass(struct Packet& packet)
@@ -6,16 +6,11 @@ void	PacketManager::pass(struct Packet& packet)
 	Message message;
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
 
+	ErrorPacket error_packet;
+
 	if (client->getIsPass())
 	{
-		message.setPrefix("irc.local");
-		message.setCommand(ERR_ALREADYREGISTERED);
-		message.addParam(client->getHostName());
-		message.setTrailing("You may not register");
-
-		struct Packet packet = {client->getSocket(), message};
-		sendPacket(packet);
-
+		error_packet.Err_alreadyregistred(packet);
 		return ;
 	}
 
