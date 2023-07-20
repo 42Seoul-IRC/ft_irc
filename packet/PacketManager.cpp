@@ -16,6 +16,7 @@ void PacketManager::init(char *password)
 	recv_function_map_["INVITE"] = &PacketManager::invite;
 	recv_function_map_["TOPIC"] = &PacketManager::topic;
 	recv_function_map_["MODE"] = &PacketManager::mode;
+
 }
 
 void	PacketManager::removeClientBySocket(int socket)
@@ -40,11 +41,16 @@ void	PacketManager::removeClientBySocket(int socket)
 
 void PacketManager::execute(struct Packet packet)
 {
+<<<<<<< HEAD
 	std::map<std::string, RecvPacketFunction>::iterator it = recv_function_map_.find(packet.message.getCommand());
+=======
+	std::map<std::string, RecvPacketFunction>::iterator it = recv_function_map_.find(packet.message.command_);
+>>>>>>> 95007fd22122f80160a7f867ae0e77431d834e97
 	if (it != recv_function_map_.end())
 	{
 		(this->*(it->second))(packet);
 	}
+<<<<<<< HEAD
 }
 
 void PacketManager::sendPacket(struct Packet& packet)
@@ -77,3 +83,6 @@ std::string PacketManager::getNickBySocket(int socket)
 	}
 }
 
+=======
+}
+>>>>>>> 95007fd22122f80160a7f867ae0e77431d834e97
