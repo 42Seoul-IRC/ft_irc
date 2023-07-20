@@ -27,6 +27,16 @@ const std::string&	Channel::getTopic(void)
 	return topic_;
 }
 
+void	Channel::setTopicSetter(const std::string& name)
+{
+	topic_setter_ = name;
+}
+
+std::string&	Channel::getTopicSetter(void)
+{
+	return topic_setter_;
+}
+
 void	Channel::setPassword(const std::string& pw)
 {
 	password_ = pw;
