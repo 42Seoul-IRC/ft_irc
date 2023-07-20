@@ -17,6 +17,11 @@ Channel::~Channel()
 	invited_clients_.clear();
 }
 
+void	Channel::setChannelCreatedTime()
+{
+	channel_created_time_ = time(NULL);
+}
+
 void	Channel::setTopic(const std::string& name)
 {
 	topic_ = name;

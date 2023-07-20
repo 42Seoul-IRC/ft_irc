@@ -11,6 +11,8 @@
 class Channel {
 	public:
 		std::string channel_name_;
+		unsigned long channel_created_time_;
+
 		std::string topic_;
 		std::string topic_setter_;
 		//write topic settime unix timestamp
@@ -26,13 +28,15 @@ class Channel {
 		Channel(const std::string& name);
 		~Channel();
 
+		void	setChannelCreatedTime();
+
 		void	setTopic(const std::string& name);
 		const std::string&	getTopic(void);
 
 		void	setTopicSetter(const std::string& name);
 		std::string&	getTopicSetter(void);
 
-		void	setTopicSetTime();
+		void	setTopicSetTime(unsigned long time);
 		unsigned long	getTopicSetTime(void);
 
 
