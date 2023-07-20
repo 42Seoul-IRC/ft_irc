@@ -1,4 +1,5 @@
 #include "ChannelManager.hpp"
+#include <iostream>
 
 void	ChannelManager::createChannelByName(const std::string& channel_name)
 {
@@ -6,6 +7,7 @@ void	ChannelManager::createChannelByName(const std::string& channel_name)
 		return ;
 	Channel *temp = new Channel(channel_name);
 	channels_.insert(std::make_pair(channel_name, temp));
+	std::cout << "[INFO] Create channel : " << channel_name  << ", " << temp << std::endl;
 }
 
 void	ChannelManager::addClientToChannel(const std::string& channel_name, const std::string& client_name)

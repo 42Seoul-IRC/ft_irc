@@ -60,6 +60,7 @@ void PacketManager::sendPacket(Message message, Channel *channel)
 {
 	for (std::set<std::string>::iterator it = channel->clients_.begin(); it != channel->clients_.end(); it++)
 	{
+		std::cout << "sendPacket: " << &client_manager_  << std::endl;
 		int socket = client_manager_.nick_clients_[*it]->getSocket();
 
 		Packet packet = {
