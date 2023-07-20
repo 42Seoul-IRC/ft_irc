@@ -37,6 +37,17 @@ std::string&	Channel::getTopicSetter(void)
 	return topic_setter_;
 }
 
+void	Channel::setTopicSetTime()
+{
+	topic_settime_ = time(NULL);
+}
+
+unsigned long	Channel::getTopicSetTime(void)
+{
+	return topic_settime_;
+}
+
+
 void	Channel::setPassword(const std::string& pw)
 {
 	password_ = pw;

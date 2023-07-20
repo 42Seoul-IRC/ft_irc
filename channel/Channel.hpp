@@ -13,6 +13,9 @@ class Channel {
 		std::string channel_name_;
 		std::string topic_;
 		std::string topic_setter_;
+		//write topic settime unix timestamp
+		unsigned long topic_settime_;
+
 		std::string password_;
 		std::set<std::string> operators_;
 		std::set<std::string> clients_; // 필요한  경우, 바로 map<std::string, *client> 사용할 것!
@@ -28,6 +31,9 @@ class Channel {
 
 		void	setTopicSetter(const std::string& name);
 		std::string&	getTopicSetter(void);
+
+		void	setTopicSetTime();
+		unsigned long	getTopicSetTime(void);
 
 
 		void	setPassword(const std::string& pw);
