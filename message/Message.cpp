@@ -129,6 +129,7 @@ std::string Message::toString(void) const
 	}
 	if (hasTrailing_)
 		str += " :" + trailing_;
+	str += '\n';
 	return (str);
 }
 

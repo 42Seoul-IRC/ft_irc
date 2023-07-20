@@ -4,7 +4,10 @@
 void	PacketManager::pass(struct Packet& packet)
 {
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
-	PacketMaker packet_maker;
+	PacketMaker packet_maker(*this);
+
+	std::cout << "[DEBUG] Pass's client_manager_ : " << &client_manager_ << std::endl;
+	std::cout << "[DEBUG] client's address : " << client << std::endl;
 
 	if (client->getIsPass())
 	{
@@ -30,7 +33,7 @@ void	PacketManager::pass(struct Packet& packet)
 void	PacketManager::nick(struct Packet& packet)
 {
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
-	PacketMaker packet_maker;
+	PacketMaker packet_maker(*this);
 
 	if (!client->getIsPass())
 	{
@@ -90,7 +93,7 @@ void	PacketManager::nick(struct Packet& packet)
 void	PacketManager::user(struct Packet& packet)
 {
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
-	PacketMaker packet_maker;
+	PacketMaker packet_maker(*this);
 
 	if (!client->getIsPass())
 	{
@@ -123,7 +126,7 @@ void	PacketManager::user(struct Packet& packet)
 void	PacketManager::privmsg(struct Packet& packet)
 {
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
-	PacketMaker packet_maker;
+	PacketMaker packet_maker(*this);
 
 	if (!client->getIsAuthenticated())
 	{
@@ -182,7 +185,7 @@ void	PacketManager::privmsg(struct Packet& packet)
 void	PacketManager::quit(struct Packet& packet)
 {
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
-	PacketMaker packet_maker;
+	PacketMaker packet_maker(*this);
 
 	if (!client->getIsAuthenticated())
 	{
@@ -209,7 +212,7 @@ void	PacketManager::quit(struct Packet& packet)
 
 void	PacketManager::ping(struct Packet& packet)
 {
-	PacketMaker packet_maker;
+	PacketMaker packet_maker(*this);
 
 	if (packet.message.getParams().size() != 1)
 		return ;
@@ -236,7 +239,7 @@ void	PacketManager::join(struct Packet& packet)
 9. 해당 채널의 모든 유저에게 join 메시지 전송
 */
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
-	PacketMaker packet_maker;
+	PacketMaker packet_maker(*this);
 
 	if (!client->getIsAuthenticated())
 	{
@@ -320,7 +323,7 @@ void	PacketManager::part(struct Packet& packet)
 6. 유저의 채널 리스트에서 해당 채널의 이름 제거
 */
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
-	PacketMaker packet_maker;
+	PacketMaker packet_maker(*this);
 	if (!client->getIsAuthenticated())
 	{
 		packet_maker.ErrNotRegistered(packet);
@@ -375,7 +378,7 @@ void	PacketManager::kick(struct Packet& packet)
 */
 	Message message;
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
-	PacketMaker packet_maker;
+	PacketMaker packet_maker(*this);
 
 	if (!client->getIsAuthenticated())
 	{
@@ -432,7 +435,7 @@ void	PacketManager::invite(struct Packet& packet)
 {
 	//0. Argument check
 
-	PacketMaker packet_maker;
+	PacketMaker packet_maker(*this);
 	Message message;
 	
 	std::string client_nick = getNickBySocket(packet.client_socket);
@@ -561,7 +564,7 @@ void	PacketManager::topic(struct Packet& packet)
 	// **오류 메시지 형식**: **`<client> <command> :Not enough parameters`오류 이유**: 클라이언트 명령을 구문 분석할 수 없는 이유는 충분한 매개 변수가 제공되지 않았기 때문입니다.
 	// **오류 코드**: **`461`**
 
-	PacketMaker packet_maker;
+	PacketMaker packet_maker(*this);
 	Message message;
 	
 	std::string client_nick = getNickBySocket(packet.client_socket);

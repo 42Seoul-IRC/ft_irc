@@ -1,5 +1,18 @@
 #include "PacketMaker.hpp"
 
+PacketMaker::PacketMaker(const PacketManager& packet_manager)
+{
+	client_manager_ = packet_manager.client_manager_;
+	channel_manager_ = packet_manager.channel_manager_;
+}
+
+PacketMaker::~PacketMaker()
+{
+	client_manager_.socket_clients_.clear();
+	client_manager_.nick_clients_.clear();
+	channel_manager_.channels_.clear();
+}
+
 // Common Error
 void PacketMaker::ErrNotRegistered(struct Packet& packet)
 {

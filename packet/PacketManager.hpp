@@ -15,9 +15,8 @@ class PacketManager {
 		typedef void (PacketManager::*RecvPacketFunction)(struct Packet&);
 		std::map<std::string, RecvPacketFunction> recv_function_map_;
 		
-		ChannelManager channel_manager_;
-	
 	public:
+		ChannelManager channel_manager_;
 		ClientManager client_manager_;
 		
 		std::string valid_channel_modes_;

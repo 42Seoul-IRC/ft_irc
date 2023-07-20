@@ -7,6 +7,9 @@
 class PacketMaker : public PacketManager
 {
 	public:
+		PacketMaker(const PacketManager& packet_manager);
+		~PacketMaker();
+
 		// Common Error
 		void ErrNotRegistered(struct Packet& packet);
 		void ErrNeedMoreParams(struct Packet& packet);

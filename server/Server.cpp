@@ -82,6 +82,7 @@ void Server::successHandler(int socket)
 		{
 			packet_manager_.client_manager_.addClientBySocket(client_socket);
 			addSocket(client_socket);
+			std::cout << "[INFO] Client connected : " << client_socket << ", " << packet_manager_.client_manager_.getClientBySocket(client_socket) << std::endl;
 		}
 		catch(const std::exception& e)
 		{
@@ -132,7 +133,7 @@ void Server::errorHandler(int socket)
 		if (client)
 		{
 			Message message;
-			message.setCommand("QUT");
+			message.setCommand("QUIT");
 			
 			struct Packet quit = {socket, message};
 
