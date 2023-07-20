@@ -16,7 +16,7 @@ class Message {
 
 	public:
 		static std::vector<std::string> split(std::string str, std::string delimiter);
-		static Message parseMessage(const std::string &str);
+		static Message parseMessage(std::string str);
 		
 		void setPrefix (const std::string &prefix);
 		void setCommand (const std::string &command);

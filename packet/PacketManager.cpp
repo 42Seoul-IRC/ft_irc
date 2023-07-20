@@ -40,7 +40,7 @@ void	PacketManager::removeClientBySocket(int socket)
 	client_manager_.nick_clients_.erase(nick);
 }
 
-void PacketManager::execute(struct Packet packet)
+void PacketManager::execute(struct Packet& packet)
 {
 	std::map<std::string, RecvPacketFunction>::iterator it = recv_function_map_.find(packet.message.getCommand());
 	if (it != recv_function_map_.end())

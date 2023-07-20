@@ -1,11 +1,15 @@
 #include "Message.hpp"
 
-Message Message::parseMessage(const std::string &str) 
+Message Message::parseMessage(std::string str) 
 {
 	Message message;
-	std::istringstream iss(str);
 	std::string params;
 	std::string token;
+
+	str.erase(str.find_last_not_of(" \n\r\t") + 1);
+	str.erase(0, str.find_first_not_of(" \n\r\t"));
+	
+	std::istringstream iss(str);
 
 	size_t idx = str.find(":", 1);
 	if (idx != std::string::npos)

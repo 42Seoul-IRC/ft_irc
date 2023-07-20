@@ -1,5 +1,5 @@
 #include "ClientManager.hpp"
-
+#include <iostream>
 void	ClientManager::addClientBySocket(int socket)
 {
 	Client	*temp;

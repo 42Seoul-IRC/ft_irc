@@ -23,7 +23,7 @@ class PacketManager {
 		std::string valid_channel_modes_;
 		
 		void init(char *password);
-		void execute(struct Packet packet);
+		void execute(struct Packet& packet);
 		void removeClientBySocket(int socket);
 		std::string getNickBySocket(int socket);
 

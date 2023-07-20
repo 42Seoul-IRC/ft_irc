@@ -60,7 +60,6 @@ void Server::run(void)
 
 void Server::process(void)
 {
-
 	for (std::deque<Packet>::iterator it = packet_queue.begin(); it != packet_queue.end(); it++)
 	{
 		packet_manager_.execute(*it);
@@ -75,7 +74,7 @@ void Server::successHandler(int socket)
 		int client_socket = server_socket_.accept();
 		if (client_socket == -1)
 			throw std::runtime_error("Socket accept error");
-		
+
 		if (::fcntl(client_socket, F_SETFL, O_NONBLOCK) == -1)
 			throw std::runtime_error("Client fcntl error");
 
