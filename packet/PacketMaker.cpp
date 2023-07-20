@@ -281,6 +281,9 @@ Message PacketMaker::NickSuccess(struct Packet& packet)
 	message.setCommand("NICK");
 	message.setTrailing(packet.message.getParams()[0]);
 
+	struct Packet pkt = {client->getSocket(), message};
+	sendPacket(pkt);
+
 	return message;
 }
 

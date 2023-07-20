@@ -53,7 +53,6 @@ std::string Client::getHost(void)
 
 	char *ip = inet_ntoa(clnt_addr.sin_addr);
 	std::string result(ip);
-	free(ip);
 
 	std::string host_info(getNickName());
 

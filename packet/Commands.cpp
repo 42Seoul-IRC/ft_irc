@@ -55,13 +55,13 @@ void	PacketManager::nick(struct Packet& packet)
 		return ;
 	}
 
-	if (!client_manager_.isUsedNickname(new_nick))
+	if (client_manager_.isUsedNickname(new_nick))
 	{
 		packet_maker.ErrNicknameInUse(packet);
 		return ;
 	}
 
-	Client *nick_client = client_manager_.getClientByNick(new_nick);
+	Client *nick_client = client_manager_.getClientByNick(old_nick);
 	if (!nick_client)
 	{
 		client_manager_.addNickClient(new_nick, client);
@@ -75,17 +75,18 @@ void	PacketManager::nick(struct Packet& packet)
 	}
 	else
 	{
-		Message message = packet_maker.NickSuccess(packet);
-
 		client_manager_.removeNickClient(old_nick);
 		client_manager_.addNickClient(new_nick, client);
+		client->setNickName(new_nick);
+
+		Message message = packet_maker.NickSuccess(packet);
 
 		std::vector<Channel *> channels = channel_manager_.getChannelsByClientName(old_nick);
 		for (std::vector<Channel *>::iterator it = channels.begin(); it != channels.end(); ++it)
 		{
 			(*it)->changeClientInfo(old_nick, new_nick);
 
-			sendPacket(message, (*it));
+			sendPacket(message, (*it), new_nick);
 		}
 	}
 }
