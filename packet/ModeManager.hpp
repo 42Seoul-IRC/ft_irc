@@ -26,9 +26,10 @@ class ModeManager
         void    setParams(std::vector<std::string> *params);
 
         void    setItParam(std::vector<std::string>::iterator it_param);
-        bool    isEndParam();
-        std::vector<std::string>::iterator getNextParam();
+        bool    isEndItParam();
+        std::vector<std::string>::iterator getNextItParam();
         std::vector<std::string>::iterator getItParam();
+        void    incrementItParam();
 
 
         void    pushBackChangedBuffer(std::string buffer);

@@ -1,4 +1,9 @@
 #include "PacketManager.hpp"
+#include "PacketMaker.hpp"
+
+PacketManager::PacketManager() : packet_maker_(PacketMaker(client_manager_, channel_manager_))
+{
+}
 
 void PacketManager::init(char *password)
 {
@@ -48,43 +53,6 @@ void PacketManager::execute(struct Packet& packet)
 	if (it != recv_function_map_.end())
 	{
 		(this->*(it->second))(packet);
-	}
-}
-
-void PacketManager::sendPacket(struct Packet& packet)
-{
-	::send(packet.client_socket, packet.message.toString().c_str(), packet.message.toString().length(), 0);
-}
-
-void PacketManager::sendPacket(Message message, Channel *channel)
-{
-	for (std::set<std::string>::iterator it = channel->clients_.begin(); it != channel->clients_.end(); it++)
-	{
-		std::cout << "sendPacket: " << &client_manager_  << std::endl;
-		int socket = client_manager_.nick_clients_[*it]->getSocket();
-
-		Packet packet = {
-			.client_socket = socket,
-			.message = message
-		};
-		sendPacket(packet);
-	}
-}
-
-void PacketManager::sendPacket(Message message, Channel *channel, std::string exclude_nick)
-{
-	for (std::set<std::string>::iterator it = channel->clients_.begin(); it != channel->clients_.end(); it++)
-	{
-		if (*it == exclude_nick)
-			continue;
-
-		int socket = client_manager_.nick_clients_[*it]->getSocket();
-
-		Packet packet = {
-			.client_socket = socket,
-			.message = message
-		};
-		sendPacket(packet);
 	}
 }
 

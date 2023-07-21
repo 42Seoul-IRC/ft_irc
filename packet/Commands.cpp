@@ -1,29 +1,28 @@
-#include "PacketMaker.hpp"
+#include "PacketManager.hpp"
 #include "macro.h"
 
 void	PacketManager::pass(struct Packet& packet)
 {
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
-	PacketMaker packet_maker(*this);
 
 	std::cout << "[DEBUG] Pass's client_manager_ : " << &client_manager_ << std::endl;
 	std::cout << "[DEBUG] client's address : " << client << std::endl;
 
 	if (client->getIsPass())
 	{
-		packet_maker.ErrAlreadyRegistred(packet);
+		packet_maker_.ErrAlreadyRegistred(packet);
 		return ;
 	}
 
 	if (packet.message.getParams().size() != 1)
 	{
-		packet_maker.ErrNeedMoreParams(packet);
+		packet_maker_.ErrNeedMoreParams(packet);
 		return ;
 	}
 
 	if (packet.message.getParams()[0] != password_)
 	{
-		packet_maker.ErrPasswdMismatch(packet);
+		packet_maker_.ErrPasswdMismatch(packet);
 		return ;
 	}
 
@@ -33,17 +32,16 @@ void	PacketManager::pass(struct Packet& packet)
 void	PacketManager::nick(struct Packet& packet)
 {
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
-	PacketMaker packet_maker(*this);
 
 	if (!client->getIsPass())
 	{
-		packet_maker.ErrNotRegistered(packet);		
+		packet_maker_.ErrNotRegistered(packet);		
 		return ;
 	}
 
 	if (packet.message.getParams().size() != 1)
 	{
-		packet_maker.ErrNoNicknameGiven(packet);
+		packet_maker_.ErrNoNicknameGiven(packet);
 		return ;
 	}
 
@@ -51,13 +49,13 @@ void	PacketManager::nick(struct Packet& packet)
 	std::string new_nick = packet.message.getParams()[0];
 	if (!client_manager_.isValidNickname(new_nick))
 	{
-		packet_maker.ErrErroneusNickname(packet);
+		packet_maker_.ErrErroneusNickname(packet);
 		return ;
 	}
 
 	if (client_manager_.isUsedNickname(new_nick))
 	{
-		packet_maker.ErrNicknameInUse(packet);
+		packet_maker_.ErrNicknameInUse(packet);
 		return ;
 	}
 
@@ -69,7 +67,7 @@ void	PacketManager::nick(struct Packet& packet)
 
 		if (client->getUserName() != "")
 		{
-			packet_maker.RplWelcome(packet);
+			packet_maker_.RplWelcome(packet);
 			client->setIsAuthenticated(true);
 		}
 	}
@@ -79,14 +77,14 @@ void	PacketManager::nick(struct Packet& packet)
 		client_manager_.addNickClient(new_nick, client);
 		client->setNickName(new_nick);
 
-		Message message = packet_maker.NickSuccess(packet);
+		Message message = packet_maker_.NickSuccess(packet);
 
 		std::vector<Channel *> channels = channel_manager_.getChannelsByClientName(old_nick);
 		for (std::vector<Channel *>::iterator it = channels.begin(); it != channels.end(); ++it)
 		{
 			(*it)->changeClientInfo(old_nick, new_nick);
 
-			sendPacket(message, (*it), new_nick);
+			packet_maker_.sendPacket(message, (*it), new_nick);
 		}
 	}
 }
@@ -94,23 +92,22 @@ void	PacketManager::nick(struct Packet& packet)
 void	PacketManager::user(struct Packet& packet)
 {
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
-	PacketMaker packet_maker(*this);
 
 	if (!client->getIsPass())
 	{
-		packet_maker.ErrNotRegistered(packet);
+		packet_maker_.ErrNotRegistered(packet);
 		return ;
 	}
 
 	if (packet.message.getParams().size() != 4)
 	{
-		packet_maker.ErrNeedMoreParams(packet);
+		packet_maker_.ErrNeedMoreParams(packet);
 		return ;
 	}
 
 	if (client->getUserName() != "")
 	{
-		packet_maker.ErrAlreadyRegistred(packet);
+		packet_maker_.ErrAlreadyRegistred(packet);
 		return ;
 	}
 
@@ -119,7 +116,7 @@ void	PacketManager::user(struct Packet& packet)
 
 	if (client->getNickName() != "")
 	{
-		packet_maker.RplWelcome(packet);
+		packet_maker_.RplWelcome(packet);
 		client->setIsAuthenticated(true);
 	}
 }
@@ -127,23 +124,22 @@ void	PacketManager::user(struct Packet& packet)
 void	PacketManager::privmsg(struct Packet& packet)
 {
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
-	PacketMaker packet_maker(*this);
 
 	if (!client->getIsAuthenticated())
 	{
-		packet_maker.ErrNotRegistered(packet);
+		packet_maker_.ErrNotRegistered(packet);
 		return ;
 	}
 
 	if (packet.message.getParams().size() != 1)
 	{
-		packet_maker.ErrNoRecipient(packet);
+		packet_maker_.ErrNoRecipient(packet);
 		return ;
 	}
 
 	if (packet.message.getTrailing() == "")
 	{
-		packet_maker.ErrNoTextToSend(packet);
+		packet_maker_.ErrNoTextToSend(packet);
 		return ;
 	}
 
@@ -155,30 +151,30 @@ void	PacketManager::privmsg(struct Packet& packet)
 			Channel *channel = channel_manager_.getChannelByName(packet.message.getParams()[0]);
 			if (!channel)
 			{
-				packet_maker.ErrNoSuchChannel(packet);
+				packet_maker_.ErrNoSuchChannel(packet);
 				return ;
 			}
 
 			if (!channel_manager_.checkClientIsInChannel(packet.message.getParams()[0], client->getNickName()))
 			{
-				packet_maker.ErrCannotSendToChan(packet);
+				packet_maker_.ErrCannotSendToChan(packet);
 				return ;
 			}
 
-			Message message = packet_maker.PrivmsgToChannel(packet);
+			Message message = packet_maker_.PrivmsgToChannel(packet);
 
-			sendPacket(message, channel, client->getNickName());
+			packet_maker_.sendPacket(message, channel, client->getNickName());
 		}
 		else
 		{
 			Client *target_client = client_manager_.getClientByNick(packet.message.getParams()[0]);
 			if (!target_client)
 			{
-				packet_maker.ErrNoSuchNick(packet);
+				packet_maker_.ErrNoSuchNick(packet);
 				return ;
 			}
 
-			packet_maker.PrivmsgToUser(packet);
+			packet_maker_.PrivmsgToUser(packet);
 		}
 	}
 }
@@ -186,7 +182,6 @@ void	PacketManager::privmsg(struct Packet& packet)
 void	PacketManager::quit(struct Packet& packet)
 {
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
-	PacketMaker packet_maker(*this);
 
 	if (!client->getIsAuthenticated())
 	{
@@ -203,9 +198,9 @@ void	PacketManager::quit(struct Packet& packet)
 
 		channel_manager_.deleteClientFromChannel(*it, client->getNickName());
 
-		Message message = packet_maker.Quit(packet);
+		Message message = packet_maker_.Quit(packet);
 
-		sendPacket(message, channel);
+		packet_maker_.sendPacket(message, channel);
 	}
 
 	client_manager_.removeClient(client->getSocket());
@@ -213,15 +208,13 @@ void	PacketManager::quit(struct Packet& packet)
 
 void	PacketManager::ping(struct Packet& packet)
 {
-	PacketMaker packet_maker(*this);
-
 	if (packet.message.getParams().size() != 1)
 		return ;
 
-	Message message = packet_maker.Ping(packet);
+	Message message = packet_maker_.Ping(packet);
 
 	struct Packet send_packet = {packet.client_socket, message};
-	sendPacket(send_packet);
+	packet_maker_.sendPacket(send_packet);
 }
 
 
@@ -240,17 +233,16 @@ void	PacketManager::join(struct Packet& packet)
 9. 해당 채널의 모든 유저에게 join 메시지 전송
 */
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
-	PacketMaker packet_maker(*this);
 
 	if (!client->getIsAuthenticated())
 	{
-		packet_maker.ErrNotRegistered(packet);
+		packet_maker_.ErrNotRegistered(packet);
 		return ;
 	}
 
 	if (packet.message.getParams().size() < 1)
 	{
-		packet_maker.ErrNeedMoreParams(packet);
+		packet_maker_.ErrNeedMoreParams(packet);
 		return ;
 	}
 	std::string client_name = client->getNickName();
@@ -268,7 +260,7 @@ void	PacketManager::join(struct Packet& packet)
 	{
 		if ((*it1)[0] != '#')
 		{
-			packet_maker.ErrBadChanMask(packet);
+			packet_maker_.ErrBadChanMask(packet);
 			continue ;
 		}
 		if (channel_manager_.getChannelByName(*it1) == NULL)
@@ -279,7 +271,7 @@ void	PacketManager::join(struct Packet& packet)
 		{
 			if (channel_manager_.checkChannelPassword(*it1, *it2) == false)
 			{
-				packet_maker.ErrBadChannelKey(packet);
+				packet_maker_.ErrBadChannelKey(packet);
 				continue ;
 			}
 		}
@@ -287,13 +279,13 @@ void	PacketManager::join(struct Packet& packet)
 		{
 			if (channel_manager_.checkClientIsInvited(*it1, client_name) == false)
 			{
-				packet_maker.ErrInviteOnlyChan(packet);
+				packet_maker_.ErrInviteOnlyChan(packet);
 				continue ;
 			}
 		}
 		if (!(channel_manager_.getChannelByName(*it1)->checkChannelCapacity()))
 		{
-			packet_maker.ErrChannelIsFull(packet);
+			packet_maker_.ErrChannelIsFull(packet);
 			continue ;
 		}
 		channel_manager_.addClientToChannel(*it1, client_name);
@@ -303,13 +295,13 @@ void	PacketManager::join(struct Packet& packet)
 			Packet temp = packet;
 			temp.message.setCommand(*it1);
 			temp.message.setTrailing(channel_manager_.getChannelByName(*it1)->getTopic());
-			packet_maker.RplTopic(temp);
+			packet_maker_.RplTopic(temp);
 		}
 		// broadcast join message
 		Packet temp = packet;
 		temp.message.setTrailing(*it1);
-		packet_maker.RplNamReply(temp);
-		packet_maker.BroadcastJoin(temp);
+		packet_maker_.RplNamReply(temp);
+		packet_maker_.BroadcastJoin(temp);
 	}
 }
 
@@ -324,16 +316,16 @@ void	PacketManager::part(struct Packet& packet)
 6. 유저의 채널 리스트에서 해당 채널의 이름 제거
 */
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
-	PacketMaker packet_maker(*this);
+
 	if (!client->getIsAuthenticated())
 	{
-		packet_maker.ErrNotRegistered(packet);
+		packet_maker_.ErrNotRegistered(packet);
 		return ;
 	}
 
 	if (packet.message.getParams().size() < 1)
 	{
-		packet_maker.ErrNeedMoreParams(packet);
+		packet_maker_.ErrNeedMoreParams(packet);
 		return ;
 	}
 	std::string client_name = client->getNickName();
@@ -345,19 +337,19 @@ void	PacketManager::part(struct Packet& packet)
 	{
 		if (channel_manager_.getChannelByName(*it) == NULL)
 		{
-			packet_maker.ErrNoSuchChannel(packet);
+			packet_maker_.ErrNoSuchChannel(packet);
 			continue ;
 		}
 		if (channel_manager_.checkClientIsInChannel(*it, client_name) == false)
 		{
-			packet_maker.ErrNotOnChannel(packet);
+			packet_maker_.ErrNotOnChannel(packet);
 			continue ;
 		}
 
 		//broadcast part message
 		Packet temp = packet;
 		temp.message.setTrailing(*it);
-		packet_maker.BroadcastPart(temp);
+		packet_maker_.BroadcastPart(temp);
 
 		channel_manager_.deleteClientFromChannel(*it, client_name);
 		client_manager_.removeChannelFromClient(client_name, *it);
@@ -379,16 +371,15 @@ void	PacketManager::kick(struct Packet& packet)
 */
 	Message message;
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
-	PacketMaker packet_maker(*this);
 
 	if (!client->getIsAuthenticated())
 	{
-		packet_maker.ErrNotRegistered(packet);
+		packet_maker_.ErrNotRegistered(packet);
 		return ;
 	}
 	if (packet.message.getParams().size() < 2)
 	{
-		packet_maker.ErrNeedMoreParams(packet);
+		packet_maker_.ErrNeedMoreParams(packet);
 		return ;
 	}
 	std::string client_name = client->getNickName();
@@ -397,27 +388,27 @@ void	PacketManager::kick(struct Packet& packet)
 	std::string kick_message = packet.message.getTrailing();
 	if (channel_manager_.getChannelByName(channel_name) == NULL)
 	{
-		packet_maker.ErrNoSuchChannel(packet);
+		packet_maker_.ErrNoSuchChannel(packet);
 		return ;
 	}
 	if (client_manager_.getClientByNick(target_user_name) == NULL)
 	{
-		packet_maker.ErrNoSuchNick(packet);
+		packet_maker_.ErrNoSuchNick(packet);
 		return ;
 	}
 	if (channel_manager_.checkClientIsInChannel(channel_name, client_name) == false)
 	{
-		packet_maker.ErrUserNotInChannel(packet);
+		packet_maker_.ErrUserNotInChannel(packet);
 		return ;
 	}
 	if (channel_manager_.checkClientIsOperator(channel_name, client_name) == false)
 	{
-		packet_maker.ErrChanOPrivsNeeded(packet);
+		packet_maker_.ErrChanOPrivsNeeded(packet);
 		return ;
 	}
 	if (channel_manager_.checkClientIsInChannel(channel_name, target_user_name) == false)
 	{
-		packet_maker.ErrUserNotInChannel(packet);
+		packet_maker_.ErrUserNotInChannel(packet);
 		return ;
 	}
 
@@ -425,7 +416,7 @@ void	PacketManager::kick(struct Packet& packet)
 	Packet temp = packet;
 	temp.message.setPrefix(channel_name);
 	temp.message.setCommand(target_user_name);
-	packet_maker.BroadcastKick(temp);
+	packet_maker_.BroadcastKick(temp);
 
 	channel_manager_.deleteClientFromChannel(channel_name, target_user_name);
 	client_manager_.removeChannelFromClient(target_user_name, channel_name);
@@ -435,8 +426,6 @@ void	PacketManager::kick(struct Packet& packet)
 void	PacketManager::invite(struct Packet& packet)
 {
 	//0. Argument check
-
-	PacketMaker packet_maker(*this);
 	Message message;
 	
 	std::string client_nick = getNickBySocket(packet.client_socket);
@@ -444,7 +433,7 @@ void	PacketManager::invite(struct Packet& packet)
 	
 	if (!client->getIsAuthenticated())
 	{
-		packet_maker.ErrNotRegistered(packet);
+		packet_maker_.ErrNotRegistered(packet);
 		return ;
 	}
 	
@@ -459,7 +448,7 @@ void	PacketManager::invite(struct Packet& packet)
 		message.setTrailing("Not enough parameters");
 
 		struct Packet packet = {client->getSocket(), message};
-		sendPacket(packet);
+		packet_maker_.sendPacket(packet);
 		return ;
 	}
 	
@@ -479,7 +468,7 @@ void	PacketManager::invite(struct Packet& packet)
 		message.setTrailing("No such channel");
 
 		struct Packet packet = {client->getSocket(), message};
-		sendPacket(packet);
+		packet_maker_.sendPacket(packet);
 		return ;
 	}
 	
@@ -493,7 +482,7 @@ void	PacketManager::invite(struct Packet& packet)
 		message.setTrailing("You're not on that channel");
 
 		struct Packet packet = {client->getSocket(), message};
-		sendPacket(packet);
+		packet_maker_.sendPacket(packet);
 		return ;
 	}
 
@@ -508,7 +497,7 @@ void	PacketManager::invite(struct Packet& packet)
 		message.setTrailing("You're not channel operator");
 
 		struct Packet packet = {client->getSocket(), message};
-		sendPacket(packet);
+		packet_maker_.sendPacket(packet);
 		return ;
 	}
 
@@ -523,7 +512,7 @@ void	PacketManager::invite(struct Packet& packet)
 		message.setTrailing("is already on channel");
 
 		struct Packet packet = {client->getSocket(), message};
-		sendPacket(packet);
+		packet_maker_.sendPacket(packet);
 		return ;
 	}
 	
@@ -553,7 +542,7 @@ void	PacketManager::invite(struct Packet& packet)
 	message.setTrailing("Inviting " + target_nick + " to " + channel_name);
 
 	struct Packet pck = {client->getSocket(), message};
-	sendPacket(pck);
+	packet_maker_.sendPacket(pck);
 	return ;
 }
 
@@ -566,7 +555,6 @@ void	PacketManager::topic(struct Packet& packet)
 	// **오류 메시지 형식**: **`<client> <command> :Not enough parameters`오류 이유**: 클라이언트 명령을 구문 분석할 수 없는 이유는 충분한 매개 변수가 제공되지 않았기 때문입니다.
 	// **오류 코드**: **`461`**
 
-	PacketMaker packet_maker(*this);
 	Message message;
 	
 	std::string client_nick = getNickBySocket(packet.client_socket);
@@ -574,7 +562,7 @@ void	PacketManager::topic(struct Packet& packet)
 
 	if (!client->getIsAuthenticated())
 	{
-		packet_maker.ErrNotRegistered(packet);
+		packet_maker_.ErrNotRegistered(packet);
 		return ;
 	}
 
@@ -589,7 +577,7 @@ void	PacketManager::topic(struct Packet& packet)
 		message.setTrailing("Not enough parameters");
 
 		struct Packet packet = {client->getSocket(), message};
-		sendPacket(packet);
+		packet_maker_.sendPacket(packet);
 		return ;
 	}	
 
@@ -610,7 +598,7 @@ void	PacketManager::topic(struct Packet& packet)
 		message.setTrailing(ERR_NOSUCHCHANNEL_MSG);
 
 		struct Packet packet = {client->getSocket(), message};
-		sendPacket(packet);
+		packet_maker_.sendPacket(packet);
 		return ;
 	}
 
@@ -627,7 +615,7 @@ void	PacketManager::topic(struct Packet& packet)
 		message.setTrailing(ERR_NOTONCHANNEL_MSG);
 
 		struct Packet packet = {client->getSocket(), message};
-		sendPacket(packet);
+		packet_maker_.sendPacket(packet);
 		return ;
 	}
 
@@ -647,7 +635,7 @@ void	PacketManager::topic(struct Packet& packet)
 		message.setTrailing(ERR_CHANOPRIVSNEEDED_MSG);
 
 		struct Packet packet = {client->getSocket(), message};
-		sendPacket(packet);
+		packet_maker_.sendPacket(packet);
 		return ;
 	}
 
@@ -668,7 +656,7 @@ void	PacketManager::topic(struct Packet& packet)
 		message.setTrailing(topic);
 
 		struct Packet packet = {client->getSocket(), message};
-		sendPacket(packet);
+		packet_maker_.sendPacket(packet);
 
 		Message message2;
 
@@ -680,7 +668,7 @@ void	PacketManager::topic(struct Packet& packet)
 		message2.addParam(channel->getTopicSetTime());
 
 		struct Packet packet2 = {client->getSocket(), message2};
-		sendPacket(packet2);	
+		packet_maker_.sendPacket(packet2);	
 	}
 	else
 	{
@@ -694,7 +682,7 @@ void	PacketManager::topic(struct Packet& packet)
 			message.setTrailing(topic);
 
 			struct Packet packet = {client->getSocket(), message};
-			sendPacket(packet);
+			packet_maker_.sendPacket(packet);
 
 			Message message2;
 
@@ -706,7 +694,7 @@ void	PacketManager::topic(struct Packet& packet)
 			message2.addParam(channel->getTopicSetTime());
 
 			struct Packet packet2 = {client->getSocket(), message2};
-			sendPacket(packet2);
+			packet_maker_.sendPacket(packet2);
 		} 
 		else
 		{
@@ -717,7 +705,7 @@ void	PacketManager::topic(struct Packet& packet)
 			message.setTrailing(RPL_NOTOPIC_MSG);
 
 			struct Packet packet = {client->getSocket(), message};
-			sendPacket(packet);
+			packet_maker_.sendPacket(packet);
 		}
 	}
 

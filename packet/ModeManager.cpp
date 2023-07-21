@@ -1,5 +1,5 @@
-#include "PacketManager.hpp"
 #include "ModeManager.hpp"
+#include "PacketManager.hpp"
 
 ModeManager::ModeManager()
 {
@@ -36,7 +36,7 @@ void    ModeManager::setItParam(std::vector<std::string>::iterator it_param)
     this->it_param = it_param;
 }
 
-bool    ModeManager::isEndParam()
+bool    ModeManager::isEndItParam()
 {
     if (it_param == params->end())
         return true;
@@ -44,7 +44,7 @@ bool    ModeManager::isEndParam()
         return false;
 }
 
-std::vector<std::string>::iterator ModeManager::getNextParam()
+std::vector<std::string>::iterator ModeManager::getNextItParam()
 {
     return it_param++;
 }
@@ -52,6 +52,11 @@ std::vector<std::string>::iterator ModeManager::getNextParam()
 std::vector<std::string>::iterator ModeManager::getItParam()
 {
     return it_param;
+}
+
+void    ModeManager::incrementItParam()
+{
+    it_param++;
 }
 
 void    ModeManager::pushBackChangedBuffer(std::string buffer)
@@ -115,8 +120,6 @@ void    ModeManager::topicMode()
 
 void    ModeManager::keyMode()
 {    
-    it_param++;
-    
     if (mode_switch == '+')
     {
         if (it_param == params->end())
@@ -133,13 +136,14 @@ void    ModeManager::keyMode()
 
             return ;
         }
-        //key is n
 
         channel_->setChannelMode('k');
         channel_->setPassword(key);
         
         pushBackChangedBuffer("k");
         pushBackChangedParamBuffer(key);
+
+        incrementItParam();
     }
     else if (mode_switch == '-')
     {
@@ -179,12 +183,12 @@ void    ModeManager::opMode()
         pushBackChangedBuffer("o");
         pushBackChangedParamBuffer(nick);   
     }
+    incrementItParam();
 
 }
 
 void    ModeManager::limitMode()
 {
-    it_param++;
     if (mode_switch == '+')
     {
         if (it_param == params->end())
@@ -212,6 +216,8 @@ void    ModeManager::limitMode()
         
         pushBackChangedBuffer("l");
         pushBackChangedParamBuffer(limit);
+
+        incrementItParam();
     }
     else if (mode_switch == '-')
     {
@@ -227,7 +233,9 @@ void    ModeManager::limitMode()
 void    ModeManager::executeMode(char mode)
 {
     //only handle i t k o l
-    
+    if (mode_switch == ' ')
+        noMode();
+
     if (mode == 'i' && canUpdate(mode))
         inviteMode();
     else if (mode == 't' && canUpdate(mode))
@@ -264,6 +272,7 @@ void	PacketManager::mode(struct Packet& packet)
     mode_manager.setItParam(params.begin());
     
 
+    //check params[0] exist?
     if (mode_manager.getItParam() == params.end())
     {
         // ERR_NEEDMOREPARAMS (461)
@@ -271,10 +280,11 @@ void	PacketManager::mode(struct Packet& packet)
         return ;
     }
     std::string channel_name = *mode_manager.getItParam();
+    mode_manager.incrementItParam();
     Channel *channel = channel_manager_.getChannelByName(channel_name);
     
     
-    //check error no such channel
+    //check there is no chnnel in server
     if (channel == NULL)
     {
         // ERR_NOSUCHCHANNEL (403)
@@ -282,17 +292,11 @@ void	PacketManager::mode(struct Packet& packet)
         return ;
     }
 
-    mode_manager.setChannel(channel);
-    mode_manager.setClient(client);
-    mode_manager.setPacketMaker(&packet_maker);
-
-    // if params[1] is empty, send channel mode
-    // RPL_CHANNELMODEIS (324)
-    // RPL_CREATIONTIME (329)
-    if (mode_manager.isEndParam())
+    //check client is in channel
+    // ERR_NOTONCHANNEL (442)
+    if (!channel->checkClientIsInChannel(client_nick))
     {
-        packet_maker.RplChannelModeIs(packet, channel);
-        packet_maker.RplCreationTime(packet, channel);
+        packet_maker.ErrNotOnChannel(packet);
         return ;
     }
 
@@ -303,12 +307,27 @@ void	PacketManager::mode(struct Packet& packet)
         packet_maker.ErrChanOPrivsNeeded(packet);
         return ;
     }
+    mode_manager.setChannel(channel);
+    mode_manager.setClient(client);
+    mode_manager.setPacketMaker(&packet_maker);
+
+    // check if params[1] == mode string is empty, send channel mode
+    // RPL_CHANNELMODEIS (324)
+    // RPL_CREATIONTIME (329)
+    if (mode_manager.isEndItParam())
+    {
+        packet_maker.RplChannelModeIs(packet, channel);
+        packet_maker.RplCreationTime(packet, channel);
+        return ;
+    }
+
+
 
 
 	//business logic
 
-
-    std::stringstream ss(packet.message.getParams()[1]);
+    std::string mode_string = *mode_manager.getItParam();
+    std::stringstream ss(mode_string);
     char mode;
 
     while (ss >> mode)
@@ -320,5 +339,4 @@ void	PacketManager::mode(struct Packet& packet)
         }
         mode_manager.executeMode(mode);
     }
-
 }

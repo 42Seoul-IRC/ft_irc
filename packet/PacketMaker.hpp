@@ -1,16 +1,21 @@
 #ifndef PACKETMAKER_HPP
-#define PACKETMAKER_HPP
+# define PACKETMAKER_HPP
 
 #include "PacketManager.hpp"
 #include "macro.h"
 
-class PacketMaker : public PacketManager
+class PacketMaker
 {
 	public:
-		PacketMaker(PacketManager& packet_manager);
+		PacketMaker(ClientManager& client_manager_, ChannelManager& channel_manager_);
 		~PacketMaker();
+
 		ClientManager& client_manager_;
 		ChannelManager& channel_manager_;
+
+		void sendPacket(struct Packet& packet);
+		void sendPacket(Message message, Channel *channel);
+		void sendPacket(Message message, Channel *channel, std::string exclude_nick);
 
 		// Common Error
 		void ErrNotRegistered(struct Packet& packet);

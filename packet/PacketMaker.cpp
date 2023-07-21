@@ -1,6 +1,6 @@
 #include "PacketMaker.hpp"
 
-PacketMaker::PacketMaker(PacketManager& packet_manager) : client_manager_(packet_manager.client_manager_), channel_manager_(packet_manager.channel_manager_)
+PacketMaker::PacketMaker(ClientManager& client_manager_, ChannelManager& channel_manager_) : client_manager_(client_manager_), channel_manager_(channel_manager_)
 {
 
 }
@@ -8,6 +8,43 @@ PacketMaker::PacketMaker(PacketManager& packet_manager) : client_manager_(packet
 PacketMaker::~PacketMaker()
 {
 
+}
+
+void PacketMaker::sendPacket(struct Packet& packet)
+{
+	::send(packet.client_socket, packet.message.toString().c_str(), packet.message.toString().length(), 0);
+}
+
+void PacketMaker::sendPacket(Message message, Channel *channel)
+{
+	for (std::set<std::string>::iterator it = channel->clients_.begin(); it != channel->clients_.end(); it++)
+	{
+		std::cout << "sendPacket: " << &client_manager_  << std::endl;
+		int socket = client_manager_.nick_clients_[*it]->getSocket();
+
+		Packet packet = {
+			.client_socket = socket,
+			.message = message
+		};
+		sendPacket(packet);
+	}
+}
+
+void PacketMaker::sendPacket(Message message, Channel *channel, std::string exclude_nick)
+{
+	for (std::set<std::string>::iterator it = channel->clients_.begin(); it != channel->clients_.end(); it++)
+	{
+		if (*it == exclude_nick)
+			continue;
+
+		int socket = client_manager_.nick_clients_[*it]->getSocket();
+
+		Packet packet = {
+			.client_socket = socket,
+			.message = message
+		};
+		sendPacket(packet);
+	}
 }
 
 // Common Error
