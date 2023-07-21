@@ -20,7 +20,9 @@ class PacketMaker
 		// Common Error
 		void ErrNotRegistered(struct Packet& packet);
 		void ErrNeedMoreParams(struct Packet& packet);
+		void ErrNoSuchChannel(struct Packet& packet, std::string channel_name);
 		void ErrNoSuchChannel(struct Packet& packet);
+		void ErrNoSuchNick(struct Packet& packet, std::string nick_name);
 		void ErrNoSuchNick(struct Packet& packet);
 		void ErrNotOnChannel(struct Packet& packet);
 		void ErrChanOPrivsNeeded(struct Packet& packet);
@@ -52,10 +54,10 @@ class PacketMaker
 		// PRIVMSG Error
 		void ErrNoRecipient(struct Packet& packet);
 		void ErrNoTextToSend(struct Packet& packet);
-		void ErrCannotSendToChan(struct Packet& packet);
+		void ErrCannotSendToChan(struct Packet& packet, std::string channel_name);
 		// PRIVMSG Success
-		Message PrivmsgToChannel(struct Packet& packet);
-		void PrivmsgToUser(struct Packet& packet);
+		void PrivmsgToChannel(struct Packet& packet, std::string target_channel);
+		void PrivmsgToUser(struct Packet& packet, std::string target_nick);
 
 		// QUIT Success
 		Message Quit(struct Packet& packet);

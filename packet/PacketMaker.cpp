@@ -19,7 +19,6 @@ void PacketMaker::sendPacket(Message message, Channel *channel)
 {
 	for (std::set<std::string>::iterator it = channel->clients_.begin(); it != channel->clients_.end(); it++)
 	{
-		std::cout << "sendPacket: " << &client_manager_  << std::endl;
 		int socket = client_manager_.nick_clients_[*it]->getSocket();
 
 		Packet packet = {
@@ -77,6 +76,21 @@ void PacketMaker::ErrNeedMoreParams(struct Packet& packet)
 	sendPacket(pkt);
 }
 
+void PacketMaker::ErrNoSuchChannel(struct Packet& packet, std::string channel_name)
+{
+	Message message;
+	Client *client = client_manager_.getClientBySocket(packet.client_socket);
+
+	message.setPrefix(SERVER_NAME);
+	message.setCommand(ERR_NOSUCHCHANNEL);
+	message.addParam(client->getNickName());
+	message.addParam(channel_name);
+	message.setTrailing(ERR_NOSUCHCHANNEL_MSG);
+
+	struct Packet pkt = {client->getSocket(), message};
+	sendPacket(pkt);
+}
+
 void PacketMaker::ErrNoSuchChannel(struct Packet& packet)
 {
 	Message message;
@@ -87,6 +101,21 @@ void PacketMaker::ErrNoSuchChannel(struct Packet& packet)
 	message.addParam(client->getNickName());
 	message.addParam(packet.message.getParams()[0]);
 	message.setTrailing(ERR_NOSUCHCHANNEL_MSG);
+
+	struct Packet pkt = {client->getSocket(), message};
+	sendPacket(pkt);
+}
+
+void PacketMaker::ErrNoSuchNick(struct Packet& packet, std::string nick_name)
+{
+	Message message;
+	Client *client = client_manager_.getClientBySocket(packet.client_socket);
+
+	message.setPrefix(SERVER_NAME);
+	message.setCommand(ERR_NOSUCHNICK);
+	message.addParam(client->getNickName());
+	message.addParam(nick_name);
+	message.setTrailing(ERR_NOSUCHNICK_MSG);
 
 	struct Packet pkt = {client->getSocket(), message};
 	sendPacket(pkt);
@@ -369,11 +398,10 @@ void PacketMaker::ErrNoTextToSend(struct Packet& packet)
 	sendPacket(pkt);
 }
 
-void PacketMaker::ErrCannotSendToChan(struct Packet& packet)
+void PacketMaker::ErrCannotSendToChan(struct Packet& packet, std::string channel_name)
 {
 	Message message;
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
-	std::string channel_name = packet.message.getParams()[0];
 
 	message.setPrefix(SERVER_NAME);
 	message.setCommand(ERR_CANNOTSENDTOCHAN);
@@ -385,31 +413,30 @@ void PacketMaker::ErrCannotSendToChan(struct Packet& packet)
 	sendPacket(pkt);
 }
 
-Message PacketMaker::PrivmsgToChannel(struct Packet& packet)
+void PacketMaker::PrivmsgToChannel(struct Packet& packet, std::string target_channel)
 {
 	Message message;
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
 
 	message.setPrefix(client->getHost());
 	message.setCommand("PRIVMSG");
-	message.addParam(packet.message.getParams()[0]);
+	message.addParam(target_channel);
 	message.setTrailing(packet.message.getTrailing());
 
-	return message;
+	sendPacket(message, channel_manager_.getChannelByName(target_channel));
 }
 
-void PacketMaker::PrivmsgToUser(struct Packet& packet)
+void PacketMaker::PrivmsgToUser(struct Packet& packet, std::string target_nick)
 {
 	Message message;
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
-	Client *target_client = client_manager_.getClientByNick(packet.message.getParams()[0]);
 
 	message.setPrefix(client->getHost());
 	message.setCommand("PRIVMSG");
-	message.addParam(client->getNickName());
+	message.addParam(target_nick);
 	message.setTrailing(packet.message.getTrailing());
 
-	struct Packet pkt = {target_client->getSocket(), message};
+	struct Packet pkt = {client_manager_.getClientByNick(target_nick)->getSocket(), message};
 	sendPacket(pkt);
 }
 
