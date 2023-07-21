@@ -4,7 +4,7 @@
 ModeManager::ModeManager()
 {
     mode_switch = 0;
-    changed_buffer = "";
+    changed_mode_buffer = "";
 }
 
 void    ModeManager::setModeSwitch(char mode_switch)
@@ -56,9 +56,9 @@ std::vector<std::string>::iterator ModeManager::getItParam()
 
 void    ModeManager::pushBackChangedBuffer(std::string buffer)
 {
-    if (changed_buffer.size() != 0)
-        changed_buffer += " ";
-    changed_buffer += buffer
+    if (changed_mode_buffer.size() != 0)
+        changed_mode_buffer += " ";
+    changed_mode_buffer += buffer
 }
 
 void    ModeManager::pushBackChangedParamBuffer(std::string param)

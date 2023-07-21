@@ -12,6 +12,7 @@ class PacketMaker
 
 		ClientManager& client_manager_;
 		ChannelManager& channel_manager_;
+		struct Packet packet;
 
 		void sendPacket(struct Packet& packet);
 		void sendPacket(Message message, Channel *channel);
@@ -64,6 +65,8 @@ class PacketMaker
 
 		// PING Success
 		Message Ping(struct Packet& packet);
+		
+		void Broadcast(struct Packet& packet, std::string cmd);
 
 		// JOIN Error
 		void ErrBadChannelKey(struct Packet& packet);
@@ -83,6 +86,8 @@ class PacketMaker
 
 		// INVITE Error
 		void ErrUserOnChannel(struct Packet& packet);
+
+		void BroadcastMode(Channel *channel, std::string changed_mode_buffer, std::string param_buffer);
 };
 
 #endif

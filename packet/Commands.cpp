@@ -428,13 +428,13 @@ void	PacketManager::invite(struct Packet& packet)
 	
 	std::string client_nick = getNickBySocket(packet.client_socket);
 	Client * client = client_manager_.getClientByNick(client_nick);
-	
+
 	if (!client->getIsAuthenticated())
 	{
 		packet_maker_->ErrNotRegistered(packet);
 		return ;
-	}
-	
+	}	
+
 	if (packet.message.getParams().size() != 2 || packet.message.getTrailing().size() != 0 || packet.message.getPrefix().size() != 0)
 	{
 		// ERR_NEEDMOREPARAMS
@@ -456,7 +456,7 @@ void	PacketManager::invite(struct Packet& packet)
 	}
 	
 	//- 명령어를 보낸 사용자가 채널 안에 존재하는가?
-	if (!channel_manager_.checkClientIsInChannel(channel_name, client_nick))
+	if (channel_manager_.checkClientIsInChannel(channel_name, client_nick))
 	{
 		packet_maker_->ErrNotOnChannel(packet);
 		return ;
@@ -490,6 +490,7 @@ void	PacketManager::invite(struct Packet& packet)
 	if (send(target_socket, inviting_msg.c_str(), inviting_msg.size(), 0) == -1)
 	{
 		//error
+		return ;
 	}
 
 	//3. send message
@@ -569,70 +570,29 @@ void	PacketManager::topic(struct Packet& packet)
 	std::string topic = packet.message.getTrailing();
 	if (topic.empty() != 0)
 	{
-		
+
 
 		channel->setTopic(topic);
 		channel->setTopicSetter(client_nick);
 		channel->setTopicSetTime();
-
-		packet_maker_->RplNoTopic(packet);
-		message.setCommand(RPL_TOPIC);
-		message.addParam(client->getHostName());
-		message.addParam(client_nick);
-		message.addParam(channel_name);
-		message.setTrailing(topic);
-
-		struct Packet packet = {client->getSocket(), message};
-		packet_maker_->sendPacket(packet);
-
-		Message message2;
-
-		message2.setCommand(RPL_TOPICWHOTIME);
-		message2.addParam(client->getHostName());
-		message2.addParam(client_nick);
-		message2.addParam(channel_name);
-		message2.addParam(channel->getTopicSetter());
-		message2.addParam(channel->getTopicSetTime());
-
-		struct Packet packet2 = {client->getSocket(), message2};
-		packet_maker_->sendPacket(packet2);	
+		
+		// packet_maker_->RplTopic(packet);
+		// packet_maker_->RplTopicWhoTime(packet);		
+		
+		packet_maker_->Broadcast(packet, channel_name);
+		return ;
 	}
 	else
 	{
 		topic = channel->getTopic();
 		if (topic.empty() != 0)
 		{
-			message.setCommand(RPL_TOPIC);
-			message.addParam(client->getHostName());
-			message.addParam(client_nick);
-			message.addParam(channel_name);
-			message.setTrailing(topic);
-
-			struct Packet packet = {client->getSocket(), message};
-			packet_maker_->sendPacket(packet);
-
-			Message message2;
-
-			message2.setCommand(RPL_TOPICWHOTIME);
-			message2.addParam(client->getHostName());
-			message2.addParam(client_nick);
-			message2.addParam(channel_name);
-			message2.addParam(channel->getTopicSetter());
-			message2.addParam(channel->getTopicSetTime());
-
-			struct Packet packet2 = {client->getSocket(), message2};
-			packet_maker_->sendPacket(packet2);
+			packet_maker_->RplTopic(packet);
+			packet_maker_->RplTopicWhoTime(packet);
 		} 
 		else
 		{
-			message.setCommand(RPL_NOTOPIC);
-			message.addParam(client->getHostName());
-			message.addParam(client_nick);
-			message.addParam(channel_name);
-			message.setTrailing(RPL_NOTOPIC_MSG);
-
-			struct Packet packet = {client->getSocket(), message};
-			packet_maker_->sendPacket(packet);
+			packet_maker_->RplNoTopic(packet);
 		}
 	}
 
@@ -650,29 +610,114 @@ void	PacketManager::topic(struct Packet& packet)
 
 }
 
-// void	PacketManager::mode(struct Packet& packet)
-// {
-// 	std::string client_nick = getNickBySocket(packet.client_socket);
-// 	Client * client = client_manager_.getClientByNick(client_nick);
+void PacketManager::channel(struct Packet& packet)
+{
+	//print all channel data
+	(void) packet;
 
-// 	std::string channel_name = packet.message.getParams()[0];
-// 	Channel *channel = channel_manager_.getChannelByName(channel_name);
+	std::cout << "channel" << std::endl;
 
-// 	std::string mode_str = packet.message.getParams()[1];
-// 	std::string mode_par = packet.message.getParams()[2];
+	std::cout << "---------------------" << std::endl;
+
+	std::cout << "channel name : " << std::endl;
+	std::map<std::string, Channel *>::iterator it4 = channel_manager_.channels_.begin();
+	for (; it4 != channel_manager_.channels_.end(); ++it4)
+	{
+		std::cout << it4->first << std::endl;
+		//print channel's client
+		std::cout << "     " << "channel's client : " << std::endl;
+		std::set<std::string>::iterator it5 = it4->second->clients_.begin();
+		for (; it5 != it4->second->clients_.end(); ++it5)
+		{
+			std::cout << "     " << *it5 << std::endl;
+		}
+
+		std::cout << std::endl;
+		//channek operator
+		std::cout << "     " << "channel's operator : " << std::endl;
+		std::set<std::string>::iterator it6 = it4->second->operators_.begin();
+		for (; it6 != it4->second->operators_.end(); ++it6)
+		{
+			std::cout << "     " << *it6 << std::endl;
+		}
+		std::cout << std::endl;
+
+		//channel invited_list
+		std::cout << "     " << "channel's invited_list : " << std::endl;
+		std::set<std::string>::iterator it7 = it4->second->invited_clients_.begin();
+		for (; it7 != it4->second->invited_clients_.end(); ++it7)
+		{
+			std::cout << "     " << *it7 << std::endl;
+		}
+		std::cout << std::endl;
+
+		//channel password
+		std::cout << "     " << "channel's password : " << std::endl;
+		std::cout << "     " << it4->second->password_ << std::endl;
+
+		//channel mode
+		std::cout << "     " << "channel's mode : " << std::endl;
+		std::cout << "     " << it4->second->mode_ << std::endl;
+		
+		//channel topic
+		std::cout << "     " << "channel's topic : " << std::endl;
+		std::cout << "     " << it4->second->getTopic() << std::endl;
+		std::cout << "     " << "channel's topic setter : " << std::endl;
+		std::cout << "     " << it4->second->getTopicSetter() << std::endl;
+		std::cout << "     " << "channel's topic set time : " << std::endl;
+		std::cout << "     " << it4->second->getTopicSetTime() << std::endl;
+		std::cout << std::endl;
+
+		//channel limit
+		std::cout << "     " << "channel's limit : " << std::endl;
+
+
+
+	}
+	std::cout << std::endl;
+
+}
+
+//instead of using getter in 
+
+void PacketManager::client(struct Packet& packet)
+{
+	//print all client data
+	//first, print all client socket
+
+	(void) packet;
+	std::cout << "---------------------" << std::endl;
+
+	std::cout << "client" << std::endl;
+
+	std::cout << "---------------------" << std::endl;
+
+	std::cout << "client socket : " << std::endl;
+	std::map<int, Client *>::iterator it = client_manager_.socket_clients_.begin();
+	for (; it != client_manager_.socket_clients_.end(); ++it)
+	{
+		std::cout << it->first << std::endl;
+	}
+	std::cout << std::endl;
+
+	std::cout << "---------------------" << std::endl;
+
+	//second, print all client nick
+	std::cout << "client nick : " << std::endl;
+	std::map<std::string, Client *>::iterator it2 = client_manager_.nick_clients_.begin();
+	for (; it2 != client_manager_.nick_clients_.end(); ++it2)
+	{
+		std::cout << it2->first << std::endl;
+		//print client's channel
+		std::cout << "     " << "client's channel : " << std::endl;
+		std::set<std::string>::iterator it3 = it2->second->getChannels().begin();
+		for (; it3 != it2->second->getChannels().end(); ++it3)
+		{
+			std::cout << "     " << *it3 << std::endl;
+		}
+		std::cout << std::endl;
+	}
+	std::cout << std::endl;
 	
-
-
-// 	//business logic
-
-
-// 	//mode handling
-// 	int iter = 0;
-// 	while (iter < mode_str.size())
-// 	{
-// 		if (mode_str[iter] == '+' )
-
-// 		iter ++;
-// 	}
-
-// }
+	std::cout << "---------------------" << std::endl;
+}

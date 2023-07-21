@@ -49,6 +49,9 @@ class PacketManager
 
 		// void	printPacket(struct Packet& packet);
 		void	mode(struct Packet& packet);
+
+		void	channel(struct Packet& packet);
+		void	client(struct Packet& packet);
 };
 
 #endif

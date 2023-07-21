@@ -26,7 +26,9 @@ void PacketManager::init(char *password)
 	recv_function_map_["KICK"] = &PacketManager::kick;
 	recv_function_map_["INVITE"] = &PacketManager::invite;
 	recv_function_map_["TOPIC"] = &PacketManager::topic;
-	// recv_function_map_["MODE"] = &PacketManager::mode;
+	recv_function_map_["CHANNEL"] = &PacketManager::channel;
+	recv_function_map_["CLIENT"] = &PacketManager::client;
+	recv_function_map_["MODE"] = &PacketManager::mode;
 
 	valid_channel_modes_ = "itkol";
 	std::cout << "[INFO] ClientManager initialized : " << &client_manager_ << std::endl;
@@ -59,6 +61,7 @@ void PacketManager::execute(struct Packet& packet)
 	if (it != recv_function_map_.end())
 	{
 		(this->*(it->second))(packet);
+		channel(packet);
 	}
 }
 
