@@ -40,7 +40,6 @@ std::ostream& operator<<(std::ostream& outstream, const Message& msg)
 	}
 	outstream << std::endl;
 	outstream << "trailing : " << msg.getTrailing() << std::endl;
-	outstream << std::endl;
 
 	return (outstream);
 }

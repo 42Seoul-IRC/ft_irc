@@ -1,4 +1,5 @@
 #include "Channel.hpp"
+#include <iostream>
 
 Channel::Channel(const std::string& name)
 {
@@ -132,16 +133,22 @@ bool Channel::checkClientIsInvited(const std::string& client_name)
 
 bool Channel::checkClientIsInChannel(const std::string& client_name)
 {
-    if(clients_.find(client_name) != clients_.end())
+    if (clients_.find(client_name) != clients_.end())
         return true;
     else
         return false;
 }
 
-void	Channel::setOperator(const std::string& client_name)
+void	Channel::setOperator(const std::string& client_name) // 제대로 작동 X
 {
+	std::cout << "[INFO] setOperator is checking for " << client_name << std::endl;
+	for (std::set<std::string>::iterator it = clients_.begin(); it != clients_.end(); ++it)
+		std::cout << "[INFO] " << *it << std::endl;
 	if (checkClientIsInChannel(client_name))
+	{
 		operators_.insert(client_name);
+		std::cout << "[INFO] " << client_name << " is now operator of " << channel_name_ << std::endl;
+	}
 }
 
 void	Channel::unsetOperator(const std::string& client_name)

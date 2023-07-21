@@ -108,7 +108,7 @@ void Server::successHandler(int socket)
 			//for debug
 			Message msg = Message::parseMessage(buffer);
 			
-			std::cout <<  msg << std::endl;
+			std::cout << msg;
 			//end
 
 			struct Packet packet = {socket, msg};

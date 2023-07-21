@@ -13,12 +13,10 @@ class Channel {
 		std::string channel_name_;
 		unsigned long channel_created_time_;
 
-
 		std::string password_;
 		std::set<std::string> operators_;
 		std::set<std::string> clients_; // 필요한  경우, 바로 map<std::string, *client> 사용할 것!
 		std::set<std::string> invited_clients_;
-		
 		
 		std::string mode_;
 		
