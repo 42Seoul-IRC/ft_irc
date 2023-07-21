@@ -634,8 +634,7 @@ void	PacketManager::topic(struct Packet& packet)
 
 	// **오류 메시지 형식**: **`<client> <channel> :You're not channel operator`오류 이유**: 클라이언트가 적절한 채널 권한이 없어 명령이 실패했다는 것을 나타냅니다.
 	// **오류 코드**: **`482`**
-
-	if (!channel_manager_.checkClientIsOperator(channel_name, client_nick))
+	if (channel->isOnChannelMode(MODE_TOPIC) && !channel_manager_.checkClientIsOperator(channel_name, client_nick))
 	{
 		message.setCommand(ERR_CHANOPRIVSNEEDED);
 		message.addParam(client->getHostName());
@@ -647,6 +646,7 @@ void	PacketManager::topic(struct Packet& packet)
 		sendPacket(packet);
 		return ;
 	}
+
 
 	//2. business logic
 

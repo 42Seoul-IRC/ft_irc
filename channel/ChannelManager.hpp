@@ -17,7 +17,6 @@ class ChannelManager {
 		void	deleteClientFromChannel(const std::string& channel_name, const std::string& client_name);
 
 		int		getChannelOnClientCount(const std::string& channel_name);
-		int		getChannelMode(const std::string& channel_name);
 		std::vector<Channel *>	getChannelsByClientName(const std::string& clientName);
 		
 		bool 	checkClientIsOperator(const std::string& channel_name, const std::string& clientName);

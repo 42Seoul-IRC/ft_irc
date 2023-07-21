@@ -32,6 +32,7 @@ class Channel {
 		~Channel();
 
 		void	setChannelCreatedTime();
+		unsigned long	getChannelCreatedTime();
 
 		void	setTopic(const std::string& name);
 		const std::string&	getTopic(void);
@@ -41,7 +42,11 @@ class Channel {
 
 		void	setTopicSetTime();
 		unsigned long	getTopicSetTime(void);
+	
+		void	setLimit(int limit);
+		int		getLimit(void);
 
+		std::string	getChannelName(void);
 
 		void	setPassword(const std::string& pw);
 		bool	checkPassword(const std::string& pw);
@@ -63,6 +68,8 @@ class Channel {
 
 		bool	isOnChannelMode(char mode);
 		void	setChannelMode(char mode);
+		void	unsetChannelMode(char mode);
+		std::string	getChannelModeString(void);
 
 		void	changeClientInfo(const std::string& client_name, const std::string& new_name);
 };

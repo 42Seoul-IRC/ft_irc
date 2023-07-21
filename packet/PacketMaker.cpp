@@ -511,3 +511,43 @@ void PacketMaker::ErrUserOnChannel(struct Packet& packet)
 	struct Packet pkt = {client->getSocket(), message};
 	sendPacket(pkt);
 }
+
+//MODE
+//RPL_CHANNELMODEIS (324)
+
+void	PacketMaker::RplChannelModeIs(struct Packet& packet, Channel *channel)
+{
+	Message message;
+	Client *client = client_manager_.getClientBySocket(packet.client_socket);
+	std::string channel_name = channel->getChannelName();
+	std::string channel_mode = channel->getChannelModeString();
+
+	message.setPrefix(SERVER_NAME);
+	message.setCommand("324");
+	message.addParam(client->getNickName());
+	message.addParam(channel_name);
+	message.setTrailing(channel_mode);
+
+	struct Packet pkt = {client->getSocket(), message};
+	sendPacket(pkt);
+} 
+
+
+// RPL_CREATIONTIME (329)
+
+void	PacketMaker::RplCreationTime(struct Packet& packet, Channel *channel)
+{
+	Message message;
+	Client *client = client_manager_.getClientBySocket(packet.client_socket);
+	std::string channel_name = channel->getChannelName();
+	std::string channel_created_time = std::to_string(channel->getChannelCreatedTime());
+
+	message.setPrefix(SERVER_NAME);
+	message.setCommand("329");
+	message.addParam(client->getNickName());
+	message.addParam(channel_name);
+	message.setTrailing(channel_created_time);
+
+	struct Packet pkt = {client->getSocket(), message};
+	sendPacket(pkt);
+}

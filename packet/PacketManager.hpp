@@ -46,7 +46,7 @@ class PacketManager {
 		void	topic(struct Packet& packet);
 
 		void	printPacket(struct Packet& packet);
-		// void	mode(struct Packet& packet);
+		void	mode(struct Packet& packet);
 };
 
 #endif

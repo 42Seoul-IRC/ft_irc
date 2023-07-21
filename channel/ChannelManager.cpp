@@ -53,12 +53,12 @@ int		ChannelManager::getChannelOnClientCount(const std::string& channel_name)
 	return (channels_.find(channel_name)->second->clients_.size());
 }
 
-int		ChannelManager::getChannelMode(const std::string& channel_name)
-{
-	if (channels_.find(channel_name) == channels_.end())
-		return (-1);
-	return (channels_.find(channel_name)->second->getChannelMode());
-}
+// int		ChannelManager::getChannelMode(const std::string& channel_name)
+// {
+// 	if (channels_.find(channel_name) == channels_.end())
+// 		return (-1);
+// 	return (channels_.find(channel_name)->second->getChannelMode());
+// }
 
 std::vector<Channel *> ChannelManager::getChannelsByClientName(const std::string& clientName)
 {

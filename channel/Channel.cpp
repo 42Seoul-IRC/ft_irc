@@ -22,6 +22,13 @@ void	Channel::setChannelCreatedTime()
 	channel_created_time_ = time(NULL);
 }
 
+//getChannelCreatedTime()
+
+unsigned long	Channel::getChannelCreatedTime(void)
+{
+	return channel_created_time_;
+}
+
 void	Channel::setTopic(const std::string& name)
 {
 	topic_ = name;
@@ -52,6 +59,20 @@ unsigned long	Channel::getTopicSetTime(void)
 	return topic_settime_;
 }
 
+void	Channel::setLimit(int limit)
+{
+	limit_ = limit;
+}
+
+int		Channel::getLimit(void)
+{
+	return limit_;
+}
+
+std::string	Channel::getChannelName(void)
+{
+	return channel_name_;
+}
 
 void	Channel::setPassword(const std::string& pw)
 {
@@ -166,6 +187,18 @@ void	Channel::setChannelMode(char mode)
 {
 	if (!isOnChannelMode(mode))
 		mode_ += mode;
+}
+
+std::string	Channel::getChannelModeString(void)
+{
+	return mode_;
+}
+
+
+void	Channel::unsetChannelMode(char mode)
+{
+	if (isOnChannelMode(mode))
+		mode_.erase(mode_.find(mode), 1);
 }
 
 void	Channel::changeClientInfo(const std::string& client_name, const std::string& new_nick)
