@@ -303,6 +303,14 @@ void	PacketManager::mode(struct Packet& packet)
     }
     std::string channel_name = *mode_manager.getItParam();
     mode_manager.incrementItParam();
+
+    
+    // check if channel start with #
+    if (channel_name[0] != '#')
+    {
+        return ;
+    }
+
     Channel *channel = channel_manager_.getChannelByName(channel_name);
     
     
@@ -313,6 +321,8 @@ void	PacketManager::mode(struct Packet& packet)
         packet_maker_->ErrNoSuchChannel(packet);
         return ;
     }
+
+  
 
     //check client is in channel
     // ERR_NOTONCHANNEL (442)
