@@ -440,15 +440,7 @@ void	PacketManager::invite(struct Packet& packet)
 	if (packet.message.getParams().size() != 2 || packet.message.getTrailing().size() != 0 || packet.message.getPrefix().size() != 0)
 	{
 		// ERR_NEEDMOREPARAMS
-
-		message.setCommand(ERR_NEEDMOREPARAMS);
-		message.addParam(client->getHostName());
-		message.addParam(client_nick);
-		message.addParam(packet.message.getCommand());	
-		message.setTrailing("Not enough parameters");
-
-		struct Packet packet = {client->getSocket(), message};
-		packet_maker_->sendPacket(packet);
+		packet_maker_->ErrNeedMoreParams(packet);
 		return ;
 	}
 	
@@ -461,28 +453,14 @@ void	PacketManager::invite(struct Packet& packet)
 	//chennel exits?
 	if (!channel_manager_.getChannelByName(channel_name))
 	{
-		message.setCommand(ERR_NOSUCHCHANNEL);
-		message.addParam(client->getHostName());
-		message.addParam(client_nick);
-		message.addParam(channel_name);
-		message.setTrailing("No such channel");
-
-		struct Packet packet = {client->getSocket(), message};
-		packet_maker_->sendPacket(packet);
+		packet_maker_->ErrNoSuchChannel(packet);
 		return ;
 	}
 	
 	//- 명령어를 보낸 사용자가 채널 안에 존재하는가?
 	if (!channel_manager_.checkClientIsInChannel(channel_name, client_nick))
 	{
-		message.setCommand(ERR_NOTONCHANNEL);
-		message.addParam(client->getHostName());
-		message.addParam(client_nick);
-		message.addParam(channel_name);
-		message.setTrailing("You're not on that channel");
-
-		struct Packet packet = {client->getSocket(), message};
-		packet_maker_->sendPacket(packet);
+		packet_maker_->ErrNotOnChannel(packet);
 		return ;
 	}
 
@@ -490,29 +468,14 @@ void	PacketManager::invite(struct Packet& packet)
 
 	if ((channel_manager_.getChannelByName(channel_name)->isOnChannelMode(MODE_INVITE) && !channel_manager_.checkClientIsOperator(channel_name, client_nick)))
 	{
-		message.setCommand(ERR_CHANOPRIVSNEEDED);
-		message.addParam(client->getHostName());
-		message.addParam(client_nick);
-		message.addParam(channel_name);
-		message.setTrailing("You're not channel operator");
-
-		struct Packet packet = {client->getSocket(), message};
-		packet_maker_->sendPacket(packet);
+		packet_maker_->ErrChanOPrivsNeeded(packet);
 		return ;
 	}
 
 	// - 사용자가 이미 채널에 존재하는가?
 	if (!channel_manager_.checkClientIsInChannel(channel_name, target_nick))
 	{
-		message.setCommand(ERR_USERONCHANNEL);
-		message.addParam(client->getHostName());
-		message.addParam(client_nick);
-		message.addParam(target_nick);
-		message.addParam(channel_name);
-		message.setTrailing("is already on channel");
-
-		struct Packet packet = {client->getSocket(), message};
-		packet_maker_->sendPacket(packet);
+		packet_maker_->ErrUserOnChannel(packet);
 		return ;
 	}
 	
@@ -534,15 +497,7 @@ void	PacketManager::invite(struct Packet& packet)
 	//3. send message
 
 	// - RPL_INVITING
-	message.setCommand(RPL_INVITING);
-	message.addParam(client->getHostName());
-	message.addParam(client_nick);
-	message.addParam(target_nick);
-	message.addParam(channel_name);
-	message.setTrailing("Inviting " + target_nick + " to " + channel_name);
-
-	struct Packet pck = {client->getSocket(), message};
-	packet_maker_->sendPacket(pck);
+	packet_maker_->RplInviting(packet);
 	return ;
 }
 
@@ -569,15 +524,7 @@ void	PacketManager::topic(struct Packet& packet)
 	if ( packet.message.getParams().size() != 1 || packet.message.getTrailing().size() != 0)
 	{
 		// ERR_NEEDMOREPARAMS
-
-		message.setCommand(ERR_NEEDMOREPARAMS);
-		message.addParam(client->getHostName());
-		message.addParam(client_nick);
-		message.addParam(packet.message.getCommand());	
-		message.setTrailing("Not enough parameters");
-
-		struct Packet packet = {client->getSocket(), message};
-		packet_maker_->sendPacket(packet);
+		packet_maker_->ErrNeedMoreParams(packet);
 		return ;
 	}	
 
@@ -591,14 +538,7 @@ void	PacketManager::topic(struct Packet& packet)
 
 	if (!channel_manager_.getChannelByName(channel_name))
 	{
-		message.setCommand(ERR_NOSUCHCHANNEL);
-		message.addParam(client->getHostName());
-		message.addParam(client_nick);
-		message.addParam(channel_name);
-		message.setTrailing(ERR_NOSUCHCHANNEL_MSG);
-
-		struct Packet packet = {client->getSocket(), message};
-		packet_maker_->sendPacket(packet);
+		packet_maker_->ErrNoSuchChannel(packet);
 		return ;
 	}
 
@@ -608,14 +548,7 @@ void	PacketManager::topic(struct Packet& packet)
 	
 	if (!channel_manager_.checkClientIsInChannel(channel_name, client_nick))
 	{
-		message.setCommand(ERR_NOTONCHANNEL);
-		message.addParam(client->getHostName());
-		message.addParam(client_nick);
-		message.addParam(channel_name);
-		message.setTrailing(ERR_NOTONCHANNEL_MSG);
-
-		struct Packet packet = {client->getSocket(), message};
-		packet_maker_->sendPacket(packet);
+		packet_maker_->ErrNotOnChannel(packet);
 		return ;
 	}
 
@@ -628,14 +561,7 @@ void	PacketManager::topic(struct Packet& packet)
 	// **오류 코드**: **`482`**
 	if (channel->isOnChannelMode(MODE_TOPIC) && !channel_manager_.checkClientIsOperator(channel_name, client_nick))
 	{
-		message.setCommand(ERR_CHANOPRIVSNEEDED);
-		message.addParam(client->getHostName());
-		message.addParam(client_nick);
-		message.addParam(channel_name);
-		message.setTrailing(ERR_CHANOPRIVSNEEDED_MSG);
-
-		struct Packet packet = {client->getSocket(), message};
-		packet_maker_->sendPacket(packet);
+		packet_maker_->ErrChanOPrivsNeeded(packet);
 		return ;
 	}
 
@@ -645,10 +571,13 @@ void	PacketManager::topic(struct Packet& packet)
 	std::string topic = packet.message.getTrailing();
 	if (topic.empty() != 0)
 	{
+		
+
 		channel->setTopic(topic);
 		channel->setTopicSetter(client_nick);
 		channel->setTopicSetTime();
 
+		packet_maker_.RplNoTopic(packet);
 		message.setCommand(RPL_TOPIC);
 		message.addParam(client->getHostName());
 		message.addParam(client_nick);
