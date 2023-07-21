@@ -366,6 +366,8 @@ Message PacketMaker::NickSuccess(struct Packet& packet)
 	struct Packet pkt = {client->getSocket(), message};
 	sendPacket(pkt);
 
+	std::cout << message.toString() << std::endl;
+
 	return message;
 }
 
@@ -438,7 +440,7 @@ void PacketMaker::PrivmsgToChannel(struct Packet& packet, std::string target_cha
 	message.addParam(target_channel);
 	message.setTrailing(packet.message.getTrailing());
 
-	sendPacket(message, channel_manager_.getChannelByName(target_channel));
+	sendPacket(message, channel_manager_.getChannelByName(target_channel), client->getNickName());
 }
 
 void PacketMaker::PrivmsgToUser(struct Packet& packet, std::string target_nick)

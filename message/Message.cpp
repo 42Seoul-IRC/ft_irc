@@ -9,7 +9,6 @@ std::vector<Message> Message::parse(std::string str)
 	str.erase(0, str.find_first_not_of(" \n\r\t"));
 
 	messages = split(str, "\r\n");
-	std::cout << messages.size() << std::endl;
 	for (std::vector<std::string>::iterator it = messages.begin(); it != messages.end(); it++)
 	{
 		message.push_back(parseMessage(*it));

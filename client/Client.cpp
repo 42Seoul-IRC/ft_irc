@@ -47,23 +47,16 @@ bool	Client::getIsPass(void) const
 
 std::string Client::getHost(void)
 {
-    struct sockaddr_in clnt_addr;
-    socklen_t size = sizeof(clnt_addr);
-    getsockname(client_socket_, &(struct sockaddr& )clnt_addr, &size);
+	std::string host_info;
 
-	char *ip = inet_ntoa(clnt_addr.sin_addr);
-	std::string result(ip);
-
-	std::string host_info(getNickName());
-
+	host_info += getNickName();
 	host_info += "!";
 	host_info += getUserName();
 	host_info += "@";
-	host_info += result;
+	host_info += getHostName();
 
     return host_info;
 }
-
 void Client::setNickName(const std::string& nickname)
 {
 	nickname_ = nickname;

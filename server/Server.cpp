@@ -105,20 +105,13 @@ void Server::successHandler(int socket)
 			}
 			buffer[size] = '\0';
 
-			std::cout << buffer << std::endl;
-			
-			//for debug
-			// Message msg = Message::parseMessage(buffer);
 			std::vector<Message> messages = Message::parse(buffer);
 			for (std::vector<Message>::iterator it = messages.begin(); it != messages.end(); it++)
 			{
 				std::cout << *it << std::endl;
+			 	struct Packet packet = {socket, *it};
+				packet_queue.push_back(packet);
 			}
-			
-			//end
-
-			// struct Packet packet = {socket, msg};
-			// packet_queue.push_back(packet);
 		}
 		else
 		{

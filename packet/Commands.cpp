@@ -82,11 +82,11 @@ void	PacketManager::nick(struct Packet& packet)
 	}
 	else
 	{
+		Message message = packet_maker_->NickSuccess(packet);
+		
 		client_manager_.removeNickClient(old_nick);
 		client_manager_.addNickClient(new_nick, client);
 		client->setNickName(new_nick);
-
-		Message message = packet_maker_->NickSuccess(packet);
 
 		std::vector<Channel *> channels = channel_manager_.getChannelsByClientName(old_nick);
 		for (std::vector<Channel *>::iterator it = channels.begin(); it != channels.end(); ++it)
@@ -108,7 +108,7 @@ void	PacketManager::user(struct Packet& packet)
 		return ;
 	}
 
-	if (packet.message.getParams().size() != 4)
+	if (packet.message.getParams().size() != 3)
 	{
 		packet_maker_->ErrNeedMoreParams(packet);
 		return ;
@@ -121,7 +121,7 @@ void	PacketManager::user(struct Packet& packet)
 	}
 
 	client->setUserName(packet.message.getParams()[0]);
-	client->setHostName(packet.message.getParams()[3]);
+	client->setHostName(packet.message.getParams()[2]);
 
 	if (client->getNickName() != "")
 	{
