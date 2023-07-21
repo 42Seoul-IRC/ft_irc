@@ -146,35 +146,33 @@ void	PacketManager::privmsg(struct Packet& packet)
 	std::vector<std::string> targets = Message::split(packet.message.getParams()[0], ",");
 	for (std::vector<std::string>::iterator it = targets.begin(); it != targets.end(); it++)
 	{
-		if (packet.message.getParams()[0][0] == '#')
+		if ((*it)[0] == '#')
 		{
-			Channel *channel = channel_manager_.getChannelByName(packet.message.getParams()[0]);
+			Channel *channel = channel_manager_.getChannelByName(*it);
 			if (!channel)
 			{
-				packet_maker_->ErrNoSuchChannel(packet);
+				packet_maker_->ErrNoSuchChannel(packet, *it);
 				return ;
 			}
 
-			if (!channel_manager_.checkClientIsInChannel(packet.message.getParams()[0], client->getNickName()))
+			if (!channel_manager_.checkClientIsInChannel(*it, client->getNickName()))
 			{
-				packet_maker_->ErrCannotSendToChan(packet);
+				packet_maker_->ErrCannotSendToChan(packet, *it);
 				return ;
 			}
 
-			Message message = packet_maker_->PrivmsgToChannel(packet);
-
-			packet_maker_->sendPacket(message, channel, client->getNickName());
+			packet_maker_->PrivmsgToChannel(packet, *it);
 		}
 		else
 		{
-			Client *target_client = client_manager_.getClientByNick(packet.message.getParams()[0]);
+			Client *target_client = client_manager_.getClientByNick(*it);
 			if (!target_client)
 			{
-				packet_maker_->ErrNoSuchNick(packet);
+				packet_maker_->ErrNoSuchNick(packet, *it);
 				return ;
 			}
 
-			packet_maker_->PrivmsgToUser(packet);
+			packet_maker_->PrivmsgToUser(packet, *it);
 		}
 	}
 }
@@ -577,7 +575,7 @@ void	PacketManager::topic(struct Packet& packet)
 		channel->setTopicSetter(client_nick);
 		channel->setTopicSetTime();
 
-		packet_maker_.RplNoTopic(packet);
+		packet_maker_->RplNoTopic(packet);
 		message.setCommand(RPL_TOPIC);
 		message.addParam(client->getHostName());
 		message.addParam(client_nick);
