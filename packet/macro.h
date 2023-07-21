@@ -17,6 +17,8 @@
 #define RPL_NAMREPLY_MSG "Reply name"
 #define RPL_INVITING "341"
 #define RPL_INVITING_MSG "Inviting you to join"
+#define RPL_ENDOFNAMES "366"
+#define RPL_ENDOFNAMES_MSG "End of /NAMES list"
 
 // Error Messages
 

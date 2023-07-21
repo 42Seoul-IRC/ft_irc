@@ -308,6 +308,7 @@ void	PacketManager::join(struct Packet& packet)
 		Packet temp = packet;
 		temp.message.setTrailing(*it1);
 		packet_maker_->RplNamReply(temp);
+		packet_maker_->RplEndOfNames(temp);
 		packet_maker_->BroadcastJoin(temp);
 	}
 }

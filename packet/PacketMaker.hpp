@@ -36,6 +36,7 @@ class PacketMaker
 		void RplTopic(struct Packet& packet);
 		void RplTopicWhoTime(struct Packet& packet);
 		void RplNamReply(struct Packet& packet);
+		void RplEndOfNames(struct Packet& packet);
 		void RplInviting(struct Packet& packet);
 		void RplChannelModeIs(struct Packet& packet, Channel *channel);
 		void RplCreationTime(struct Packet& packet, Channel *channel);

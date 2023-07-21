@@ -262,6 +262,22 @@ void PacketMaker::RplNamReply(struct Packet& packet)
 	sendPacket(message, channel_manager_.getChannelByName(channel_name));
 }
 
+void PacketMaker::RplEndOfNames(struct Packet& packet)
+{
+	Message message;
+	std::string channel_name = packet.message.getTrailing();
+	Client *client = client_manager_.getClientBySocket(packet.client_socket);
+
+	message.setPrefix(SERVER_NAME);
+	message.setCommand(RPL_ENDOFNAMES);
+	message.addParam(client->getNickName());
+	message.addParam(channel_name);
+	message.setTrailing(RPL_ENDOFNAMES_MSG);
+
+	struct Packet pkt = {client->getSocket(), message};
+	sendPacket(pkt);	
+}
+
 void PacketMaker::RplInviting(struct Packet& packet)
 {
 	Message message;
