@@ -21,11 +21,11 @@ class PacketManager
 		
 	public:
 		PacketManager();
+		~PacketManager();
 
 		ChannelManager channel_manager_;
 		ClientManager client_manager_;
-		PacketMaker& packet_maker_;
-
+		PacketMaker* packet_maker_;
 		std::string valid_channel_modes_;
 		
 		void init(char *password);
