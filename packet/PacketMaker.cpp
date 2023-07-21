@@ -552,6 +552,17 @@ void PacketMaker::BroadcastJoin(struct Packet& packet)
 	sendPacket(message, channel_manager_.getChannelByName(packet.message.getTrailing()));
 }
 
+void PacketMaker::Broadcast(struct Packet& packet, std::string cmd)
+{
+	Message message;
+
+	message.setPrefix(client_manager_.getClientBySocket(packet.client_socket)->getHost());
+	message.setCommand(cmd);
+	message.setTrailing(packet.message.getTrailing());
+
+	sendPacket(message, channel_manager_.getChannelByName(packet.message.getTrailing()));
+}
+
 void PacketMaker::ErrBadChanMask(struct Packet& packet)
 {
 	Message message;
@@ -665,4 +676,17 @@ void	PacketMaker::RplCreationTime(struct Packet& packet, Channel *channel)
 
 	struct Packet pkt = {client->getSocket(), message};
 	sendPacket(pkt);
+}
+
+void	PacketMaker::BroadcastMode(Channel *channel, std::string changed_mode_buffer, std::string param_buffer)
+{
+	Message message;
+	std::string channel_name = channel->getChannelName();
+
+	message.setPrefix(SERVER_NAME);
+	message.setCommand("MODE");
+	message.addParam(channel_name);
+	message.addParam(changed_mode_buffer);
+	message.addParam(param_buffer);
+
 }

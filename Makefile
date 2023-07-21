@@ -13,8 +13,8 @@ SRCS =  channel/Channel.cpp\
 		packet/Commands.cpp \
 		server/Server.cpp \
 		socket/Socket.cpp \
-		main.cpp
-#		packet/CmdMode.cpp \
+		main.cpp \
+		packet/ModeManager.cpp \
 
 OBJS = $(SRCS:.cpp=.o)
 
@@ -22,6 +22,15 @@ all : $(NAME)
 
 $(NAME) : $(OBJS)
 	$(CC) $(CXXFLAGS) $(OBJS) -o $(NAME)
+
+tcpflow :
+	tcpflow -i lo port 6667 -c
+
+connect :
+	nc 127.0.0.1 6667
+	PASS 6667
+	NICK test
+	USER test 0 * :realname
 
 %.o : %.cpp
 	$(CC) $(CXXFLAGS) -o $@ -c $<

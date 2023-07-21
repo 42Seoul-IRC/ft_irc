@@ -11,12 +11,13 @@ class ModeManager
         std::vector<std::string> *params;
         std::vector<std::string>::iterator it_param;
 
-        std::string changed_buffer; 
+        std::string changed_mode_buffer; 
         std::string changed_param_buffer;
 
         Channel *channel_;
         Client *client_;
         PacketMaker *packet_maker_;
+        struct Packet packet;
 
 
     public:
@@ -38,7 +39,9 @@ class ModeManager
         void    setChannel(Channel *channel);
         void    setClient(Client *client);
         void    setPacketMaker(PacketMaker *packet_maker);
+        void    setPacket(struct Packet packet);
 
+        void    sendSuccessMsg();
 
 
         void    executeMode(char mode);
