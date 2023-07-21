@@ -537,14 +537,15 @@ void PacketMaker::ErrUserNotInChannel(struct Packet& packet)
 void PacketMaker::BroadcastKick(struct Packet& packet)
 {
 	Message message;
+	std::string channel_name(packet.message.getPrefix());
 
 	message.setPrefix(client_manager_.getClientBySocket(packet.client_socket)->getHost());
 	message.setCommand("KICK");
-	message.addParam(packet.message.getPrefix());
+	message.addParam(channel_name);
 	message.addParam(packet.message.getCommand());
 	message.setTrailing(packet.message.getTrailing());
 
-	sendPacket(message, channel_manager_.getChannelByName(packet.message.getTrailing()));
+	sendPacket(message, channel_manager_.getChannelByName(channel_name));
 }
 
 // INVITE
