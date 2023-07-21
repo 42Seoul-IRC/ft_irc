@@ -10,6 +10,8 @@ class ChannelManager {
 	public:
 		std::map<std::string, Channel*> channels_;
 
+		~ChannelManager();
+
 		void	createChannelByName(const std::string& channel_name);
 		void	addClientToChannel(const std::string& channel_name, const std::string& client_name);
 		Channel	*getChannelByName(const std::string& channel_name);

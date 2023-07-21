@@ -1,5 +1,19 @@
 #include "ClientManager.hpp"
 #include <iostream>
+
+ClientManager::~ClientManager()
+{
+	std::map<int, Client*>::iterator it;
+
+	for (it = socket_clients_.begin(); it != socket_clients_.end(); it++)
+	{
+		it->second->removeClient();
+		delete it->second;
+	}
+	socket_clients_.clear();
+	nick_clients_.clear();
+}
+
 void	ClientManager::addClientBySocket(int socket)
 {
 	Client	*temp;

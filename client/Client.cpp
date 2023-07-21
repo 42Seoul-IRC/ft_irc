@@ -10,6 +10,12 @@ Client::Client(int socket)
 	is_authenticated_ = false;
 }
 
+Client::~Client()
+{
+	close(client_socket_);
+	channels_.clear();
+}
+
 int Client::getSocket(void) const
 {
     return client_socket_;

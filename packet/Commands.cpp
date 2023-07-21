@@ -578,7 +578,7 @@ void	PacketManager::topic(struct Packet& packet)
 	//2. business logic
 
 	std::string topic = packet.message.getTrailing();
-	if (topic.empty() != 0)
+	if (topic.size() != 0)
 	{
 
 
@@ -592,10 +592,9 @@ void	PacketManager::topic(struct Packet& packet)
 		packet_maker_->Broadcast(packet, channel_name);
 		return ;
 	}
-	else
 	{
 		topic = channel->getTopic();
-		if (topic.empty() != 0)
+		if (topic.size() != 1)
 		{
 			packet_maker_->RplTopic(packet);
 			packet_maker_->RplTopicWhoTime(packet);

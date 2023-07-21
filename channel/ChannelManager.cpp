@@ -1,6 +1,17 @@
 #include "ChannelManager.hpp"
 #include <iostream>
 
+ChannelManager::~ChannelManager()
+{
+	std::map<std::string, Channel*>::iterator it;
+
+	for (it = channels_.begin(); it != channels_.end(); it++)
+	{
+		delete it->second;
+	}
+	channels_.clear();
+}
+
 void	ChannelManager::createChannelByName(const std::string& channel_name)
 {
 	if (channels_.find(channel_name) != channels_.end())

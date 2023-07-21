@@ -113,7 +113,6 @@ void    ModeManager::inviteMode()
         channel_->unsetChannelMode('i');
         pushBackChangedBuffer("i");
     }
-
     sendSuccessMsg();
 }
 
@@ -301,10 +300,16 @@ void	PacketManager::mode(struct Packet& packet)
         packet_maker_->ErrNeedMoreParams(packet);
         return ;
     }
+
+
     std::string channel_name = *mode_manager.getItParam();
     mode_manager.incrementItParam();
     Channel *channel = channel_manager_.getChannelByName(channel_name);
-    
+
+    if (channel_name[0] != '#')
+    {
+        return ;
+    }
     
     //check there is no chnnel in server
     if (channel == NULL)

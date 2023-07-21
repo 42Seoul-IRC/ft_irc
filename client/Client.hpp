@@ -18,6 +18,7 @@ class Client {
 
 	public:
 		Client(int socket);
+		~Client();
 		
 		int	getSocket(void) const;
 		std::string	getNickName(void);
