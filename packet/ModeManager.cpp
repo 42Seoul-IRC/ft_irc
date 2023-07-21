@@ -288,7 +288,6 @@ void	PacketManager::mode(struct Packet& packet)
     //use iterator for params
 	
     ModeManager mode_manager;
-    PacketMaker packet_maker(client_manager_, channel_manager_);
 
     std::vector<std::string> params = packet.message.getParams();
     mode_manager.setParams(&params);
@@ -299,7 +298,7 @@ void	PacketManager::mode(struct Packet& packet)
     if (mode_manager.getItParam() == params.end())
     {
         // ERR_NEEDMOREPARAMS (461)
-        packet_maker.ErrNeedMoreParams(packet);
+        packet_maker_->ErrNeedMoreParams(packet);
         return ;
     }
     std::string channel_name = *mode_manager.getItParam();
@@ -311,7 +310,7 @@ void	PacketManager::mode(struct Packet& packet)
     if (channel == NULL)
     {
         // ERR_NOSUCHCHANNEL (403)
-        packet_maker.ErrNoSuchChannel(packet);
+        packet_maker_->ErrNoSuchChannel(packet);
         return ;
     }
 
@@ -319,7 +318,7 @@ void	PacketManager::mode(struct Packet& packet)
     // ERR_NOTONCHANNEL (442)
     if (!channel->checkClientIsInChannel(client_nick))
     {
-        packet_maker.ErrNotOnChannel(packet);
+        packet_maker_->ErrNotOnChannel(packet);
         return ;
     }
 
@@ -328,21 +327,21 @@ void	PacketManager::mode(struct Packet& packet)
     // RPL_CREATIONTIME (329)
     if (mode_manager.isEndItParam())
     {
-        packet_maker.RplChannelModeIs(packet, channel);
-        packet_maker.RplCreationTime(packet, channel);
+        packet_maker_->RplChannelModeIs(packet, channel);
+        packet_maker_->RplCreationTime(packet, channel);
         return ;
     }
-	
+
     //check user is operator of channel
     // ERR_CHANOPRIVSNEEDED (482)
     if (!channel->checkClientIsOperator(client_nick))
     {
-        packet_maker.ErrChanOPrivsNeeded(packet);
+        packet_maker_->ErrChanOPrivsNeeded(packet);
         return ;
     }
     mode_manager.setChannel(channel);
     mode_manager.setClient(client);
-    mode_manager.setPacketMaker(&packet_maker);
+    mode_manager.setPacketMaker(packet_maker_);
     mode_manager.setPacket(packet);
 
 
