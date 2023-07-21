@@ -4,7 +4,10 @@
 void	ChannelManager::createChannelByName(const std::string& channel_name)
 {
 	if (channels_.find(channel_name) != channels_.end())
+	{
+		std::cout << "[ERROR] ChannelManager::createChannelByName : " << channel_name << " is already exist." << std::endl;
 		return ;
+	}
 	Channel *temp = new Channel(channel_name);
 	channels_.insert(std::make_pair(channel_name, temp));
 	std::cout << "[INFO] Create channel : " << channel_name  << ", " << temp << std::endl;
@@ -12,17 +15,18 @@ void	ChannelManager::createChannelByName(const std::string& channel_name)
 
 void	ChannelManager::addClientToChannel(const std::string& channel_name, const std::string& client_name)
 {
-	// if getChannelByName->clients_.length() == 0 : set client_name to operator
-	// add client_name to channel
 	Channel *temp = getChannelByName(channel_name);
 	if (temp == NULL)
 	{
-		std::cout << "[ERROR] ChannelManager::addClientToChannel : " << channel_name << " is not exist" << std::endl;
+		std::cout << "[ERROR] ChannelManager::addClientToChannel : " << channel_name << " is not exist." << std::endl;
 		return ;
 	}
-	if (temp->clients_.size() == 0)
-		temp->setOperator(client_name);
 	temp->addClient(client_name);
+	if (temp->clients_.size() == 1)
+	{
+		temp->setOperator(client_name);
+		std::cout << "[INFO] ChannelManager::addClientToChannel : " << channel_name << " has set " << client_name << " to operator." << std::endl;
+	}
 }
 
 Channel	*ChannelManager::getChannelByName(const std::string& channel_name)
@@ -35,7 +39,10 @@ Channel	*ChannelManager::getChannelByName(const std::string& channel_name)
 void	ChannelManager::deleteChannelByName(const std::string& channel_name)
 {
 	if (channels_.find(channel_name) == channels_.end())
+	{
+		std::cout << "[ERROR] ChannelManager::deleteChannelByName : " << channel_name << " is not exist." << std::endl;
 		return ;
+	}
 	delete channels_.find(channel_name)->second;
 	channels_.erase(channel_name);
 }
