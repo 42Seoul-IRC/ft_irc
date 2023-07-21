@@ -104,15 +104,21 @@ void Server::successHandler(int socket)
 				packet_manager_.removeClientBySocket(socket);
 			}
 			buffer[size] = '\0';
+
+			std::cout << buffer << std::endl;
 			
 			//for debug
-			Message msg = Message::parseMessage(buffer);
+			// Message msg = Message::parseMessage(buffer);
+			std::vector<Message> messages = Message::parse(buffer);
+			for (std::vector<Message>::iterator it = messages.begin(); it != messages.end(); it++)
+			{
+				std::cout << *it << std::endl;
+			}
 			
-			std::cout << msg;
 			//end
 
-			struct Packet packet = {socket, msg};
-			packet_queue.push_back(packet);
+			// struct Packet packet = {socket, msg};
+			// packet_queue.push_back(packet);
 		}
 		else
 		{

@@ -46,6 +46,21 @@ void PacketMaker::sendPacket(Message message, Channel *channel, std::string excl
 	}
 }
 
+// Connection
+void PacketMaker::CapLs(struct Packet& packet)
+{
+	Message message;
+	Client *client = client_manager_.getClientBySocket(packet.client_socket);
+
+	message.setPrefix(SERVER_NAME);
+	message.setCommand("CAP");
+	message.addParam("*");
+	message.addParam("LS");
+
+	struct Packet pkt = {client->getSocket(), message};
+	sendPacket(pkt);
+}
+
 // Common Error
 void PacketMaker::ErrNotRegistered(struct Packet& packet)
 {

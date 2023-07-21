@@ -1,6 +1,15 @@
 #include "PacketManager.hpp"
 #include "macro.h"
 
+void	PacketManager::cap(struct Packet& packet)
+{
+	if (packet.message.getParams().size() == 0)
+	{
+		packet_maker_->ErrNeedMoreParams(packet);
+		return ;
+	}
+}
+
 void	PacketManager::pass(struct Packet& packet)
 {
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);

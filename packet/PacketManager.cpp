@@ -15,6 +15,7 @@ void PacketManager::init(char *password)
 {
 	password_ = password;
 
+	recv_function_map_["CAP"] = &PacketManager::cap;
 	recv_function_map_["PASS"] = &PacketManager::pass;
 	recv_function_map_["NICK"] = &PacketManager::nick;
 	recv_function_map_["USER"] = &PacketManager::user;

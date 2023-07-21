@@ -1,13 +1,28 @@
 #include "Message.hpp"
 
+std::vector<Message> Message::parse(std::string str)
+{
+	std::vector<Message> message;
+	std::vector<std::string> messages;
+
+	str.erase(str.find_last_not_of(" \n\r\t") + 1);
+	str.erase(0, str.find_first_not_of(" \n\r\t"));
+
+	messages = split(str, "\r\n");
+	std::cout << messages.size() << std::endl;
+	for (std::vector<std::string>::iterator it = messages.begin(); it != messages.end(); it++)
+	{
+		message.push_back(parseMessage(*it));
+	}
+
+	return message;
+}
+
 Message Message::parseMessage(std::string str) 
 {
 	Message message;
 	std::string params;
 	std::string token;
-
-	str.erase(str.find_last_not_of(" \n\r\t") + 1);
-	str.erase(0, str.find_first_not_of(" \n\r\t"));
 	
 	std::istringstream iss(str);
 

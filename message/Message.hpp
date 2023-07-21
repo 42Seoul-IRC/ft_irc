@@ -15,6 +15,7 @@ class Message {
 		bool hasTrailing_;
 
 	public:
+		static std::vector<Message> parse(std::string str);
 		static std::vector<std::string> split(std::string str, std::string delimiter);
 		static Message parseMessage(std::string str);
 		

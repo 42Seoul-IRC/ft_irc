@@ -33,6 +33,7 @@ class PacketManager
 		void removeClientBySocket(int socket);
 		std::string getNickBySocket(int socket);
 
+		void	cap(struct Packet& packet);
 		void	pass(struct Packet& packet);
 		void	nick(struct Packet& packet);
 		void	user(struct Packet& packet);

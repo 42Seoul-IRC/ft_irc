@@ -17,6 +17,9 @@ class PacketMaker
 		void sendPacket(Message message, Channel *channel);
 		void sendPacket(Message message, Channel *channel, std::string exclude_nick);
 
+		// Connection
+		void CapLs(struct Packet& packet);
+
 		// Common Error
 		void ErrNotRegistered(struct Packet& packet);
 		void ErrNeedMoreParams(struct Packet& packet);
