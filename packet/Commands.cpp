@@ -577,7 +577,7 @@ void	PacketManager::topic(struct Packet& packet)
 		channel->setTopicSetter(client_nick);
 		channel->setTopicSetTime();
 
-		packet_maker_.RplNoTopic(packet);
+		packet_maker_->RplNoTopic(packet);
 		message.setCommand(RPL_TOPIC);
 		message.addParam(client->getHostName());
 		message.addParam(client_nick);

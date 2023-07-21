@@ -16,7 +16,10 @@ void	ChannelManager::addClientToChannel(const std::string& channel_name, const s
 	// add client_name to channel
 	Channel *temp = getChannelByName(channel_name);
 	if (temp == NULL)
+	{
+		std::cout << "[ERROR] ChannelManager::addClientToChannel : " << channel_name << " is not exist" << std::endl;
 		return ;
+	}
 	if (temp->clients_.size() == 0)
 		temp->setOperator(client_name);
 	temp->addClient(client_name);
