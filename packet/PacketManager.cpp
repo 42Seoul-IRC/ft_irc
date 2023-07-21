@@ -1,8 +1,14 @@
 #include "PacketManager.hpp"
 #include "PacketMaker.hpp"
 
-PacketManager::PacketManager() : packet_maker_(PacketMaker(client_manager_, channel_manager_))
+PacketManager::PacketManager()
 {
+	packet_maker_ = new PacketMaker(client_manager_, channel_manager_);
+}
+
+PacketManager::~PacketManager()
+{
+	delete packet_maker_;
 }
 
 void PacketManager::init(char *password)

@@ -7,7 +7,7 @@ PacketMaker::PacketMaker(ClientManager& client_manager_, ChannelManager& channel
 
 PacketMaker::~PacketMaker()
 {
-
+	
 }
 
 void PacketMaker::sendPacket(struct Packet& packet)
