@@ -27,6 +27,8 @@ class PacketMaker : public PacketManager
 		void RplTopicWhoTime(struct Packet& packet);
 		void RplNamReply(struct Packet& packet);
 		void RplInviting(struct Packet& packet);
+		void RplChannelModeIs(struct Packet& packet, Channel *channel);
+		void RplCreationTime(struct Packet& packet, Channel *channel);
 
 		// PASS Error
 		void ErrAlreadyRegistered(struct Packet& packet);
