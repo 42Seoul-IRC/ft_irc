@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <sys/time.h>
 
 #include "../client/Client.hpp"
 #include "ChannelMode.hpp"

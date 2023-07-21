@@ -236,7 +236,12 @@ void PacketMaker::RplTopicWhoTime(struct Packet& packet)
 	message.addParam(client->getNickName());
 	message.addParam(channel_name);
 	message.addParam(channel->getTopicSetter());
-	message.setTrailing(std::to_string(channel->getTopicSetTime()));
+
+	std::stringstream	ss(channel->getTopicSetTime());
+	std::string time_str;
+
+	ss >>time_str;	
+	message.setTrailing(time_str);
 
 	struct Packet pkt = {client->getSocket(), message};
 	sendPacket(pkt);	
@@ -585,9 +590,10 @@ void PacketMaker::BroadcastPart(struct Packet& packet)
 
 	message.setPrefix(client_manager_.getClientBySocket(packet.client_socket)->getHost());
 	message.setCommand("PART");
+	message.addParam(packet.message.getCommand());
 	message.setTrailing(packet.message.getTrailing());
 
-	sendPacket(message, channel_manager_.getChannelByName(packet.message.getTrailing()));
+	sendPacket(message, channel_manager_.getChannelByName(packet.message.getCommand()));
 }
 
 void PacketMaker::ErrUserNotInChannel(struct Packet& packet)
@@ -667,6 +673,8 @@ void	PacketMaker::RplCreationTime(struct Packet& packet, Channel *channel)
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
 	std::string channel_name = channel->getChannelName();
 	std::string channel_created_time = std::to_string(channel->getChannelCreatedTime());
+
+	std::cout << channel->getChannelCreatedTime() << std::endl;
 
 	message.setPrefix(SERVER_NAME);
 	message.setCommand("329");

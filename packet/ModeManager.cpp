@@ -323,6 +323,16 @@ void	PacketManager::mode(struct Packet& packet)
         return ;
     }
 
+    // check if params[1] == mode string is empty, send channel mode
+    // RPL_CHANNELMODEIS (324)
+    // RPL_CREATIONTIME (329)
+    if (mode_manager.isEndItParam())
+    {
+        packet_maker.RplChannelModeIs(packet, channel);
+        packet_maker.RplCreationTime(packet, channel);
+        return ;
+    }
+	
     //check user is operator of channel
     // ERR_CHANOPRIVSNEEDED (482)
     if (!channel->checkClientIsOperator(client_nick))
@@ -335,15 +345,6 @@ void	PacketManager::mode(struct Packet& packet)
     mode_manager.setPacketMaker(&packet_maker);
     mode_manager.setPacket(packet);
 
-    // check if params[1] == mode string is empty, send channel mode
-    // RPL_CHANNELMODEIS (324)
-    // RPL_CREATIONTIME (329)
-    if (mode_manager.isEndItParam())
-    {
-        packet_maker.RplChannelModeIs(packet, channel);
-        packet_maker.RplCreationTime(packet, channel);
-        return ;
-    }
 
 	//business logic
 

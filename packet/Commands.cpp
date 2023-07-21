@@ -345,7 +345,7 @@ void	PacketManager::part(struct Packet& packet)
 	{
 		if (channel_manager_.getChannelByName(*it) == NULL)
 		{
-			packet_maker_->ErrNoSuchChannel(packet);
+			packet_maker_->ErrNoSuchChannel(packet, *it);
 			continue ;
 		}
 		if (channel_manager_.checkClientIsInChannel(*it, client_name) == false)
@@ -356,7 +356,7 @@ void	PacketManager::part(struct Packet& packet)
 
 		//broadcast part message
 		Packet temp = packet;
-		temp.message.setTrailing(*it);
+		temp.message.setCommand(*it);
 		packet_maker_->BroadcastPart(temp);
 
 		channel_manager_.deleteClientFromChannel(*it, client_name);
@@ -662,12 +662,10 @@ void PacketManager::channel(struct Packet& packet)
 		std::cout << std::endl;
 
 		//channel password
-		std::cout << "     " << "channel's password : " << std::endl;
-		std::cout << "     " << it4->second->password_ << std::endl;
+		std::cout << "     " << "channel's password : " << it4->second->password_ << std::endl;
 
 		//channel mode
-		std::cout << "     " << "channel's mode : " << std::endl;
-		std::cout << "     " << it4->second->mode_ << std::endl;
+		std::cout << "     " << "channel's mode : " << it4->second->mode_ << std::endl;
 		
 		//channel topic
 		std::cout << "     " << "channel's topic : " << std::endl;
@@ -680,7 +678,6 @@ void PacketManager::channel(struct Packet& packet)
 
 		//channel limit
 		std::cout << "     " << "channel's limit : " << std::endl;
-
 
 
 	}

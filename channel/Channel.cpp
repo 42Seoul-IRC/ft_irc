@@ -9,6 +9,7 @@ Channel::Channel(const std::string& name)
 		channel_name_ = name;
 	limit_ = -1;
 	mode_ = "nt";
+	setChannelCreatedTime();
 }
 
 Channel::~Channel()
@@ -20,7 +21,9 @@ Channel::~Channel()
 
 void	Channel::setChannelCreatedTime()
 {
-	channel_created_time_ = time(NULL);
+	struct timeval	tv;
+	gettimeofday(&tv, NULL);
+	channel_created_time_ = tv.tv_sec;
 }
 
 //getChannelCreatedTime()
@@ -52,7 +55,9 @@ std::string&	Channel::getTopicSetter(void)
 
 void	Channel::setTopicSetTime()
 {
-	topic_settime_ = time(NULL);
+	struct timeval	tv;
+	gettimeofday(&tv, NULL);
+	topic_settime_ = tv.tv_sec;
 }
 
 unsigned long	Channel::getTopicSetTime(void)

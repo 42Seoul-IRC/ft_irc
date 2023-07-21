@@ -62,7 +62,7 @@ void PacketManager::execute(struct Packet& packet)
 	if (it != recv_function_map_.end())
 	{
 		(this->*(it->second))(packet);
-		channel(packet);
+		// channel(packet);
 	}
 }
 
