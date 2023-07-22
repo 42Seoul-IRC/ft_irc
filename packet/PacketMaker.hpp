@@ -16,8 +16,8 @@ class PacketMaker
 
 		void log(struct Packet& packet);
 		void sendPacket(struct Packet& packet);
-		void sendPacket(Message message, Channel *channel);
-		void sendPacket(Message message, Channel *channel, std::string exclude_nick);
+		void sendPacket(Message message, std::string channel_name);
+		void sendPacket(Message message, std::string channel_name, std::string exclude_nick);
 
 		// Connection
 		void CapLs(struct Packet& packet);
