@@ -1,8 +1,6 @@
 #ifndef CLIENT_MANAGER_HPP
 #define CLIENT_MANAGER_HPP
 
-#define FIRST_CHARACTER "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-
 #include <list>
 #include <map>
 #include "Client.hpp"
@@ -17,18 +15,18 @@ public:
 
 	void addClientBySocket(int socket);
 	Client *getClientBySocket(int socket);
-	Client *getClientByNick(std::string nick);
+	Client *getClientByNick(const std::string& nick);
 
 	bool clientIsAuth(int socket);
-	bool clientIsInServer(std::string nick);
-	bool isValidNickname(std::string nick);
-	bool isUsedNickname(std::string nick);
+	bool clientIsInServer(const std::string& nick);
+	bool isValidNickname(std::string& nick);
+	bool isUsedNickname(const std::string& nick);
 
-	void addNickClient(std::string nick, Client *client);
-	void removeNickClient(std::string nick);
+	void addNickClient(const std::string& nick, Client *client);
+	void removeNickClient(const std::string& nick);
 
-	void addChannelToClient(std::string nick, std::string channel);
-	void removeChannelFromClient(std::string nick, std::string channel);
+	void addChannelToClient(const std::string& nick, const std::string& channel);
+	void removeChannelFromClient(const std::string& nick, const std::string& channel);
 	void removeClient(int socket);
 };
 

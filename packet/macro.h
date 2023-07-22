@@ -33,7 +33,7 @@
 #define ERR_ERRONEUSNICKNAME "432"
 #define ERR_ERRONEUSNICKNAME_MSG "Erroneous nickname"
 #define ERR_NICKNAMEINUSE "433"
-#define ERR_NICKNAMEINUSE_MSG "Nickname in use"
+#define ERR_NICKNAMEINUSE_MSG "Nickname is already in use"
 #define ERR_NOORIGIN "409"
 #define ERR_NOORIGIN_MSG "No origin specified"
 #define ERR_NOSUCHNICK "401"
