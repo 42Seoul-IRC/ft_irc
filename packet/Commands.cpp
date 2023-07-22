@@ -598,9 +598,9 @@ void	PacketManager::topic(struct Packet& packet)
 	else
 	{
 		std::string pre_topic = channel->getTopic();
-		if (pre_topic.empty() != 0)
+		if (!pre_topic.empty())
 		{
-			packet_maker_->RplTopic(packet);
+			packet_maker_->RplTopic(packet, pre_topic);
 			packet_maker_->RplTopicWhoTime(packet);
 		} 
 		else
