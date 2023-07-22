@@ -16,8 +16,8 @@ class PacketMaker
 
 		void log(struct Packet& packet);
 		void sendPacket(struct Packet& packet);
-		void sendPacket(Message message, std::string channel_name);
-		void sendPacket(Message message, std::string channel_name, std::string exclude_nick);
+		void sendPacket(Message& message, const std::string& channel_name);
+		void sendPacket(Message& message, const std::string& channel_name, const std::string& exclude_nick);
 
 		// Connection
 		void CapLs(struct Packet& packet);
@@ -25,9 +25,9 @@ class PacketMaker
 		// Common Error
 		void ErrNotRegistered(struct Packet& packet);
 		void ErrNeedMoreParams(struct Packet& packet);
-		void ErrNoSuchChannel(struct Packet& packet, std::string channel_name);
+		void ErrNoSuchChannel(struct Packet& packet, const std::string& channel_name);
 		void ErrNoSuchChannel(struct Packet& packet);
-		void ErrNoSuchNick(struct Packet& packet, std::string nick_name);
+		void ErrNoSuchNick(struct Packet& packet, const std::string& nick_name);
 		void ErrNoSuchNick(struct Packet& packet);
 		void ErrNotOnChannel(struct Packet& packet);
 		void ErrChanOPrivsNeeded(struct Packet& packet);
@@ -60,10 +60,10 @@ class PacketMaker
 		// PRIVMSG Error
 		void ErrNoRecipient(struct Packet& packet);
 		void ErrNoTextToSend(struct Packet& packet);
-		void ErrCannotSendToChan(struct Packet& packet, std::string channel_name);
+		void ErrCannotSendToChan(struct Packet& packet, const std::string& channel_name);
 		// PRIVMSG Success
-		void PrivmsgToChannel(struct Packet& packet, std::string target_channel);
-		void PrivmsgToUser(struct Packet& packet, std::string target_nick);
+		void PrivmsgToChannel(struct Packet& packet, const std::string& target_channel);
+		void PrivmsgToUser(struct Packet& packet, const std::string& target_nick);
 
 		// QUIT Success
 		Message Quit(struct Packet& packet);
@@ -71,7 +71,7 @@ class PacketMaker
 		// PING Success
 		Message Ping(struct Packet& packet);
 		
-		void Broadcast(struct Packet& packet, std::string cmd);
+		void Broadcast(struct Packet& packet, const std::string& cmd);
 
 		// JOIN Error
 		void ErrBadChannelKey(struct Packet& packet);

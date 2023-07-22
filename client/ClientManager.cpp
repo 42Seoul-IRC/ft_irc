@@ -29,7 +29,7 @@ Client	*ClientManager::getClientBySocket(int socket)
 	return (socket_clients_.find(socket)->second);
 }
 
-Client	*ClientManager::getClientByNick(std::string nick)
+Client	*ClientManager::getClientByNick(const std::string& nick)
 {
 	if (nick_clients_.find(nick) == nick_clients_.end())
 		return (NULL);
@@ -46,7 +46,7 @@ bool	ClientManager::clientIsAuth(int socket)
 	return (temp->getIsAuthenticated());
 }
 
-bool	ClientManager::clientIsInServer(std::string nick)
+bool	ClientManager::clientIsInServer(const std::string& nick)
 {
 	std::map<std::string, Client*>::iterator it;
 
@@ -58,7 +58,7 @@ bool	ClientManager::clientIsInServer(std::string nick)
 	return (false);
 }
 
-bool	ClientManager::isValidNickname(std::string nick)
+bool	ClientManager::isValidNickname(std::string& nick)
 {
 	if (nick.length() > 9 || nick.length() == 0)
 		return (false);
@@ -73,31 +73,31 @@ bool	ClientManager::isValidNickname(std::string nick)
 	return (true);
 }
 
-bool	ClientManager::isUsedNickname(std::string nick)
+bool	ClientManager::isUsedNickname(const std::string& nick)
 {
 	if (nick_clients_.find(nick) == nick_clients_.end())
 		return (false);
 	return true;
 }
 
-void	ClientManager::addNickClient(std::string nick, Client* client)
+void	ClientManager::addNickClient(const std::string& nick, Client* client)
 {
 	nick_clients_.insert(std::make_pair(nick, client));
 }
 
-void	ClientManager::removeNickClient(std::string nick)
+void	ClientManager::removeNickClient(const std::string& nick)
 {
 	nick_clients_.erase(nick);
 }
 
-void	ClientManager::addChannelToClient(std::string nick, std::string channel)
+void	ClientManager::addChannelToClient(const std::string& nick, const std::string& channel)
 {
 	if (nick_clients_.find(nick) == nick_clients_.end())
 		return ;
 	nick_clients_.find(nick)->second->addChannel(channel);
 }
 
-void	ClientManager::removeChannelFromClient(std::string nick, std::string channel)
+void	ClientManager::removeChannelFromClient(const std::string& nick, const std::string& channel)
 {
 	if (nick_clients_.find(nick) == nick_clients_.end())
 		return ;
