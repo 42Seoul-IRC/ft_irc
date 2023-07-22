@@ -8,9 +8,16 @@ int	main(int argc, char **argv)
 		return (1);
 	}
 
+	try {
 	Server server;
 	server.init(argv[1], argv[2]);
 	server.run();
+	}
+	catch (std::exception &e)
+	{
+		std::cerr << e.what() << std::endl;
+		exit(EXIT_FAILURE);
+	}
 
 	return (0);
 }

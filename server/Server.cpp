@@ -7,18 +7,10 @@ Server::Server()
 
 void Server::init(char* port, char* password)
 {
-	try
-	{
-		server_socket_.bind(port);
-		server_socket_.listen();
-		if ((kqueue_ = kqueue()) == -1)
-			throw std::runtime_error("Kqueue error");
-	}
-	catch (std::exception &e)
-	{
-		std::cerr << e.what() << std::endl;
-		exit(EXIT_FAILURE);
-	}
+	server_socket_.bind(port);
+	server_socket_.listen();
+	if ((kqueue_ = kqueue()) == -1)
+		throw std::runtime_error("Kqueue error");
 
 	addSocket(server_socket_.getSocket());
 
