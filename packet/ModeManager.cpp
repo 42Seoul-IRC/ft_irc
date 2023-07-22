@@ -171,7 +171,7 @@ void    ModeManager::inviteMode()
         channel_->unsetChannelMode('i');
         pushBackChangedBuffer("i");
     }
-    sendSuccessMsg();
+    
 }
 
 void    ModeManager::topicMode()
@@ -187,7 +187,7 @@ void    ModeManager::topicMode()
         pushBackChangedBuffer("t");
     }
 
-    sendSuccessMsg();
+    
 }
 
 void    ModeManager::keyMode()
@@ -226,7 +226,7 @@ void    ModeManager::keyMode()
         pushBackChangedBuffer("k");
     }
 
-    sendSuccessMsg();
+    
 }
 
 void    ModeManager::opMode()
@@ -262,7 +262,7 @@ void    ModeManager::opMode()
     }
     incrementItParam();
 
-    sendSuccessMsg();
+    
 }
 
 void    ModeManager::limitMode()
@@ -306,7 +306,6 @@ void    ModeManager::limitMode()
         pushBackChangedBuffer("l");
     }
 
-    sendSuccessMsg();
 }
 
 
@@ -436,6 +435,7 @@ void	PacketManager::mode(struct Packet& packet)
         mode_manager.executeMode(mode);
         // mode_manager.printMode();
     }
+    mode_manager.sendSuccessMsg();
 }
 
 void    ModeManager::printMode()
