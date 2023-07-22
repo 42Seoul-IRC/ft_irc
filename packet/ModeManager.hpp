@@ -22,6 +22,7 @@ class ModeManager
 
     public:
         ModeManager();
+		~ModeManager();
         void    setModeSwitch(char mode_switch);
 
         void    setParams(std::vector<std::string> *params);
