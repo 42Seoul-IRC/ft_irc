@@ -375,7 +375,10 @@ void PacketMaker::ErrNicknameInUse(struct Packet& packet)
 
 	message.setPrefix(SERVER_NAME);
 	message.setCommand(ERR_NICKNAMEINUSE);
-	message.addParam(client->getNickName());
+	if (client->getNickName().size() == 0)
+		message.addParam("*");
+	else
+		message.addParam(client->getNickName());
 	message.addParam(packet.message.getParams()[0]);
 	message.setTrailing(ERR_NICKNAMEINUSE_MSG);
 
