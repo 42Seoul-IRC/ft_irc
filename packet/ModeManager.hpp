@@ -54,4 +54,6 @@ class ModeManager
         void    limitMode();
 
         void    noMode();
+
+        void    printMode();
 };
