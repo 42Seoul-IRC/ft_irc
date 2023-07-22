@@ -734,3 +734,72 @@ void	PacketMaker::BroadcastMode(Channel *channel, std::string changed_mode_buffe
 	message.addParam(param_buffer);
 
 }
+
+//696 :irc.local 696 one #a l * :You must specify a parameter for the limit mode. Syntax: <limit>.
+
+void	PacketMaker::ErrNeedMoreParamsLimit(struct Packet& packet)
+{
+	Message message;
+	Client *client = client_manager_.getClientBySocket(packet.client_socket);
+	std::string channel_name = packet.message.getParams()[0];
+
+	message.setPrefix(SERVER_NAME);
+	message.setCommand("696");
+	message.addParam(client->getNickName());
+	message.addParam(channel_name);
+	message.addParam("l");
+	message.setTrailing("You must specify a parameter for the limit mode. Syntax: <limit>.");
+
+	struct Packet pkt = {client->getSocket(), message};
+	sendPacket(pkt);
+}
+
+//696 :irc.local 696 one #a k * :You must specify a parameter for the key mode. Syntax: <key>.
+
+void	PacketMaker::ErrNeedMoreParamsKey(struct Packet& packet)
+{
+	Message message;
+	Client *client = client_manager_.getClientBySocket(packet.client_socket);
+	std::string channel_name = packet.message.getParams()[0];
+
+	message.setPrefix(SERVER_NAME);
+	message.setCommand("696");
+	message.addParam(client->getNickName());
+	message.addParam(channel_name);
+	message.addParam("k");
+	message.setTrailing("You must specify a parameter for the key mode. Syntax: <key>.");
+
+	struct Packet pkt = {client->getSocket(), message};
+	sendPacket(pkt);
+}
+
+
+//696 one #a o * :You must specify a parameter for the op mode. Syntax: <nick>.
+
+void	PacketMaker::ErrNeedMoreParamsOp(struct Packet& packet)
+{
+	Message message;
+	Client *client = client_manager_.getClientBySocket(packet.client_socket);
+	std::string channel_name = packet.message.getParams()[0];
+
+	message.setPrefix(SERVER_NAME);
+	message.setCommand("696");
+	message.addParam(client->getNickName());
+	message.addParam(channel_name);
+	message.addParam("o");
+	message.setTrailing("You must specify a parameter for the op mode. Syntax: <nick>.");
+
+	struct Packet pkt = {client->getSocket(), message};
+	sendPacket(pkt);
+}
+
+void PacketMaker::ErrNeedMoreParams(struct Packet& packet, char mode)
+{
+	if (mode == 'l')
+		ErrNeedMoreParamsLimit(packet);
+	else if (mode == 'k')
+		ErrNeedMoreParamsKey(packet);
+	else if (mode == 'o')
+		ErrNeedMoreParamsOp(packet);
+}
+

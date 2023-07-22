@@ -63,6 +63,7 @@ void    ModeManager::pushBackChangedBuffer(std::string buffer)
 {
     if (changed_mode_buffer.size() != 0)
         changed_mode_buffer += " ";
+    changed_mode_buffer += mode_switch;
     changed_mode_buffer += buffer;
 }
 
@@ -136,11 +137,6 @@ void    ModeManager::keyMode()
 {    
     if (mode_switch == '+')
     {
-        if (it_param == params->end())
-        {
-            // ERR_NEEDMOREPARAMS (461)
-            return ;
-        }
         std::string key = *it_param;
 
         //check space in key
@@ -172,11 +168,6 @@ void    ModeManager::keyMode()
 
 void    ModeManager::opMode()
 {
-    if (it_param == params->end())
-    {
-        // ERR_NEEDMOREPARAMS (461)
-        return ;
-    }
 
     std::string nick = *it_param;
     if (!channel_->checkClientIsInChannel(nick))
@@ -209,12 +200,6 @@ void    ModeManager::limitMode()
 {
     if (mode_switch == '+')
     {
-        if (it_param == params->end())
-        {
-            // ERR_NEEDMOREPARAMS (461)
-            packet_maker_->ErrNeedMoreParams(packet);
-            return ;
-        }
         
         std::string limit = *it_param; 
         std::stringstream ss(limit);
@@ -262,7 +247,16 @@ void    ModeManager::executeMode(char mode)
         inviteMode();
     else if (mode == 't' && canUpdate(mode))
         topicMode();
-    else if (mode == 'k' && canUpdate(mode))
+
+    //check param is exist
+    if (isEndItParam())
+    {
+        // ERR_NEEDMOREPARAMS (461)
+        packet_maker_->ErrNeedMoreParams(packet, mode);
+        return ;
+    }
+
+    if (mode == 'k' && canUpdate(mode))
         keyMode();
     else if (mode == 'o' && canUpdate(mode))
         opMode();

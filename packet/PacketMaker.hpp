@@ -96,6 +96,13 @@ class PacketMaker
 		void ErrUserOnChannel(struct Packet& packet);
 		void msgToUser(struct Packet& packet, const std::string command, std::string target_nick);
 		void BroadcastMode(Channel *channel, std::string changed_mode_buffer, std::string param_buffer);
+
+		// MODE Error
+		void ErrNeedMoreParams(struct Packet& packet, char mode);
+		void ErrNeedMoreParamsOp(struct Packet& packet);
+		void ErrNeedMoreParamsKey(struct Packet& packet);
+		void ErrNeedMoreParamsLimit(struct Packet& packet);
+
 };
 
 #endif
