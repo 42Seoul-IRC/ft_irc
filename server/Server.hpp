@@ -19,12 +19,13 @@ class Server {
 		void process(void);
 		void addSocket(int socket);
 
+		void successHandler(int socket);
+		void errorHandler(int socket);
+		
 	public:
 		Server();
 		void init(char* port, char* password);
 		void run(void);
-		void successHandler(int socket);
-		void errorHandler(int socket);
 };
 
 #endif

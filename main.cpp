@@ -9,9 +9,9 @@ int	main(int argc, char **argv)
 	}
 
 	try {
-	Server server;
-	server.init(argv[1], argv[2]);
-	server.run();
+		Server server;
+		server.init(argv[1], argv[2]);
+		server.run();
 	}
 	catch (std::exception &e)
 	{
