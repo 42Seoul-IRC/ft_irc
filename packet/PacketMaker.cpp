@@ -595,7 +595,7 @@ void PacketMaker::BroadcastTopic(struct Packet& packet)
 	message.setCommand("TOPIC");
 	message.addParam(packet.message.getParams()[0]);
 	message.setTrailing(packet.message.getTrailing());
-	sendPacket(message, channel_manager_.getChannelByName(packet.message.getParams()[0]));
+	sendPacket(message, packet.message.getParams()[0]);
 }
 
 void PacketMaker::ErrBadChanMask(struct Packet& packet)
@@ -745,7 +745,7 @@ void	PacketMaker::BroadcastMode(struct Packet& packet, std::string changed_mode_
 	message.addParam(changed_mode_buffer);
 	message.setTrailing(param_buffer);
 
-	sendPacket(message, channel_manager_.getChannelByName(channel_name));
+	sendPacket(message, channel_name);
 }
 
 //696 :irc.local 696 one #a l * :You must specify a parameter for the limit mode. Syntax: <limit>.
