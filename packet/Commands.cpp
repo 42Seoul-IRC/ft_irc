@@ -14,8 +14,8 @@ void	PacketManager::pass(struct Packet& packet)
 {
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
 
-	std::cout << "[DEBUG] Pass's client_manager_ : " << &client_manager_ << std::endl;
-	std::cout << "[DEBUG] client's address : " << client << std::endl;
+	// std::cout << "[DEBUG] Pass's client_manager_ : " << &client_manager_ << std::endl;
+	// std::cout << "[DEBUG] client's address : " << client << std::endl;
 
 	if (client->getIsPass())
 	{
