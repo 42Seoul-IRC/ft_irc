@@ -91,7 +91,7 @@ class PacketMaker
 
 		// INVITE Error
 		void ErrUserOnChannel(struct Packet& packet);
-
+		void msgToUser(struct Packet& packet, const std::string command, std::string target_nick);
 		void BroadcastMode(Channel *channel, std::string changed_mode_buffer, std::string param_buffer);
 };
 

@@ -292,12 +292,13 @@ void PacketMaker::RplInviting(struct Packet& packet)
 	std::string target_nick = packet.message.getParams()[0];
 	std::string channel_name = packet.message.getParams()[1];
 
+	message.setPrefix(SERVER_NAME);
 	message.setCommand(RPL_INVITING);
-	message.addParam(client->getHostName());
 	message.addParam(client->getNickName());
 	message.addParam(target_nick);
-	message.addParam(channel_name);
-	message.setTrailing("Inviting " + target_nick + " to " + channel_name);
+	message.setTrailing(channel_name);
+	// message.addParam(channel_name);
+	// message.setTrailing("Inviting " + target_nick + " to " + channel_name);
 
 	struct Packet pkt = {client->getSocket(), message};
 	sendPacket(pkt);
@@ -641,6 +642,20 @@ void PacketMaker::ErrUserOnChannel(struct Packet& packet)
 	message.setTrailing("is alreay on channel");
 
 	struct Packet pkt = {client->getSocket(), message};
+	sendPacket(pkt);
+}
+
+void PacketMaker::msgToUser(struct Packet& packet, const std::string command, std::string target_nick)
+{
+	Message message;
+	Client *client = client_manager_.getClientBySocket(packet.client_socket);
+
+	message.setPrefix(client->getHost());
+	message.setCommand(command);
+	message.addParam(target_nick);
+	message.setTrailing(packet.message.getTrailing());
+
+	struct Packet pkt = {client_manager_.getClientByNick(target_nick)->getSocket(), message};
 	sendPacket(pkt);
 }
 
