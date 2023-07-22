@@ -32,8 +32,6 @@ void PacketManager::init(char *password)
 	recv_function_map_["MODE"] = &PacketManager::mode;
 
 	valid_channel_modes_ = "itkol";
-	// std::cout << "[INFO] ClientManager initialized : " << &client_manager_ << std::endl;
-	// std::cout << "[INFO] ChannelManager initialized : " << &channel_manager_ << std::endl;
 }
 
 void	PacketManager::removeClientBySocket(int socket)
@@ -62,7 +60,7 @@ void PacketManager::execute(struct Packet& packet)
 	if (it != recv_function_map_.end())
 	{
 		(this->*(it->second))(packet);
-		// channel(packet);
+		// channel(packet); // print channel's info
 	}
 }
 

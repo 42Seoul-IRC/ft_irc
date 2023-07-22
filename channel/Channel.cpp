@@ -146,9 +146,6 @@ bool Channel::checkClientIsInChannel(const std::string& client_name)
 
 void	Channel::setOperator(const std::string& client_name) // 제대로 작동 X
 {
-	std::cout << "[INFO] setOperator is checking for " << client_name << std::endl;
-	for (std::set<std::string>::iterator it = clients_.begin(); it != clients_.end(); ++it)
-		std::cout << "[INFO] Client : " << *it << std::endl;
 	if (checkClientIsInChannel(client_name))
 	{
 		operators_.insert(client_name);
