@@ -205,6 +205,7 @@ void PacketMaker::RplNoTopic(struct Packet& packet)
 	Message message;
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
 
+	message.setPrefix(SERVER_NAME);
 	message.setCommand(RPL_NOTOPIC);
 	message.addParam(client->getHostName());
 	message.addParam(client->getNickName());
@@ -237,12 +238,13 @@ void PacketMaker::RplTopicWhoTime(struct Packet& packet)
 	std::string channel_name = packet.message.getParams()[0];
 	Channel *channel = channel_manager_.getChannelByName(channel_name);
 
+	message.setPrefix(SERVER_NAME);
 	message.setCommand(RPL_TOPICWHOTIME);
-	message.addParam(client->getHostName());
 	message.addParam(client->getNickName());
 	message.addParam(channel_name);
 	message.addParam(channel->getTopicSetter());
 
+	
 	std::stringstream	ss(channel->getTopicSetTime());
 	std::string time_str;
 

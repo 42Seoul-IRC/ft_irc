@@ -567,15 +567,7 @@ void	PacketManager::topic(struct Packet& packet)
 
 	
 
-	// ### **오류 482: ERR_CHANOPRIVSNEEDED**
 
-	// **오류 메시지 형식**: **`<client> <channel> :You're not channel operator`오류 이유**: 클라이언트가 적절한 채널 권한이 없어 명령이 실패했다는 것을 나타냅니다.
-	// **오류 코드**: **`482`**
-	if (channel->isOnChannelMode(MODE_TOPIC) && !channel_manager_.checkClientIsOperator(channel_name, client_nick))
-	{
-		packet_maker_->ErrChanOPrivsNeeded(packet);
-		return ;
-	}
 
 
 	//2. business logic
@@ -583,7 +575,15 @@ void	PacketManager::topic(struct Packet& packet)
 	std::string topic = packet.message.getTrailing();
 	if (!topic.empty())
 	{
+		// ### **오류 482: ERR_CHANOPRIVSNEEDED**
 
+		// **오류 메시지 형식**: **`<client> <channel> :You're not channel operator`오류 이유**: 클라이언트가 적절한 채널 권한이 없어 명령이 실패했다는 것을 나타냅니다.
+		// **오류 코드**: **`482`**
+		if (channel->isOnChannelMode(MODE_TOPIC) && !channel_manager_.checkClientIsOperator(channel_name, client_nick))
+		{
+			packet_maker_->ErrChanOPrivsNeeded(packet);
+			return ;
+		}
 
 		channel->setTopic(topic);
 		channel->setTopicSetter(client_nick);
