@@ -458,6 +458,13 @@ void	PacketManager::invite(struct Packet& packet)
 	
 	//1. validity check
 
+	//target is in server?
+	if (!client_manager_.getClientByNick(target_nick))
+	{
+		packet_maker_->ErrNoSuchNick(packet);
+		return ;
+	}
+
 	//chennel exits?
 	if (!channel_manager_.getChannelByName(channel_name))
 	{
@@ -494,20 +501,15 @@ void	PacketManager::invite(struct Packet& packet)
 
 	
 	// - 메시지를 보낸다.
-	int target_socket = client_manager_.getClientByNick(target_nick)->getSocket();
-	std::string inviting_msg = ":" + client_nick + " INVITE " + target_nick + " " + channel_name;
-	
-	if (send(target_socket, inviting_msg.c_str(), inviting_msg.size(), 0) == -1)
-	{
-		//error
-		return ;
-	}
+
 
 	//3. send message
 
 	// - RPL_INVITING
-	packet_maker_->RplInviting(packet);
 
+	packet_maker_->RplInviting(packet);
+	packet_maker_->msgToUser(packet, "INVITE",target_nick);
+	
 	return ;
 }
 
