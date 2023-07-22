@@ -711,8 +711,13 @@ void	PacketMaker::RplCreationTime(struct Packet& packet, Channel *channel)
 	message.setCommand("329");
 	message.addParam(client->getNickName());
 	message.addParam(channel_name);
-	message.setTrailing(channel_created_time);
+	
+	std::stringstream	ss;
+	ss << channel->getChannelCreatedTime();
+	std::string time_str = ss.str();
 
+	message.addParam(time_str);
+	
 	struct Packet pkt = {client->getSocket(), message};
 	sendPacket(pkt);
 }
