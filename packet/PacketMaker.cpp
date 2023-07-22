@@ -12,7 +12,7 @@ PacketMaker::~PacketMaker()
 
 void PacketMaker::log(struct Packet &packet)
 {
-	std::cout << "O(server to " << packet.client_socket << "): " << packet.message.toString() << std::endl;
+	std::cout << "[LOG] {irc.webserv -> " << packet.client_socket << "} - " << packet.message.toString();
 }
 
 void PacketMaker::sendPacket(struct Packet& packet)
@@ -264,11 +264,7 @@ void PacketMaker::RplNamReply(struct Packet& packet)
 	Message message;
 	std::string channel_name = packet.message.getTrailing();
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
-
-	// std::cout << "[INFO] client_manager_ : " << &client_manager_ << std::endl;
-	// std::cout << "[INFO] channel_manager_ : " << &channel_manager_ << std::endl;
-	// std::cout << "[DEBUG] RPlNamReply : " << packet.client_socket << ", " << client << ", " << channel_name << ", " << channel_manager_.getChannelByName(channel_name) << std::endl;
-
+  
 	message.setPrefix(SERVER_NAME);
 	message.setCommand(RPL_NAMREPLY);
 	message.addParam(client->getNickName());

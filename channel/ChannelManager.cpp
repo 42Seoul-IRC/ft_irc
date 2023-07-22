@@ -21,7 +21,7 @@ void	ChannelManager::createChannelByName(const std::string& channel_name)
 	}
 	Channel *temp = new Channel(channel_name);
 	channels_.insert(std::make_pair(channel_name, temp));
-	std::cout << "[INFO] Create channel : " << channel_name  << ", " << temp << std::endl;
+	std::cout << "[INFO] Channel created : " << channel_name  << ", " << temp << std::endl;
 }
 
 void	ChannelManager::addClientToChannel(const std::string& channel_name, const std::string& client_name)

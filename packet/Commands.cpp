@@ -14,9 +14,6 @@ void	PacketManager::pass(struct Packet& packet)
 {
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
 
-	// std::cout << "[DEBUG] Pass's client_manager_ : " << &client_manager_ << std::endl;
-	// std::cout << "[DEBUG] client's address : " << client << std::endl;
-
 	if (client->getIsPass())
 	{
 		packet_maker_->ErrAlreadyRegistred(packet);
@@ -227,7 +224,7 @@ void	PacketManager::ping(struct Packet& packet)
 
 void	PacketManager::join(struct Packet& packet)
 {
-/* // 패킷 만드는 부분 수정 필요할 듯 -> 같은 message에 addParams 호출중
+/*
 0. 파라미터가 1개 이상인지 -> 461 (ERR_NEEDMOREPARAMS)
 1. 해당 채널의 이름이 유효한지 (채널이 없으면 생성해줘야함)
 2. 해당 채널에 이미 현재 fd가 접속해 있는지 -> 무시

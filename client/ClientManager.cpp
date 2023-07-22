@@ -116,4 +116,6 @@ void	ClientManager::removeClient(int socket)
 	temp->removeClient();
 	
 	delete temp;
+
+	std::cout << "[INFO] ClientManager::removeClient : " << socket << " is removed." << std::endl;
 }
