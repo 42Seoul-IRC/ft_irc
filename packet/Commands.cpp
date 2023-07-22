@@ -53,8 +53,6 @@ void	PacketManager::nick(struct Packet& packet)
 
 	std::string old_nick = client->getNickName();
 	std::string new_nick = packet.message.getParams()[0];
-	std::cout << new_nick << std::endl;
-	std::cout << new_nick.size() << std::endl;
 	if (!client_manager_.isValidNickname(new_nick))
 	{
 		packet_maker_->ErrErroneusNickname(packet);
