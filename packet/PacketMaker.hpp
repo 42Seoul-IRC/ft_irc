@@ -41,7 +41,7 @@ class PacketMaker
 		void RplNamReply(struct Packet& packet);
 		void RplEndOfNames(struct Packet& packet);
 		void RplInviting(struct Packet& packet);
-		void RplChannelModeIs(struct Packet& packet, Channel *channel);
+		void RplChannelModeIs(struct Packet& packet, Channel *channel, std::string cur_mode_status);
 		void RplCreationTime(struct Packet& packet, Channel *channel);
 
 		// PASS Error
@@ -98,7 +98,6 @@ class PacketMaker
 		void BroadcastMode(Channel *channel, std::string changed_mode_buffer, std::string param_buffer);
 
 		// MODE Error
-		void ErrNeedMoreParams(struct Packet& packet, char mode);
 		void ErrNeedMoreParamsOp(struct Packet& packet);
 		void ErrNeedMoreParamsKey(struct Packet& packet);
 		void ErrNeedMoreParamsLimit(struct Packet& packet);

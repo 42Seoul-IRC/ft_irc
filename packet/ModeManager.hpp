@@ -42,6 +42,7 @@ class ModeManager
         void    setPacket(struct Packet packet);
 
         void    sendSuccessMsg();
+        std::string makeCurModeStatus();
 
 
         void    executeMode(char mode);

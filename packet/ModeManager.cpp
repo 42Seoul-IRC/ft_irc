@@ -97,6 +97,29 @@ void    ModeManager::sendSuccessMsg()
     packet_maker_->BroadcastMode(channel_, changed_mode_buffer, changed_param_buffer);
 }
 
+std::string ModeManager::makeCurModeStatus()
+{
+    std::string cur_mode_status = "";
+    cur_mode_status += '+';;
+    cur_mode_status += channel_->mode_;
+    //check key mode is on?
+    if (channel_->isOnChannelMode('k'))
+    {
+    cur_mode_status += " ";
+        std::stringstream ss;
+        ss << channel_->password_;
+        cur_mode_status += ss.str();
+    }
+    if (channel_->isOnChannelMode('l'))
+    {
+        cur_mode_status += " ";
+        std::stringstream ss;
+        ss << channel_->limit_;
+        cur_mode_status += ss.str();
+    }
+    return cur_mode_status;
+}
+
 void    ModeManager::setPacket(struct Packet packet)
 {
     this->packet = packet;
@@ -137,6 +160,12 @@ void    ModeManager::keyMode()
 {    
     if (mode_switch == '+')
     {
+        if (it_param == params->end())
+        {
+            packet_maker_->ErrNeedMoreParamsKey(packet);
+            return ;
+        }
+        
         std::string key = *it_param;
 
         //check space in key
@@ -169,6 +198,12 @@ void    ModeManager::keyMode()
 void    ModeManager::opMode()
 {
 
+    if (it_param == params->end())
+    {
+        packet_maker_->ErrNeedMoreParamsOp(packet);
+        return ;
+    }
+
     std::string nick = *it_param;
     if (!channel_->checkClientIsInChannel(nick))
     {
@@ -200,7 +235,12 @@ void    ModeManager::limitMode()
 {
     if (mode_switch == '+')
     {
-        
+        if (it_param == params->end())
+        {
+            packet_maker_->ErrNeedMoreParamsLimit(packet);
+            return ;
+        }
+ 
         std::string limit = *it_param; 
         std::stringstream ss(limit);
 
@@ -248,15 +288,10 @@ void    ModeManager::executeMode(char mode)
     else if (mode == 't' && canUpdate(mode))
         topicMode();
 
-    //check param is exist
-    if (isEndItParam())
-    {
-        // ERR_NEEDMOREPARAMS (461)
-        packet_maker_->ErrNeedMoreParams(packet, mode);
-        return ;
-    }
-
-    if (mode == 'k' && canUpdate(mode))
+    //Can't check param is exist
+    // Because some mode don't need param when mode_switch is '-'
+    
+    else if (mode == 'k' && canUpdate(mode))
         keyMode();
     else if (mode == 'o' && canUpdate(mode))
         opMode();
@@ -299,6 +334,7 @@ void	PacketManager::mode(struct Packet& packet)
     std::string channel_name = *mode_manager.getItParam();
     Channel *channel = channel_manager_.getChannelByName(channel_name);
     mode_manager.incrementItParam();
+    mode_manager.setChannel(channel);
 
     
     // check if channel start with #
@@ -330,7 +366,7 @@ void	PacketManager::mode(struct Packet& packet)
     // RPL_CREATIONTIME (329)
     if (mode_manager.isEndItParam())
     {
-        packet_maker_->RplChannelModeIs(packet, channel);
+        packet_maker_->RplChannelModeIs(packet, channel, mode_manager.makeCurModeStatus());
         packet_maker_->RplCreationTime(packet, channel);
         return ;
     }
@@ -342,7 +378,6 @@ void	PacketManager::mode(struct Packet& packet)
         packet_maker_->ErrChanOPrivsNeeded(packet);
         return ;
     }
-    mode_manager.setChannel(channel);
     mode_manager.setClient(client);
     mode_manager.setPacketMaker(packet_maker_);
     mode_manager.setPacket(packet);
@@ -367,13 +402,4 @@ void	PacketManager::mode(struct Packet& packet)
         mode_manager.executeMode(mode);
         mode_manager.printMode();
     }
-}
-
-
-void    ModeManager::printMode()
-{
-    std::cout << "mode_switch: " << mode_switch << std::endl;
-    std::cout << "current_mode: " << channel_->mode_ << std::endl;
-    std::cout << "changed_mode_buffer: " << changed_mode_buffer << std::endl;
-    std::cout << "changed_param_buffer: " << changed_param_buffer << std::endl;
 }

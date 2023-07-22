@@ -680,7 +680,7 @@ void PacketMaker::msgToUser(struct Packet& packet, const std::string command, st
 //MODE
 //RPL_CHANNELMODEIS (324)
 
-void	PacketMaker::RplChannelModeIs(struct Packet& packet, Channel *channel)
+void	PacketMaker::RplChannelModeIs(struct Packet& packet, Channel *channel, std::string cur_mode_stat)
 {
 	Message message;
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
@@ -691,7 +691,7 @@ void	PacketMaker::RplChannelModeIs(struct Packet& packet, Channel *channel)
 	message.setCommand("324");
 	message.addParam(client->getNickName());
 	message.addParam(channel_name);
-	message.setTrailing(channel_mode);
+	message.setTrailing(cur_mode_stat);
 
 	struct Packet pkt = {client->getSocket(), message};
 	sendPacket(pkt);
@@ -792,14 +792,3 @@ void	PacketMaker::ErrNeedMoreParamsOp(struct Packet& packet)
 	struct Packet pkt = {client->getSocket(), message};
 	sendPacket(pkt);
 }
-
-void PacketMaker::ErrNeedMoreParams(struct Packet& packet, char mode)
-{
-	if (mode == 'l')
-		ErrNeedMoreParamsLimit(packet);
-	else if (mode == 'k')
-		ErrNeedMoreParamsKey(packet);
-	else if (mode == 'o')
-		ErrNeedMoreParamsOp(packet);
-}
-
