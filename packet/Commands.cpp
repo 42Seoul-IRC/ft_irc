@@ -14,6 +14,9 @@ void	PacketManager::pass(struct Packet& packet)
 {
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
 
+	std::cout << "[DEBUG] Pass's client_manager_ : " << &client_manager_ << std::endl;
+	std::cout << "[DEBUG] client's address : " << client << std::endl;
+
 	if (client->getIsPass())
 	{
 		packet_maker_->ErrAlreadyRegistred(packet);
@@ -224,7 +227,7 @@ void	PacketManager::ping(struct Packet& packet)
 
 void	PacketManager::join(struct Packet& packet)
 {
-/*
+/* // 패킷 만드는 부분 수정 필요할 듯 -> 같은 message에 addParams 호출중
 0. 파라미터가 1개 이상인지 -> 461 (ERR_NEEDMOREPARAMS)
 1. 해당 채널의 이름이 유효한지 (채널이 없으면 생성해줘야함)
 2. 해당 채널에 이미 현재 fd가 접속해 있는지 -> 무시
@@ -463,7 +466,7 @@ void	PacketManager::invite(struct Packet& packet)
 	}
 	
 	//- 명령어를 보낸 사용자가 채널 안에 존재하는가?
-	if (channel_manager_.checkClientIsInChannel(channel_name, client_nick))
+	if (!channel_manager_.checkClientIsInChannel(channel_name, client_nick))
 	{
 		packet_maker_->ErrNotOnChannel(packet);
 		return ;
@@ -478,7 +481,7 @@ void	PacketManager::invite(struct Packet& packet)
 	}
 
 	// - 사용자가 이미 채널에 존재하는가?
-	if (!channel_manager_.checkClientIsInChannel(channel_name, target_nick))
+	if (channel_manager_.checkClientIsInChannel(channel_name, target_nick))
 	{
 		packet_maker_->ErrUserOnChannel(packet);
 		return ;
@@ -504,6 +507,7 @@ void	PacketManager::invite(struct Packet& packet)
 
 	// - RPL_INVITING
 	packet_maker_->RplInviting(packet);
+
 	return ;
 }
 
@@ -575,7 +579,7 @@ void	PacketManager::topic(struct Packet& packet)
 	//2. business logic
 
 	std::string topic = packet.message.getTrailing();
-	if (topic.size() != 0)
+	if (topic.empty() != 0)
 	{
 
 
@@ -589,9 +593,10 @@ void	PacketManager::topic(struct Packet& packet)
 		packet_maker_->Broadcast(packet, channel_name);
 		return ;
 	}
+	else
 	{
 		topic = channel->getTopic();
-		if (topic.size() != 1)
+		if (topic.empty() != 0)
 		{
 			packet_maker_->RplTopic(packet);
 			packet_maker_->RplTopicWhoTime(packet);
