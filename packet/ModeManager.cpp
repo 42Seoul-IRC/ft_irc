@@ -61,9 +61,45 @@ void    ModeManager::incrementItParam()
 
 void    ModeManager::pushBackChangedBuffer(std::string buffer)
 {
-    if (changed_mode_buffer.size() != 0)
-        changed_mode_buffer += " ";
-    changed_mode_buffer += mode_switch;
+    // changed_mode_buffer의 맨 마지막 부터 +나 -를 탐색한다. 
+    // 없으면, 그냥 추가한다.
+    // +가 있는데, mode_switch가 +이면, 그냥 추가한다.
+    // +가 있는데, mode_switch가 -이면, -를 추가한다. 
+    // -가 있는데, mode_switch가 +이면, +를 추가한다.
+    // -가 있는데, mode_switch가 -이면, 그냥 추가한다.
+
+    // 뒤에서 부터 한 글자씩, 확인하며 +나 -가 있는지 확인하는 if문 작성해줘
+    int i = changed_mode_buffer.size() - 1;
+    for (; i >= 0; i--)
+    {
+        if (changed_mode_buffer[i] == '+')
+        {
+            if (mode_switch == '+')
+            {
+                break;
+            }
+            else if (mode_switch == '-')
+            {
+                changed_mode_buffer += mode_switch;
+                break;  
+            }
+        }
+        if (changed_mode_buffer[i] == '-')
+        {
+            if (mode_switch == '+')
+            {
+                changed_mode_buffer += mode_switch;
+                break;
+            }
+            else if (mode_switch == '-')
+            {
+                break;
+            }
+        }
+    }
+
+    if (i == -1)
+        changed_mode_buffer += mode_switch;
     changed_mode_buffer += buffer;
 }
 
