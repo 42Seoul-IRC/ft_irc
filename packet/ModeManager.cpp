@@ -18,9 +18,9 @@ bool    ModeManager::canUpdate(char mode)
     //check when mode_switch is +, there don't exists mode
     //check when mode_switch is -, there exists mode
     
-    if (channel_->isOnChannelMode(mode) && mode_switch == '+' )
+    if (!channel_->isOnChannelMode(mode) && mode_switch == '+' )
         return true;
-    else if (!channel_->isOnChannelMode(mode) && mode_switch == '-' )
+    else if (channel_->isOnChannelMode(mode) && mode_switch == '-' )
         return true;
     else
         return false;
@@ -357,16 +357,29 @@ void	PacketManager::mode(struct Packet& packet)
 	//business logic
 
     std::string mode_string = *mode_manager.getItParam();
-    std::stringstream ss(mode_string);
+    mode_manager.incrementItParam();
+    std::stringstream ss;
+    
+    ss << mode_string;
     char mode;
-
     while (ss >> mode)
     {
+
         if (mode == '+' || mode == '-')
         {
             mode_manager.setModeSwitch(mode);
             continue;
         }
         mode_manager.executeMode(mode);
+        mode_manager.printMode();
     }
+}
+
+
+void    ModeManager::printMode()
+{
+    std::cout << "mode_switch: " << mode_switch << std::endl;
+    std::cout << "current_mode: " << channel_->mode_ << std::endl;
+    std::cout << "changed_mode_buffer: " << changed_mode_buffer << std::endl;
+    std::cout << "changed_param_buffer: " << changed_param_buffer << std::endl;
 }
