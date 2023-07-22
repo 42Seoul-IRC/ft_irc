@@ -653,7 +653,7 @@ void PacketMaker::msgToUser(struct Packet& packet, const std::string command, st
 	message.setPrefix(client->getHost());
 	message.setCommand(command);
 	message.addParam(target_nick);
-	message.setTrailing(packet.message.getTrailing());
+	message.setTrailing(packet.message.getParams()[1]);
 
 	struct Packet pkt = {client_manager_.getClientByNick(target_nick)->getSocket(), message};
 	sendPacket(pkt);
