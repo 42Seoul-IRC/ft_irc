@@ -228,6 +228,21 @@ void PacketMaker::RplTopic(struct Packet& packet)
 	message.setTrailing(packet.message.getTrailing());
 
 	struct Packet pkt = {client->getSocket(), message};
+	sendPacket(pkt);
+}
+
+void PacketMaker::RplTopic(struct Packet& packet, std::string pre_topic)
+{
+	Message message;
+	Client *client = client_manager_.getClientBySocket(packet.client_socket);
+
+	message.setPrefix(SERVER_NAME);
+	message.setCommand(RPL_TOPIC);
+	message.addParam(client->getNickName());
+	message.addParam(packet.message.getParams()[0]);
+	message.setTrailing(pre_topic);
+
+	struct Packet pkt = {client->getSocket(), message};
 	sendPacket(pkt);	
 }
 
@@ -245,11 +260,11 @@ void PacketMaker::RplTopicWhoTime(struct Packet& packet)
 	message.addParam(channel->getTopicSetter());
 
 	
-	std::stringstream	ss(channel->getTopicSetTime());
-	std::string time_str;
+	std::stringstream	ss;
+	ss << channel->getTopicSetTime();
+	std::string time_str = ss.str();
 
-	ss >>time_str;	
-	message.setTrailing(time_str);
+	message.addParam(time_str);
 
 	struct Packet pkt = {client->getSocket(), message};
 	sendPacket(pkt);	
