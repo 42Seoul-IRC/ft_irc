@@ -108,7 +108,7 @@ void Server::successHandler(int socket)
 			std::vector<Message> messages = Message::parse(buffer);
 			for (std::vector<Message>::iterator it = messages.begin(); it != messages.end(); it++)
 			{
-				std::cout << *it << std::endl;
+				std::cout << "I(" << socket << " to server): " << (*it).toString() << std::endl;
 			 	struct Packet packet = {socket, *it};
 				packet_queue.push_back(packet);
 			}

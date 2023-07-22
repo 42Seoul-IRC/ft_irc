@@ -14,6 +14,7 @@ class PacketMaker
 		ChannelManager& channel_manager_;
 		struct Packet packet;
 
+		void log(struct Packet& packet);
 		void sendPacket(struct Packet& packet);
 		void sendPacket(Message message, Channel *channel);
 		void sendPacket(Message message, Channel *channel, std::string exclude_nick);
