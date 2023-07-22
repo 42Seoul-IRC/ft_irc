@@ -13,6 +13,8 @@ public:
 	std::map<int, Client *> socket_clients_;
 	std::map<std::string, Client *> nick_clients_;
 
+	~ClientManager();
+
 	void addClientBySocket(int socket);
 	Client *getClientBySocket(int socket);
 	Client *getClientByNick(std::string nick);

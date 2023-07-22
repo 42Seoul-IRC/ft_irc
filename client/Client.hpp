@@ -3,6 +3,7 @@
 
 #include <string>
 #include <set>
+#include <iostream>
 #include <unistd.h>
 #include <arpa/inet.h>
 
@@ -18,6 +19,7 @@ class Client {
 
 	public:
 		Client(int socket);
+		~Client();
 		
 		int	getSocket(void) const;
 		std::string	getNickName(void);

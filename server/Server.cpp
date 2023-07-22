@@ -17,7 +17,7 @@ void Server::init(char* port, char* password)
 	catch (std::exception &e)
 	{
 		std::cerr << e.what() << std::endl;
-		return ;
+		exit(EXIT_FAILURE);
 	}
 
 	addSocket(server_socket_.getSocket());
@@ -108,7 +108,7 @@ void Server::successHandler(int socket)
 			std::vector<Message> messages = Message::parse(buffer);
 			for (std::vector<Message>::iterator it = messages.begin(); it != messages.end(); it++)
 			{
-				std::cout << *it << std::endl;
+				std::cout << "[LOG] {" << socket << " -> irc.webserv} - " << (*it).toString();
 			 	struct Packet packet = {socket, *it};
 				packet_queue.push_back(packet);
 			}
@@ -116,6 +116,7 @@ void Server::successHandler(int socket)
 		else
 		{
 			close(socket);
+			std::cout << "[INFO] Client disconnected : " << socket << std::endl;
 		}
 	}
 }
@@ -137,10 +138,12 @@ void Server::errorHandler(int socket)
 			struct Packet quit = {socket, message};
 
 			packet_manager_.execute(quit);
+			std::cout << "[INFO] Client disconnected : " << socket << std::endl;
 		}
 		else
 		{
 			close(socket);
+			std::cout << "[INFO] Client disconnected : " << socket << std::endl;
 		}
 	}
 }

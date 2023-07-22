@@ -8,6 +8,13 @@ Client::Client(int socket)
 	hostname_ = "";
 	is_pass_ = false;
 	is_authenticated_ = false;
+	std::cout << "[INFO] Client created : " << client_socket_ << ", " << this << std::endl;
+}
+
+Client::~Client()
+{
+	close(client_socket_);
+	channels_.clear();
 }
 
 int Client::getSocket(void) const

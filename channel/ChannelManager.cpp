@@ -1,6 +1,17 @@
 #include "ChannelManager.hpp"
 #include <iostream>
 
+ChannelManager::~ChannelManager()
+{
+	std::map<std::string, Channel*>::iterator it;
+
+	for (it = channels_.begin(); it != channels_.end(); it++)
+	{
+		delete it->second;
+	}
+	channels_.clear();
+}
+
 void	ChannelManager::createChannelByName(const std::string& channel_name)
 {
 	if (channels_.find(channel_name) != channels_.end())
@@ -10,7 +21,7 @@ void	ChannelManager::createChannelByName(const std::string& channel_name)
 	}
 	Channel *temp = new Channel(channel_name);
 	channels_.insert(std::make_pair(channel_name, temp));
-	std::cout << "[INFO] Create channel : " << channel_name  << ", " << temp << std::endl;
+	std::cout << "[INFO] Channel created : " << channel_name  << ", " << temp << std::endl;
 }
 
 void	ChannelManager::addClientToChannel(const std::string& channel_name, const std::string& client_name)
