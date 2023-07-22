@@ -66,7 +66,7 @@ bool	ClientManager::isValidNickname(std::string nick)
 		return (false);
 	for (std::string::iterator it = nick.begin(); it != nick.end(); it++)
 	{
-		if (!std::isprint(*it))
+		if (!std::isprint(*it) || *it == ',')
 			return (false);
 	}
 	
