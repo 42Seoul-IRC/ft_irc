@@ -722,17 +722,18 @@ void	PacketMaker::RplCreationTime(struct Packet& packet, Channel *channel)
 	sendPacket(pkt);
 }
 
-void	PacketMaker::BroadcastMode(Channel *channel, std::string changed_mode_buffer, std::string param_buffer)
+void	PacketMaker::BroadcastMode(struct Packet& packet, std::string changed_mode_buffer, std::string param_buffer)
 {
 	Message message;
-	std::string channel_name = channel->getChannelName();
+	std::string channel_name = packet.message.getParams()[0];
 
-	message.setPrefix(SERVER_NAME);
+	message.setPrefix(client_manager_.getClientBySocket(packet.client_socket)->getHost());
 	message.setCommand("MODE");
 	message.addParam(channel_name);
 	message.addParam(changed_mode_buffer);
-	message.addParam(param_buffer);
+	message.setTrailing(param_buffer);
 
+	sendPacket(message, channel_manager_.getChannelByName(channel_name));
 }
 
 //696 :irc.local 696 one #a l * :You must specify a parameter for the limit mode. Syntax: <limit>.

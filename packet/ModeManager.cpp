@@ -92,9 +92,7 @@ void    ModeManager::setPacketMaker(PacketMaker *packet_maker)
 
 void    ModeManager::sendSuccessMsg()
 {
-    // RPL_CHANNELMODEIS (324)
-    // RPL_CREATIONTIME (329)
-    packet_maker_->BroadcastMode(channel_, changed_mode_buffer, changed_param_buffer);
+    packet_maker_->BroadcastMode(packet, changed_mode_buffer, changed_param_buffer);
 }
 
 std::string ModeManager::makeCurModeStatus()
@@ -400,7 +398,7 @@ void	PacketManager::mode(struct Packet& packet)
             continue;
         }
         mode_manager.executeMode(mode);
-        mode_manager.printMode();
+        // mode_manager.printMode();
     }
 }
 
