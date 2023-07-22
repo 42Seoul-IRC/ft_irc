@@ -558,15 +558,15 @@ void PacketMaker::BroadcastJoin(struct Packet& packet)
 	sendPacket(message, channel_manager_.getChannelByName(packet.message.getTrailing()));
 }
 
-void PacketMaker::Broadcast(struct Packet& packet, std::string cmd)
+void PacketMaker::BroadcastTopic(struct Packet& packet)
 {
 	Message message;
 
 	message.setPrefix(client_manager_.getClientBySocket(packet.client_socket)->getHost());
-	message.setCommand(cmd);
+	message.setCommand("TOPIC");
+	message.addParam(packet.message.getParams()[0]);
 	message.setTrailing(packet.message.getTrailing());
-
-	sendPacket(message, channel_manager_.getChannelByName(packet.message.getTrailing()));
+	sendPacket(message, channel_manager_.getChannelByName(packet.message.getParams()[0]));
 }
 
 void PacketMaker::ErrBadChanMask(struct Packet& packet)
@@ -634,6 +634,7 @@ void PacketMaker::ErrUserOnChannel(struct Packet& packet)
 	std::string target_nick = packet.message.getParams()[0];
 	std::string channel_name = packet.message.getParams()[1];
 
+	message.setPrefix(SERVER_NAME);
 	message.setCommand(ERR_USERONCHANNEL);
 	message.addParam(client->getHostName());
 	message.addParam(client->getNickName());
