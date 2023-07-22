@@ -71,7 +71,9 @@ class PacketMaker
 		// PING Success
 		Message Ping(struct Packet& packet);
 		
-		void Broadcast(struct Packet& packet, std::string cmd);
+
+		// TOPIC 		
+		void BroadcastTopic(struct Packet& packet);
 
 		// JOIN Error
 		void ErrBadChannelKey(struct Packet& packet);

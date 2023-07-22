@@ -533,7 +533,7 @@ void	PacketManager::topic(struct Packet& packet)
 		return ;
 	}
 
-	if ( packet.message.getParams().size() != 1 || packet.message.getTrailing().size() != 0)
+	if (packet.message.getParams().size() != 1)
 	{
 		// ERR_NEEDMOREPARAMS
 		packet_maker_->ErrNeedMoreParams(packet);
@@ -581,7 +581,7 @@ void	PacketManager::topic(struct Packet& packet)
 	//2. business logic
 
 	std::string topic = packet.message.getTrailing();
-	if (topic.empty() != 0)
+	if (!topic.empty())
 	{
 
 
@@ -592,13 +592,13 @@ void	PacketManager::topic(struct Packet& packet)
 		// packet_maker_->RplTopic(packet);
 		// packet_maker_->RplTopicWhoTime(packet);		
 		
-		packet_maker_->Broadcast(packet, channel_name);
+		packet_maker_->BroadcastTopic(packet);
 		return ;
 	}
 	else
 	{
-		topic = channel->getTopic();
-		if (topic.empty() != 0)
+		std::string pre_topic = channel->getTopic();
+		if (pre_topic.empty() != 0)
 		{
 			packet_maker_->RplTopic(packet);
 			packet_maker_->RplTopicWhoTime(packet);
