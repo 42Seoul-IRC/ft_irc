@@ -60,9 +60,7 @@ bool	ClientManager::clientIsInServer(std::string nick)
 
 bool	ClientManager::isValidNickname(std::string nick)
 {
-	if (nick.length() > 9)
-		return (false);
-	if (nick.find_first_not_of(FIRST_CHARACTER) != std::string::npos)
+	if (nick.length() > 9 || nick.length() == 0)
 		return (false);
 	for (std::string::iterator it = nick.begin(); it != nick.end(); it++)
 	{
