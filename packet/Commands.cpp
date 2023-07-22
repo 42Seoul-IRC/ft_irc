@@ -93,7 +93,7 @@ void	PacketManager::nick(struct Packet& packet)
 		{
 			(*it)->changeClientInfo(old_nick, new_nick);
 
-			packet_maker_->sendPacket(message, (*it), new_nick);
+			packet_maker_->sendPacket(message, (*it)->getChannelName(), new_nick);
 		}
 	}
 }
@@ -207,7 +207,7 @@ void	PacketManager::quit(struct Packet& packet)
 
 		Message message = packet_maker_->Quit(packet);
 
-		packet_maker_->sendPacket(message, channel);
+		packet_maker_->sendPacket(message, channel->getChannelName());
 	}
 
 	client_manager_.removeClient(client->getSocket());
