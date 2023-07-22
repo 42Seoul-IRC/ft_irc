@@ -36,6 +36,7 @@ class PacketMaker
 		void RplWelcome(struct Packet& packet);
 		void RplNoTopic(struct Packet& packet);
 		void RplTopic(struct Packet& packet);
+		void RplTopic(struct Packet& packet, std::string pre_topic);
 		void RplTopicWhoTime(struct Packet& packet);
 		void RplNamReply(struct Packet& packet);
 		void RplEndOfNames(struct Packet& packet);
