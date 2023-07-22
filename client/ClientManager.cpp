@@ -62,6 +62,8 @@ bool	ClientManager::isValidNickname(std::string nick)
 {
 	if (nick.length() > 9 || nick.length() == 0)
 		return (false);
+	if (nick[0] == '#')
+		return (false);
 	for (std::string::iterator it = nick.begin(); it != nick.end(); it++)
 	{
 		if (!std::isprint(*it))
