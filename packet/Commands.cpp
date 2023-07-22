@@ -455,6 +455,13 @@ void	PacketManager::invite(struct Packet& packet)
 	
 	//1. validity check
 
+	//target is in server?
+	if (!client_manager_.getClientByNick(target_nick))
+	{
+		packet_maker_->ErrNoSuchNick(packet);
+		return ;
+	}
+
 	//chennel exits?
 	if (!channel_manager_.getChannelByName(channel_name))
 	{
@@ -463,7 +470,7 @@ void	PacketManager::invite(struct Packet& packet)
 	}
 	
 	//- 명령어를 보낸 사용자가 채널 안에 존재하는가?
-	if (channel_manager_.checkClientIsInChannel(channel_name, client_nick))
+	if (!channel_manager_.checkClientIsInChannel(channel_name, client_nick))
 	{
 		packet_maker_->ErrNotOnChannel(packet);
 		return ;
@@ -478,7 +485,7 @@ void	PacketManager::invite(struct Packet& packet)
 	}
 
 	// - 사용자가 이미 채널에 존재하는가?
-	if (!channel_manager_.checkClientIsInChannel(channel_name, target_nick))
+	if (channel_manager_.checkClientIsInChannel(channel_name, target_nick))
 	{
 		packet_maker_->ErrUserOnChannel(packet);
 		return ;
@@ -491,19 +498,15 @@ void	PacketManager::invite(struct Packet& packet)
 
 	
 	// - 메시지를 보낸다.
-	int target_socket = client_manager_.getClientByNick(target_nick)->getSocket();
-	std::string inviting_msg = ":" + client_nick + " INVITE " + target_nick + " " + channel_name;
-	
-	if (send(target_socket, inviting_msg.c_str(), inviting_msg.size(), 0) == -1)
-	{
-		//error
-		return ;
-	}
+
 
 	//3. send message
 
 	// - RPL_INVITING
+
 	packet_maker_->RplInviting(packet);
+	packet_maker_->msgToUser(packet, "INVITE",target_nick);
+	
 	return ;
 }
 
@@ -527,7 +530,7 @@ void	PacketManager::topic(struct Packet& packet)
 		return ;
 	}
 
-	if ( packet.message.getParams().size() != 1 || packet.message.getTrailing().size() != 0)
+	if (packet.message.getParams().size() != 1)
 	{
 		// ERR_NEEDMOREPARAMS
 		packet_maker_->ErrNeedMoreParams(packet);
@@ -561,23 +564,23 @@ void	PacketManager::topic(struct Packet& packet)
 
 	
 
-	// ### **오류 482: ERR_CHANOPRIVSNEEDED**
 
-	// **오류 메시지 형식**: **`<client> <channel> :You're not channel operator`오류 이유**: 클라이언트가 적절한 채널 권한이 없어 명령이 실패했다는 것을 나타냅니다.
-	// **오류 코드**: **`482`**
-	if (channel->isOnChannelMode(MODE_TOPIC) && !channel_manager_.checkClientIsOperator(channel_name, client_nick))
-	{
-		packet_maker_->ErrChanOPrivsNeeded(packet);
-		return ;
-	}
 
 
 	//2. business logic
 
 	std::string topic = packet.message.getTrailing();
-	if (topic.size() != 0)
+	if (!topic.empty())
 	{
+		// ### **오류 482: ERR_CHANOPRIVSNEEDED**
 
+		// **오류 메시지 형식**: **`<client> <channel> :You're not channel operator`오류 이유**: 클라이언트가 적절한 채널 권한이 없어 명령이 실패했다는 것을 나타냅니다.
+		// **오류 코드**: **`482`**
+		if (channel->isOnChannelMode(MODE_TOPIC) && !channel_manager_.checkClientIsOperator(channel_name, client_nick))
+		{
+			packet_maker_->ErrChanOPrivsNeeded(packet);
+			return ;
+		}
 
 		channel->setTopic(topic);
 		channel->setTopicSetter(client_nick);
@@ -586,14 +589,15 @@ void	PacketManager::topic(struct Packet& packet)
 		// packet_maker_->RplTopic(packet);
 		// packet_maker_->RplTopicWhoTime(packet);		
 		
-		packet_maker_->Broadcast(packet, channel_name);
+		packet_maker_->BroadcastTopic(packet);
 		return ;
 	}
+	else
 	{
-		topic = channel->getTopic();
-		if (topic.size() != 1)
+		std::string pre_topic = channel->getTopic();
+		if (!pre_topic.empty())
 		{
-			packet_maker_->RplTopic(packet);
+			packet_maker_->RplTopic(packet, pre_topic);
 			packet_maker_->RplTopicWhoTime(packet);
 		} 
 		else

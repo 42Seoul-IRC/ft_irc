@@ -22,6 +22,7 @@ class ModeManager
 
     public:
         ModeManager();
+		~ModeManager();
         void    setModeSwitch(char mode_switch);
 
         void    setParams(std::vector<std::string> *params);
@@ -42,6 +43,7 @@ class ModeManager
         void    setPacket(struct Packet packet);
 
         void    sendSuccessMsg();
+        std::string makeCurModeStatus();
 
 
         void    executeMode(char mode);
@@ -54,4 +56,6 @@ class ModeManager
         void    limitMode();
 
         void    noMode();
+
+        void    printMode();
 };

@@ -36,11 +36,12 @@ class PacketMaker
 		void RplWelcome(struct Packet& packet);
 		void RplNoTopic(struct Packet& packet);
 		void RplTopic(struct Packet& packet);
+		void RplTopic(struct Packet& packet, std::string pre_topic);
 		void RplTopicWhoTime(struct Packet& packet);
 		void RplNamReply(struct Packet& packet);
 		void RplEndOfNames(struct Packet& packet);
 		void RplInviting(struct Packet& packet);
-		void RplChannelModeIs(struct Packet& packet, Channel *channel);
+		void RplChannelModeIs(struct Packet& packet, Channel *channel, std::string cur_mode_status);
 		void RplCreationTime(struct Packet& packet, Channel *channel);
 
 		// PASS Error
@@ -71,7 +72,9 @@ class PacketMaker
 		// PING Success
 		Message Ping(struct Packet& packet);
 		
-		void Broadcast(struct Packet& packet, const std::string& cmd);
+		
+		void BroadcastTopic(struct Packet& packet);
+
 
 		// JOIN Error
 		void ErrBadChannelKey(struct Packet& packet);
@@ -91,8 +94,14 @@ class PacketMaker
 
 		// INVITE Error
 		void ErrUserOnChannel(struct Packet& packet);
+		void msgToUser(struct Packet& packet, const std::string command, std::string target_nick);
+		void BroadcastMode(struct Packet& packet, std::string changed_mode_buffer, std::string param_buffer);
 
-		void BroadcastMode(Channel *channel, std::string changed_mode_buffer, std::string param_buffer);
+		// MODE Error
+		void ErrNeedMoreParamsOp(struct Packet& packet);
+		void ErrNeedMoreParamsKey(struct Packet& packet);
+		void ErrNeedMoreParamsLimit(struct Packet& packet);
+
 };
 
 #endif

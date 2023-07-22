@@ -186,6 +186,7 @@ void PacketMaker::ErrChanOPrivsNeeded(struct Packet& packet)
 	message.setPrefix(SERVER_NAME);
 	message.setCommand(ERR_CHANOPRIVSNEEDED);
 	message.addParam(client->getNickName());
+	message.addParam(packet.message.getParams()[0]);
 	message.setTrailing(ERR_CHANOPRIVSNEEDED_MSG);
 
 	struct Packet pkt = {client->getSocket(), message};
@@ -211,6 +212,7 @@ void PacketMaker::RplNoTopic(struct Packet& packet)
 	Message message;
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
 
+	message.setPrefix(SERVER_NAME);
 	message.setCommand(RPL_NOTOPIC);
 	message.addParam(client->getHostName());
 	message.addParam(client->getNickName());
@@ -233,6 +235,21 @@ void PacketMaker::RplTopic(struct Packet& packet)
 	message.setTrailing(packet.message.getTrailing());
 
 	struct Packet pkt = {client->getSocket(), message};
+	sendPacket(pkt);
+}
+
+void PacketMaker::RplTopic(struct Packet& packet, std::string pre_topic)
+{
+	Message message;
+	Client *client = client_manager_.getClientBySocket(packet.client_socket);
+
+	message.setPrefix(SERVER_NAME);
+	message.setCommand(RPL_TOPIC);
+	message.addParam(client->getNickName());
+	message.addParam(packet.message.getParams()[0]);
+	message.setTrailing(pre_topic);
+
+	struct Packet pkt = {client->getSocket(), message};
 	sendPacket(pkt);	
 }
 
@@ -243,17 +260,18 @@ void PacketMaker::RplTopicWhoTime(struct Packet& packet)
 	std::string channel_name = packet.message.getParams()[0];
 	Channel *channel = channel_manager_.getChannelByName(channel_name);
 
+	message.setPrefix(SERVER_NAME);
 	message.setCommand(RPL_TOPICWHOTIME);
-	message.addParam(client->getHostName());
 	message.addParam(client->getNickName());
 	message.addParam(channel_name);
 	message.addParam(channel->getTopicSetter());
 
-	std::stringstream	ss(channel->getTopicSetTime());
-	std::string time_str;
+	
+	std::stringstream	ss;
+	ss << channel->getTopicSetTime();
+	std::string time_str = ss.str();
 
-	ss >>time_str;	
-	message.setTrailing(time_str);
+	message.addParam(time_str);
 
 	struct Packet pkt = {client->getSocket(), message};
 	sendPacket(pkt);	
@@ -298,12 +316,13 @@ void PacketMaker::RplInviting(struct Packet& packet)
 	std::string target_nick = packet.message.getParams()[0];
 	std::string channel_name = packet.message.getParams()[1];
 
+	message.setPrefix(SERVER_NAME);
 	message.setCommand(RPL_INVITING);
-	message.addParam(client->getHostName());
 	message.addParam(client->getNickName());
 	message.addParam(target_nick);
-	message.addParam(channel_name);
-	message.setTrailing("Inviting " + target_nick + " to " + channel_name);
+	message.setTrailing(channel_name);
+	// message.addParam(channel_name);
+	// message.setTrailing("Inviting " + target_nick + " to " + channel_name);
 
 	struct Packet pkt = {client->getSocket(), message};
 	sendPacket(pkt);
@@ -566,15 +585,17 @@ void PacketMaker::BroadcastJoin(struct Packet& packet)
 	sendPacket(message, packet.message.getTrailing());
 }
 
-void PacketMaker::Broadcast(struct Packet& packet, const std::string& cmd)
+
+void PacketMaker::BroadcastTopic(struct Packet& packet)
+
 {
 	Message message;
 
 	message.setPrefix(client_manager_.getClientBySocket(packet.client_socket)->getHost());
-	message.setCommand(cmd);
+	message.setCommand("TOPIC");
+	message.addParam(packet.message.getParams()[0]);
 	message.setTrailing(packet.message.getTrailing());
-
-	sendPacket(message, packet.message.getTrailing());
+	sendPacket(message, packet.message.getParams()[0]);
 }
 
 void PacketMaker::ErrBadChanMask(struct Packet& packet)
@@ -642,6 +663,7 @@ void PacketMaker::ErrUserOnChannel(struct Packet& packet)
 	std::string target_nick = packet.message.getParams()[0];
 	std::string channel_name = packet.message.getParams()[1];
 
+	message.setPrefix(SERVER_NAME);
 	message.setCommand(ERR_USERONCHANNEL);
 	message.addParam(client->getHostName());
 	message.addParam(client->getNickName());
@@ -653,10 +675,24 @@ void PacketMaker::ErrUserOnChannel(struct Packet& packet)
 	sendPacket(pkt);
 }
 
+void PacketMaker::msgToUser(struct Packet& packet, const std::string command, std::string target_nick)
+{
+	Message message;
+	Client *client = client_manager_.getClientBySocket(packet.client_socket);
+
+	message.setPrefix(client->getHost());
+	message.setCommand(command);
+	message.addParam(target_nick);
+	message.setTrailing(packet.message.getParams()[1]);
+
+	struct Packet pkt = {client_manager_.getClientByNick(target_nick)->getSocket(), message};
+	sendPacket(pkt);
+}
+
 //MODE
 //RPL_CHANNELMODEIS (324)
 
-void	PacketMaker::RplChannelModeIs(struct Packet& packet, Channel *channel)
+void	PacketMaker::RplChannelModeIs(struct Packet& packet, Channel *channel, std::string cur_mode_stat)
 {
 	Message message;
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
@@ -667,7 +703,7 @@ void	PacketMaker::RplChannelModeIs(struct Packet& packet, Channel *channel)
 	message.setCommand("324");
 	message.addParam(client->getNickName());
 	message.addParam(channel_name);
-	message.setTrailing(channel_mode);
+	message.setTrailing(cur_mode_stat);
 
 	struct Packet pkt = {client->getSocket(), message};
 	sendPacket(pkt);
@@ -687,21 +723,85 @@ void	PacketMaker::RplCreationTime(struct Packet& packet, Channel *channel)
 	message.setCommand("329");
 	message.addParam(client->getNickName());
 	message.addParam(channel_name);
-	message.setTrailing(channel_created_time);
+	
+	std::stringstream	ss;
+	ss << channel->getChannelCreatedTime();
+	std::string time_str = ss.str();
+
+	message.addParam(time_str);
+	
+	struct Packet pkt = {client->getSocket(), message};
+	sendPacket(pkt);
+}
+
+void	PacketMaker::BroadcastMode(struct Packet& packet, std::string changed_mode_buffer, std::string param_buffer)
+{
+	Message message;
+	std::string channel_name = packet.message.getParams()[0];
+
+	message.setPrefix(client_manager_.getClientBySocket(packet.client_socket)->getHost());
+	message.setCommand("MODE");
+	message.addParam(channel_name);
+	message.addParam(changed_mode_buffer);
+	message.setTrailing(param_buffer);
+
+	sendPacket(message, channel_name);
+}
+
+//696 :irc.local 696 one #a l * :You must specify a parameter for the limit mode. Syntax: <limit>.
+
+void	PacketMaker::ErrNeedMoreParamsLimit(struct Packet& packet)
+{
+	Message message;
+	Client *client = client_manager_.getClientBySocket(packet.client_socket);
+	std::string channel_name = packet.message.getParams()[0];
+
+	message.setPrefix(SERVER_NAME);
+	message.setCommand("696");
+	message.addParam(client->getNickName());
+	message.addParam(channel_name);
+	message.addParam("l");
+	message.setTrailing("You must specify a parameter for the limit mode. Syntax: <limit>.");
 
 	struct Packet pkt = {client->getSocket(), message};
 	sendPacket(pkt);
 }
 
-void	PacketMaker::BroadcastMode(Channel *channel, std::string changed_mode_buffer, std::string param_buffer)
+//696 :irc.local 696 one #a k * :You must specify a parameter for the key mode. Syntax: <key>.
+
+void	PacketMaker::ErrNeedMoreParamsKey(struct Packet& packet)
 {
 	Message message;
-	std::string channel_name = channel->getChannelName();
+	Client *client = client_manager_.getClientBySocket(packet.client_socket);
+	std::string channel_name = packet.message.getParams()[0];
 
 	message.setPrefix(SERVER_NAME);
-	message.setCommand("MODE");
+	message.setCommand("696");
+	message.addParam(client->getNickName());
 	message.addParam(channel_name);
-	message.addParam(changed_mode_buffer);
-	message.addParam(param_buffer);
+	message.addParam("k");
+	message.setTrailing("You must specify a parameter for the key mode. Syntax: <key>.");
 
+	struct Packet pkt = {client->getSocket(), message};
+	sendPacket(pkt);
+}
+
+
+//696 one #a o * :You must specify a parameter for the op mode. Syntax: <nick>.
+
+void	PacketMaker::ErrNeedMoreParamsOp(struct Packet& packet)
+{
+	Message message;
+	Client *client = client_manager_.getClientBySocket(packet.client_socket);
+	std::string channel_name = packet.message.getParams()[0];
+
+	message.setPrefix(SERVER_NAME);
+	message.setCommand("696");
+	message.addParam(client->getNickName());
+	message.addParam(channel_name);
+	message.addParam("o");
+	message.setTrailing("You must specify a parameter for the op mode. Syntax: <nick>.");
+
+	struct Packet pkt = {client->getSocket(), message};
+	sendPacket(pkt);
 }
