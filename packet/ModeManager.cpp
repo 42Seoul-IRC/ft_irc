@@ -7,6 +7,10 @@ ModeManager::ModeManager()
     changed_mode_buffer = "";
 }
 
+ModeManager::~ModeManager()
+{
+}
+
 void    ModeManager::setModeSwitch(char mode_switch)
 {
     this->mode_switch = mode_switch;
