@@ -10,8 +10,14 @@ PacketMaker::~PacketMaker()
 	
 }
 
+void PacketMaker::log(struct Packet &packet)
+{
+	std::cout << "[LOG] {irc.webserv -> " << packet.client_socket << "} - " << packet.message.toString();
+}
+
 void PacketMaker::sendPacket(struct Packet& packet)
 {
+	log(packet);
 	::send(packet.client_socket, packet.message.toString().c_str(), packet.message.toString().length(), 0);
 }
 
@@ -253,10 +259,6 @@ void PacketMaker::RplNamReply(struct Packet& packet)
 	std::string channel_name = packet.message.getTrailing();
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
 
-	std::cout << "[INFO] client_manager_ : " << &client_manager_ << std::endl;
-	std::cout << "[INFO] channel_manager_ : " << &channel_manager_ << std::endl;
-	std::cout << "[DEBUG] RPlNamReply : " << packet.client_socket << ", " << client << ", " << channel_name << ", " << channel_manager_.getChannelByName(channel_name) << std::endl;
-
 	message.setPrefix(SERVER_NAME);
 	message.setCommand(RPL_NAMREPLY);
 	message.addParam(client->getNickName());
@@ -386,8 +388,6 @@ Message PacketMaker::NickSuccess(struct Packet& packet)
 
 	struct Packet pkt = {client->getSocket(), message};
 	sendPacket(pkt);
-
-	std::cout << message.toString() << std::endl;
 
 	return message;
 }
@@ -673,8 +673,6 @@ void	PacketMaker::RplCreationTime(struct Packet& packet, Channel *channel)
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
 	std::string channel_name = channel->getChannelName();
 	std::string channel_created_time = std::to_string(channel->getChannelCreatedTime());
-
-	std::cout << channel->getChannelCreatedTime() << std::endl;
 
 	message.setPrefix(SERVER_NAME);
 	message.setCommand("329");
