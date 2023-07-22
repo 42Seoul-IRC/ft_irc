@@ -17,7 +17,7 @@ void Server::init(char* port, char* password)
 	catch (std::exception &e)
 	{
 		std::cerr << e.what() << std::endl;
-		return ;
+		exit(EXIT_FAILURE);
 	}
 
 	addSocket(server_socket_.getSocket());
