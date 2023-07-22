@@ -303,6 +303,7 @@ void	PacketManager::mode(struct Packet& packet)
 
 
     std::string channel_name = *mode_manager.getItParam();
+    Channel *channel = channel_manager_.getChannelByName(channel_name);
     mode_manager.incrementItParam();
 
     
@@ -312,13 +313,6 @@ void	PacketManager::mode(struct Packet& packet)
         return ;
     }
 
-    Channel *channel = channel_manager_.getChannelByName(channel_name);
-
-    if (channel_name[0] != '#')
-    {
-        return ;
-    }
-    
     //check there is no chnnel in server
     if (channel == NULL)
     {
