@@ -102,6 +102,8 @@ void Server::successHandler(int socket)
 			if (size < 1)
 			{
 				packet_manager_.removeClientBySocket(socket);
+				close(socket);
+				return ;
 			}
 			buffer[size] = '\0';
 
