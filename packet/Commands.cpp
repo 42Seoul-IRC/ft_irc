@@ -468,7 +468,7 @@ void	PacketManager::invite(struct Packet& packet)
 
 	
 	//target is autu?
-	if (!client_manager_.getClientByNick(client_nick)->getIsAuthenticated())
+	if (!client_manager_.getClientByNick(target_nick)->getIsAuthenticated())
 	{
 		packet_maker_->ErrNotRegistered(packet);
 		return ;
