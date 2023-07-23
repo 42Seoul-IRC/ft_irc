@@ -720,7 +720,6 @@ void	PacketMaker::RplCreationTime(struct Packet& packet, Channel *channel)
 	Message message;
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
 	std::string channel_name = channel->getChannelName();
-	std::string channel_created_time = std::to_string(channel->getChannelCreatedTime());
 
 	message.setPrefix(SERVER_NAME);
 	message.setCommand("329");
