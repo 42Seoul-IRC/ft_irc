@@ -446,7 +446,7 @@ void	PacketManager::invite(struct Packet& packet)
 		return ;
 	}	
 
-	if (packet.message.getParams().size() != 2 || packet.message.getTrailing().size() != 0 || packet.message.getPrefix().size() != 0)
+	if (packet.message.getParams().size() != 2 && packet.message.getParams().size() < 3)
 	{
 		// ERR_NEEDMOREPARAMS
 		packet_maker_->ErrNeedMoreParams(packet);
@@ -458,13 +458,22 @@ void	PacketManager::invite(struct Packet& packet)
 
 	
 	//1. validity check
-
+	
 	//target is in server?
 	if (!client_manager_.getClientByNick(target_nick))
 	{
 		packet_maker_->ErrNoSuchNick(packet);
 		return ;
 	}
+
+	
+	//target is autu?
+	if (!client_manager_.getClientByNick(client_nick)->getIsAuthenticated())
+	{
+		packet_maker_->ErrNotRegistered(packet);
+		return ;
+	}
+
 
 	//chennel exits?
 	if (!channel_manager_.getChannelByName(channel_name))
@@ -534,7 +543,7 @@ void	PacketManager::topic(struct Packet& packet)
 		return ;
 	}
 
-	if (packet.message.getParams().size() != 1)
+	if (packet.message.getParams().size() == 0)
 	{
 		// ERR_NEEDMOREPARAMS
 		packet_maker_->ErrNeedMoreParams(packet);
