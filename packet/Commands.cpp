@@ -132,7 +132,10 @@ void	PacketManager::user(struct Packet& packet)
 
 	client->setUserName(packet.message.getParams()[0]);
 	client->setServerName(packet.message.getParams()[1]);
-	client->setHostName(packet.message.getParams()[2]);
+	struct sockaddr_in clnt_addr;
+    socklen_t size = sizeof(clnt_addr);
+    getsockname(packet.client_socket, &(struct sockaddr& )clnt_addr, &size);
+    client->setHostName(inet_ntoa(clnt_addr.sin_addr));
 	client->setRealName(packet.message.getTrailing());
 
 	if (client->getNickName() != "")
