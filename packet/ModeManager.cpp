@@ -288,7 +288,9 @@ void    ModeManager::limitMode()
         }
  
         std::string limit = *it_param; 
-        std::stringstream ss(limit);
+        std::stringstream ss;
+        
+        ss << (limit);
 
         int limit_int;
         ss >> limit_int;
@@ -296,12 +298,12 @@ void    ModeManager::limitMode()
         if (limit_int < 0 || ss.fail() || !ss.eof()) 
         {
             // error param is not number
-            // ERR_NEEDMOREPARAMS (461)
-            packet_maker_->ErrNeedMoreParams(packet);
+            // 696
+            packet_maker_->ErrNeedMoreParamsLimit(packet);
             return ;
         }
         //limit is n
-
+        
         channel_->setChannelMode('l');
         channel_->setLimit(limit_int);
 
@@ -324,31 +326,30 @@ void    ModeManager::limitMode()
 
 void    ModeManager::executeMode(char mode)
 {
-    //only handle i t k o l
+    //check mode is invalid
+    
+    if (mode != 'i' && mode != 't' && mode != 'k' && mode != 'l' && mode != 'o')
+    {
+        if (mode == 'n')
+            return ;
+        
+        packet_maker_->ErrUnknownMode(packet, mode);
+        return ;
+    }
 
-    if (mode == 'i' && canUpdate(mode))
+    if (!canUpdate(mode))
+        return ;
+
+    if (mode == 'i')
         inviteMode();
-    else if (mode == 't' && canUpdate(mode))
+    else if (mode == 't')
         topicMode();
-
-    //Can't check param is exist
-    // Because some mode don't need param when mode_switch is '-'
-
-    else if (mode == 'k' && canUpdate(mode))
+    else if (mode == 'k')
         keyMode();
-    else if (mode == 'o' && canUpdate(mode))
+    else if (mode == 'o')
         opMode();
-    else if (mode == 'l' && canUpdate(mode))
+    else if (mode == 'l')
         limitMode();
-    else 
-        noMode(mode);
-}
-
-void    ModeManager::noMode(char mode)
-{
-    //:irc.local 472 one 4 :is not a recognised channel mode.
-    packet_maker_->ErrUnknownMode(packet, mode);
-    //send error
 }
 
 void	PacketManager::mode(struct Packet& packet)
