@@ -116,17 +116,6 @@ void	Message::addParam(const std::string &param)
 	params_.push_back(temp);
 }
 
-void	Message::addParam(unsigned long param)
-{
-	//string stream
-	std::stringstream ss(param);
-	std::string str;
-	
-	ss >> str;
-
-	params_.push_back(str);
-}
-
 std::string Message::toString(void) const
 {
 	std::string str;

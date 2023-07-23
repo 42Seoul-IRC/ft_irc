@@ -32,7 +32,6 @@ class Message {
 		bool getHasTrailing (void) const;
 
 		void addParam (const std::string &param);
-		void addParam (unsigned long param);
 
 		std::string toString (void) const;
 
