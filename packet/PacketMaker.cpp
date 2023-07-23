@@ -674,7 +674,7 @@ void PacketMaker::ErrUserOnChannel(struct Packet& packet)
 	message.addParam(client->getNickName());
 	message.addParam(target_nick);
 	message.addParam(channel_name);
-	message.setTrailing("is alreay on channel");
+	message.setTrailing("is already on channel");
 
 	struct Packet pkt = {client->getSocket(), message};
 	sendPacket(pkt);
