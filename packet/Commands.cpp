@@ -82,7 +82,7 @@ void	PacketManager::nick(struct Packet& packet)
 			client->setIsAuthenticated(true);
 		}
 	}
-	else
+	else if (nick_client->getIsAuthenticated())
 	{
 		Message message = packet_maker_->NickSuccess(packet);
 		
@@ -97,6 +97,11 @@ void	PacketManager::nick(struct Packet& packet)
 
 			packet_maker_->sendPacket(message, (*it)->getChannelName(), new_nick);
 		}
+	}
+	else
+	{
+		packet_maker_->ErrNotRegistered(packet);
+		quit(packet);
 	}
 }
 
