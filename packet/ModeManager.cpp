@@ -135,6 +135,16 @@ void    ModeManager::sendSuccessMsg()
     packet_maker_->BroadcastMode(packet, changed_mode_buffer, changed_param_buffer);
 }
 
+//modeisgchanged
+
+bool    ModeManager::modeIsChanged()
+{
+    if (changed_mode_buffer.size() != 0)
+        return true;
+    else
+        return false;
+}
+
 std::string ModeManager::makeCurModeStatus()
 {
     std::string cur_mode_status = "";
@@ -190,8 +200,6 @@ void    ModeManager::topicMode()
         channel_->unsetChannelMode('t');
         pushBackChangedBuffer("t");
     }
-
-    
 }
 
 void    ModeManager::keyMode()
@@ -317,8 +325,6 @@ void    ModeManager::limitMode()
 void    ModeManager::executeMode(char mode)
 {
     //only handle i t k o l
-    if (mode_switch == ' ')
-        noMode();
 
     if (mode == 'i' && canUpdate(mode))
         inviteMode();
@@ -335,11 +341,13 @@ void    ModeManager::executeMode(char mode)
     else if (mode == 'l' && canUpdate(mode))
         limitMode();
     else 
-        noMode();
+        noMode(mode);
 }
 
-void    ModeManager::noMode()
+void    ModeManager::noMode(char mode)
 {
+    //:irc.local 472 one 4 :is not a recognised channel mode.
+    packet_maker_->ErrUnknownMode(packet, mode);
     //send error
 }
 
@@ -439,7 +447,8 @@ void	PacketManager::mode(struct Packet& packet)
         mode_manager.executeMode(mode);
         // mode_manager.printMode();
     }
-    mode_manager.sendSuccessMsg();
+    if (mode_manager.modeIsChanged())
+        mode_manager.sendSuccessMsg();
 }
 
 void    ModeManager::printMode()

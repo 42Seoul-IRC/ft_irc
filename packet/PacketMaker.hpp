@@ -101,7 +101,7 @@ class PacketMaker
 		void ErrNeedMoreParamsOp(struct Packet& packet);
 		void ErrNeedMoreParamsKey(struct Packet& packet);
 		void ErrNeedMoreParamsLimit(struct Packet& packet);
-
+		void ErrUnknownMode(struct Packet& packet, char unknown_mode_char);
 };
 
 #endif

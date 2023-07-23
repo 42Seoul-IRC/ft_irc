@@ -56,6 +56,8 @@
 #define ERR_BADCHANNELKEY_MSG "Bad channel key"
 #define ERR_INVITEONLYCHAN "473"
 #define ERR_INVITEONLYCHAN_MSG "Cannot join channel (invite only)"
+#define ERR_UNKNOWNMODE "472"
+#define ERR_UNKNOWNMODE_MSG "Unknown mode"
 #define ERR_CHANNELISFULL "471"
 #define ERR_CHANNELISFULL_MSG "Channel is full"
 #define ERR_NOTREGISTERED "451"

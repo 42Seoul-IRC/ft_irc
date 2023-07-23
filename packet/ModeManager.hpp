@@ -55,7 +55,9 @@ class ModeManager
         void    opMode();
         void    limitMode();
 
-        void    noMode();
+        void    noMode(char mode);
 
         void    printMode();
+
+        bool    modeIsChanged();
 };
