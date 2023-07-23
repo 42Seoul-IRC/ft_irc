@@ -424,7 +424,8 @@ void	PacketManager::kick(struct Packet& packet)
 	}
 	if (channel_manager_.checkClientIsInChannel(channel_name, client_name) == false)
 	{
-		packet_maker_->ErrUserNotInChannel(packet);
+		packet.message.setPrefix(channel_name);
+		packet_maker_->ErrNotOnChannel(packet);
 		return ;
 	}
 	if (channel_manager_.checkClientIsOperator(channel_name, client_name) == false)
@@ -435,6 +436,7 @@ void	PacketManager::kick(struct Packet& packet)
 	}
 	if (channel_manager_.checkClientIsInChannel(channel_name, target_user_name) == false)
 	{
+		packet.message.setPrefix(channel_name);
 		packet_maker_->ErrUserNotInChannel(packet);
 		return ;
 	}

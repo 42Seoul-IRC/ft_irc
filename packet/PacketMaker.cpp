@@ -172,6 +172,7 @@ void PacketMaker::ErrNotOnChannel(struct Packet& packet)
 	message.setPrefix(SERVER_NAME);
 	message.setCommand(ERR_NOTONCHANNEL);
 	message.addParam(client->getNickName());
+	message.addParam(packet.message.getPrefix());
 	message.setTrailing(ERR_NOTONCHANNEL_MSG);
 
 	struct Packet pkt = {client->getSocket(), message};
@@ -637,6 +638,7 @@ void PacketMaker::ErrUserNotInChannel(struct Packet& packet)
 	message.setPrefix(client_manager_.getClientBySocket(packet.client_socket)->getHost());
 	message.setCommand(ERR_USERNOTINCHANNEL);
 	message.addParam(client->getNickName());
+	message.addParam(packet.message.getPrefix());
 	message.setTrailing(ERR_USERNOTINCHANNEL_MSG);
 
 	struct Packet pkt = {client->getSocket(), message};
