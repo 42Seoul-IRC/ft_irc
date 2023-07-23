@@ -411,6 +411,7 @@ void	PacketManager::kick(struct Packet& packet)
 	}
 	if (channel_manager_.checkClientIsOperator(channel_name, client_name) == false)
 	{
+		packet.message.setPrefix(channel_name);
 		packet_maker_->ErrChanOPrivsNeeded(packet);
 		return ;
 	}
@@ -581,6 +582,7 @@ void	PacketManager::topic(struct Packet& packet)
 		// **오류 코드**: **`482`**
 		if (channel->isOnChannelMode(MODE_TOPIC) && !channel_manager_.checkClientIsOperator(channel_name, client_nick))
 		{
+			packet.message.setPrefix(channel_name);
 			packet_maker_->ErrChanOPrivsNeeded(packet);
 			return ;
 		}

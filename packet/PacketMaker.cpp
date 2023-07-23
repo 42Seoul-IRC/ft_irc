@@ -186,7 +186,7 @@ void PacketMaker::ErrChanOPrivsNeeded(struct Packet& packet)
 	message.setPrefix(SERVER_NAME);
 	message.setCommand(ERR_CHANOPRIVSNEEDED);
 	message.addParam(client->getNickName());
-	message.addParam(packet.message.getParams()[0]);
+	message.addParam(packet.message.getPrefix());
 	message.setTrailing(ERR_CHANOPRIVSNEEDED_MSG);
 
 	struct Packet pkt = {client->getSocket(), message};
