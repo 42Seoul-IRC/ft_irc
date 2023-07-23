@@ -3,6 +3,9 @@
 
 #include <string>
 #include <set>
+#include <iostream>
+#include <unistd.h>
+#include <arpa/inet.h>
 
 class Client {
 	private:
@@ -11,16 +14,33 @@ class Client {
 		std::string username_;
 		std::string hostname_;
 		std::set<std::string> channels_;
-		// bool is_authenticated_;
+		bool is_pass_;
+		bool is_authenticated_;
+
 	public:
 		Client(int socket);
+		~Client();
+		
+		int	getSocket(void) const;
+		std::string	getNickName(void);
+		const std::string&	getUserName(void) const;
+		const std::string&	getHostName(void) const;
+		std::set<std::string>& getChannels(void);
+		bool getIsAuthenticated(void) const;
+		bool getIsPass(void) const;
+		std::string getHost(void);
 
-		int			getSocket();
-		std::string	getNickName();
-		std::string	getUserName();
-		std::string	getHostName();
-		std::set<std::string> getChannels();
+		void setIsPass(bool is_pass);
+		void setIsAuthenticated(bool is_authenticated);
+		void setNickName(const std::string& nickname);
+		void setUserName(const std::string& username);
+		void setHostName(const std::string& hostname);
+		void addChannel(const std::string& channel);
+		void deleteChannel(const std::string& channel);
 
+		void removeClient(void);
+
+		//bool client exists
 };
 
 #endif

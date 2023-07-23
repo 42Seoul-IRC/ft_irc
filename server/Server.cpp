@@ -7,18 +7,10 @@ Server::Server()
 
 void Server::init(char* port, char* password)
 {
-	try
-	{
-		server_socket_.bind(port);
-		server_socket_.listen();
-		if ((kqueue_ = kqueue()) == -1)
-			throw std::runtime_error("Kqueue error");
-	}
-	catch (std::exception &e)
-	{
-		std::cerr << e.what() << std::endl;
-		return ;
-	}
+	server_socket_.bind(port);
+	server_socket_.listen();
+	if ((kqueue_ = kqueue()) == -1)
+		throw std::runtime_error("Kqueue error");
 
 	addSocket(server_socket_.getSocket());
 
@@ -74,7 +66,7 @@ void Server::successHandler(int socket)
 		int client_socket = server_socket_.accept();
 		if (client_socket == -1)
 			throw std::runtime_error("Socket accept error");
-		
+
 		if (::fcntl(client_socket, F_SETFL, O_NONBLOCK) == -1)
 			throw std::runtime_error("Client fcntl error");
 
@@ -82,6 +74,7 @@ void Server::successHandler(int socket)
 		{
 			packet_manager_.client_manager_.addClientBySocket(client_socket);
 			addSocket(client_socket);
+			std::cout << "[INFO] Client connected : " << client_socket << ", " << packet_manager_.client_manager_.getClientBySocket(client_socket) << std::endl;
 		}
 		catch(const std::exception& e)
 		{
@@ -101,20 +94,23 @@ void Server::successHandler(int socket)
 			if (size < 1)
 			{
 				packet_manager_.removeClientBySocket(socket);
+				close(socket);
+				return ;
 			}
 			buffer[size] = '\0';
-			
-			//for debug
-			Message msg = Message::parseMessage(buffer);
-			
-			std::cout <<  msg << std::endl;
-			//end
 
-			// parser -> Command.execute
+			std::vector<Message> messages = Message::parse(buffer);
+			for (std::vector<Message>::iterator it = messages.begin(); it != messages.end(); it++)
+			{
+				std::cout << "[LOG] {" << socket << " -> irc.webserv} - " << (*it).toString();
+			 	struct Packet packet = {socket, *it};
+				packet_queue.push_back(packet);
+			}
 		}
 		else
 		{
 			close(socket);
+			std::cout << "[INFO] Client disconnected : " << socket << std::endl;
 		}
 	}
 }
@@ -131,15 +127,17 @@ void Server::errorHandler(int socket)
 		if (client)
 		{
 			Message message;
-			message.command_ = "QUIT";
+			message.setCommand("QUIT");
 			
 			struct Packet quit = {socket, message};
 
 			packet_manager_.execute(quit);
+			std::cout << "[INFO] Client disconnected : " << socket << std::endl;
 		}
 		else
 		{
 			close(socket);
+			std::cout << "[INFO] Client disconnected : " << socket << std::endl;
 		}
 	}
 }

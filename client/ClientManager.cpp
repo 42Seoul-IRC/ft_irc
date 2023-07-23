@@ -1,4 +1,18 @@
 #include "ClientManager.hpp"
+#include <iostream>
+
+ClientManager::~ClientManager()
+{
+	std::map<int, Client*>::iterator it;
+
+	for (it = socket_clients_.begin(); it != socket_clients_.end(); it++)
+	{
+		it->second->removeClient();
+		delete it->second;
+	}
+	socket_clients_.clear();
+	nick_clients_.clear();
+}
 
 void	ClientManager::addClientBySocket(int socket)
 {
@@ -15,27 +29,93 @@ Client	*ClientManager::getClientBySocket(int socket)
 	return (socket_clients_.find(socket)->second);
 }
 
-void ClientManager::printAllClients()
+Client	*ClientManager::getClientByNick(const std::string& nick)
 {
-	std::map<int, Client*>::iterator it;
+	if (nick_clients_.find(nick) == nick_clients_.end())
+		return (NULL);
+	return (nick_clients_.find(nick)->second);
+}
 
-	int i = 0;
-	for (it = socket_clients_.begin(); it != socket_clients_.end(); it++)
+bool	ClientManager::clientIsAuth(int socket)
+{
+	Client	*temp;
+
+	temp = getClientBySocket(socket);
+	if (temp == NULL)
+		return (false);
+	return (temp->getIsAuthenticated());
+}
+
+bool	ClientManager::clientIsInServer(const std::string& nick)
+{
+	std::map<std::string, Client*>::iterator it;
+
+	for (it = nick_clients_.begin(); it != nick_clients_.end(); it++)
 	{
-		std::cout << "--------------------------" << std::endl;
-		std::cout << "client " << i << std::endl;
-
-		std::cout << "--------------------------" << std::endl;
-		std::cout << "socket: " << it->first << std::endl;
-		std::cout << "nickname: " << it->second->getNickName() << std::endl;
-		std::cout << "username: " << it->second->getUserName() << std::endl;
-		std::cout << "hostname: " << it->second->getHostName() << std::endl;
-		std::cout << "channels: " << std::endl;
-		std::set<std::string>::iterator it2;
-		for (it2 = it->second->getChannels().begin(); it2 != it->second->getChannels().end(); it2++)
-			std::cout << *it2 << std::endl;
-		std::cout << "--------------------------" << std::endl;
-		std::cout << std::endl;
-		i++;
+		if (it->first == nick)
+			return (true);
 	}
+	return (false);
+}
+
+bool	ClientManager::isValidNickname(std::string& nick)
+{
+	if (nick.length() > 9 || nick.length() == 0)
+		return (false);
+	if (nick[0] == '#')
+		return (false);
+	for (std::string::iterator it = nick.begin(); it != nick.end(); it++)
+	{
+		if (!std::isprint(*it) || *it == ',')
+			return (false);
+	}
+	
+	return (true);
+}
+
+bool	ClientManager::isUsedNickname(const std::string& nick)
+{
+	if (nick_clients_.find(nick) == nick_clients_.end())
+		return (false);
+	return true;
+}
+
+void	ClientManager::addNickClient(const std::string& nick, Client* client)
+{
+	nick_clients_.insert(std::make_pair(nick, client));
+}
+
+void	ClientManager::removeNickClient(const std::string& nick)
+{
+	nick_clients_.erase(nick);
+}
+
+void	ClientManager::addChannelToClient(const std::string& nick, const std::string& channel)
+{
+	if (nick_clients_.find(nick) == nick_clients_.end())
+		return ;
+	nick_clients_.find(nick)->second->addChannel(channel);
+}
+
+void	ClientManager::removeChannelFromClient(const std::string& nick, const std::string& channel)
+{
+	if (nick_clients_.find(nick) == nick_clients_.end())
+		return ;
+	nick_clients_.find(nick)->second->deleteChannel(channel);
+}
+
+void	ClientManager::removeClient(int socket)
+{
+	Client	*temp;
+
+	temp = getClientBySocket(socket);
+	if (temp == NULL)
+		return ;
+	removeNickClient(temp->getNickName());
+	socket_clients_.erase(socket);
+	temp->removeClient();
+	
+	delete temp;
+
+	std::cout << "[INFO] ClientManager::removeClient : " << socket << " is removed." << std::endl;
 }
