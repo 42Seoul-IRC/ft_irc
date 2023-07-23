@@ -25,6 +25,7 @@ class ChannelManager {
 		bool 	checkClientIsInvited(const std::string& channel_name, const std::string& clientName);
 		bool 	checkClientIsInChannel(const std::string& channel_name, const std::string& clientName);
 		bool	checkChannelPassword(const std::string& channel_name, const std::string& password);
+
 };
 
 #endif

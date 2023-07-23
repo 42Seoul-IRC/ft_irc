@@ -26,7 +26,6 @@ class Channel {
 		unsigned long topic_settime_;
 
 		int limit_;
-
 		Channel(const std::string& name);
 		~Channel();
 
@@ -71,6 +70,7 @@ class Channel {
 		std::string	getChannelModeString(void);
 
 		void	changeClientInfo(const std::string& client_name, const std::string& new_name);
+
 };
 
 #endif
