@@ -118,7 +118,7 @@ void	PacketManager::user(struct Packet& packet)
 		return ;
 	}
 
-	if (packet.message.getParams().size() != 3)
+	if (packet.message.getParams().size() != 3 || !packet.message.getHasTrailing())
 	{
 		packet_maker_->ErrNeedMoreParams(packet);
 		return ;
@@ -131,7 +131,9 @@ void	PacketManager::user(struct Packet& packet)
 	}
 
 	client->setUserName(packet.message.getParams()[0]);
+	client->setServerName(packet.message.getParams()[1]);
 	client->setHostName(packet.message.getParams()[2]);
+	client->setRealName(packet.message.getTrailing());
 
 	if (client->getNickName() != "")
 	{

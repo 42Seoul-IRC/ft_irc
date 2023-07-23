@@ -13,6 +13,8 @@ class Client {
 		std::string nickname_;
 		std::string username_;
 		std::string hostname_;
+		std::string servername_;
+		std::string realname_;
 		std::set<std::string> channels_;
 		bool is_pass_;
 		bool is_authenticated_;
@@ -25,6 +27,8 @@ class Client {
 		std::string	getNickName(void);
 		const std::string&	getUserName(void) const;
 		const std::string&	getHostName(void) const;
+		const std::string&	getServerName(void) const;
+		const std::string&	getRealName(void) const;
 		std::set<std::string>& getChannels(void);
 		bool getIsAuthenticated(void) const;
 		bool getIsPass(void) const;
@@ -35,6 +39,8 @@ class Client {
 		void setNickName(const std::string& nickname);
 		void setUserName(const std::string& username);
 		void setHostName(const std::string& hostname);
+		void setServerName(const std::string& servername);
+		void setRealName(const std::string& realname);
 		void addChannel(const std::string& channel);
 		void deleteChannel(const std::string& channel);
 

@@ -37,6 +37,16 @@ const std::string& Client::getHostName(void) const
     return hostname_;
 }
 
+const std::string& Client::getServerName(void) const
+{
+	return servername_;
+}
+
+const std::string& Client::getRealName(void) const
+{
+	return realname_;
+}
+
 std::set<std::string>& Client::getChannels(void)
 {
     return channels_;
@@ -77,6 +87,16 @@ void Client::setUserName(const std::string& username)
 void Client::setHostName(const std::string& hostname)
 {
 	hostname_ = hostname;
+}
+
+void Client::setServerName(const std::string& servername)
+{
+	servername_ = servername;
+}
+
+void Client::setRealName(const std::string& realname)
+{
+	realname_ = realname;
 }
 
 void Client::addChannel(const std::string& channel)
