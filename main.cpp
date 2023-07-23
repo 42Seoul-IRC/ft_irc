@@ -11,6 +11,7 @@ int	main(int argc, char **argv)
 	try {
 		Server server;
 		server.init(argv[1], argv[2]);
+		std::cout << "[INFO] Server starts successfully! listening on port " << argv[1] << std::endl;
 		server.run();
 	}
 	catch (std::exception &e)
