@@ -13,6 +13,8 @@ void	PacketManager::cap(struct Packet& packet)
 void	PacketManager::pass(struct Packet& packet)
 {
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
+	if (!client)
+		return ;
 
 	if (client->getIsPass())
 	{
@@ -38,10 +40,13 @@ void	PacketManager::pass(struct Packet& packet)
 void	PacketManager::nick(struct Packet& packet)
 {
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
+	if (!client)
+		return ;
 
 	if (!client->getIsPass())
 	{
 		packet_maker_->ErrNotRegistered(packet);		
+		quit(packet);
 		return ;
 	}
 
@@ -98,10 +103,13 @@ void	PacketManager::nick(struct Packet& packet)
 void	PacketManager::user(struct Packet& packet)
 {
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
+	if (!client)
+		return ;
 
 	if (!client->getIsPass())
 	{
 		packet_maker_->ErrNotRegistered(packet);
+		quit(packet);
 		return ;
 	}
 
@@ -130,6 +138,8 @@ void	PacketManager::user(struct Packet& packet)
 void	PacketManager::privmsg(struct Packet& packet)
 {
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
+	if (!client)
+		return ;
 
 	if (!client->getIsAuthenticated())
 	{
@@ -186,10 +196,12 @@ void	PacketManager::privmsg(struct Packet& packet)
 void	PacketManager::quit(struct Packet& packet)
 {
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
+	if (!client)
+		return ;
 
 	if (!client->getIsAuthenticated())
 	{
-		client->removeClient();
+		client_manager_.removeClient(packet.client_socket);
 		return ;
 	}
 
@@ -237,6 +249,8 @@ void	PacketManager::join(struct Packet& packet)
 9. 해당 채널의 모든 유저에게 join 메시지 전송
 */
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
+	if (!client)
+		return ;
 
 	if (!client->getIsAuthenticated())
 	{
@@ -324,6 +338,8 @@ void	PacketManager::part(struct Packet& packet)
 6. 유저의 채널 리스트에서 해당 채널의 이름 제거
 */
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
+	if (!client)
+		return ;
 
 	if (!client->getIsAuthenticated())
 	{
@@ -379,6 +395,8 @@ void	PacketManager::kick(struct Packet& packet)
 */
 	Message message;
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
+	if (!client)
+		return ;
 
 	if (!client->getIsAuthenticated())
 	{
