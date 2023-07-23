@@ -540,6 +540,7 @@ void PacketMaker::ErrBadChannelKey(struct Packet& packet)
 	message.setPrefix(SERVER_NAME);
 	message.setCommand(ERR_BADCHANNELKEY);
 	message.addParam(client->getNickName());
+	message.addParam(packet.message.getPrefix());
 	message.setTrailing(ERR_BADCHANNELKEY_MSG);
 
 	struct Packet pkt = {client->getSocket(), message};
@@ -554,6 +555,7 @@ void PacketMaker::ErrInviteOnlyChan(struct Packet& packet)
 	message.setPrefix(SERVER_NAME);
 	message.setCommand(ERR_INVITEONLYCHAN);
 	message.addParam(client->getNickName());
+	message.addParam(packet.message.getPrefix());
 	message.setTrailing(ERR_INVITEONLYCHAN_MSG);
 
 	struct Packet pkt = {client->getSocket(), message};
@@ -568,6 +570,7 @@ void PacketMaker::ErrChannelIsFull(struct Packet& packet)
 	message.setPrefix(SERVER_NAME);
 	message.setCommand(ERR_CHANNELISFULL);
 	message.addParam(client->getNickName());
+	message.addParam(packet.message.getPrefix());
 	message.setTrailing(ERR_CHANNELISFULL_MSG);
 
 	struct Packet pkt = {client->getSocket(), message};

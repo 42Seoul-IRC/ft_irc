@@ -273,8 +273,9 @@ void	PacketManager::join(struct Packet& packet)
 			continue ;
 		if (channel_manager_.getChannelByName(*it1)->isOnChannelMode(MODE_PASSWORD))
 		{
-			if (channel_manager_.checkChannelPassword(*it1, *it2) == false)
+			if (it2 == channel_passwords.end() || channel_manager_.checkChannelPassword(*it1, *it2) == false)
 			{
+				packet.message.setPrefix(*it1);
 				packet_maker_->ErrBadChannelKey(packet);
 				continue ;
 			}
@@ -283,12 +284,14 @@ void	PacketManager::join(struct Packet& packet)
 		{
 			if (channel_manager_.checkClientIsInvited(*it1, client_name) == false)
 			{
+				packet.message.setPrefix(*it1);
 				packet_maker_->ErrInviteOnlyChan(packet);
 				continue ;
 			}
 		}
 		if (!(channel_manager_.getChannelByName(*it1)->checkChannelCapacity()))
 		{
+			packet.message.setPrefix(*it1);
 			packet_maker_->ErrChannelIsFull(packet);
 			continue ;
 		}
