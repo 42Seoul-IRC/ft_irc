@@ -182,7 +182,7 @@ void	PacketManager::privmsg(struct Packet& packet)
 		else
 		{
 			Client *target_client = client_manager_.getClientByNick(*it);
-			if (!target_client)
+			if (!target_client || !target_client->getIsAuthenticated())
 			{
 				packet_maker_->ErrNoSuchNick(packet, *it);
 				return ;
