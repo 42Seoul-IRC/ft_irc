@@ -574,7 +574,7 @@ void	PacketManager::topic(struct Packet& packet)
 	//2. business logic
 
 	std::string topic = packet.message.getTrailing();
-	if (!topic.empty())
+	if (!topic.empty() || packet.message.getHasTrailing())
 	{
 		// ### **오류 482: ERR_CHANOPRIVSNEEDED**
 

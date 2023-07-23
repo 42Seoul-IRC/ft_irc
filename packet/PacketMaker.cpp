@@ -808,3 +808,22 @@ void	PacketMaker::ErrNeedMoreParamsOp(struct Packet& packet)
 	struct Packet pkt = {client->getSocket(), message};
 	sendPacket(pkt);
 }
+
+// ERR_UNKNOWNMODE (472)
+void PacketMaker::ErrUnknownMode(struct Packet& packet, char unknown_mode_char)
+{
+	Message message;
+	Client *client = client_manager_.getClientBySocket(packet.client_socket);
+	std::string channel_name = packet.message.getParams()[0];
+
+	message.setPrefix(SERVER_NAME);
+	message.setCommand("472");
+	message.addParam(client->getNickName());
+	std::stringstream ss;
+	ss << unknown_mode_char;
+	message.addParam(ss.str());
+	message.setTrailing(ERR_UNKNOWNMODE_MSG);
+
+	struct Packet pkt = {client->getSocket(), message};
+	sendPacket(pkt);
+}
