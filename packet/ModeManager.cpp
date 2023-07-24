@@ -260,6 +260,7 @@ void    ModeManager::opMode()
 
     if (mode_switch == '+')
     {
+        channel_->setChannelMode('o');
         channel_->setOperator(nick);
 
         pushBackChangedBuffer("o");
@@ -267,6 +268,7 @@ void    ModeManager::opMode()
     }
     else if (mode_switch == '-')
     {
+        channel_->unsetChannelMode('o');
         channel_->unsetOperator(nick);
 
         pushBackChangedBuffer("o");
