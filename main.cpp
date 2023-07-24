@@ -1,7 +1,13 @@
 #include "server/Server.hpp"
 
+
+void signalHandler(int signum) {
+    (void) signum;
+}
+
 int	main(int argc, char **argv)
 {
+	signal(SIGTSTP, signalHandler);
 	if (argc != 3)
 	{
 		std::cerr << "Usage : ./ircserv <port> <password>"<< std::endl;

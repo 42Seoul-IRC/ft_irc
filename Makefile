@@ -1,7 +1,7 @@
 NAME = ircserv
 
 CC = c++
-CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -g3 -fsanitize=address
+CXXFLAGS = -Wall -Wextra -Werror -std=c++98
 
 SRCS =  channel/Channel.cpp\
 		channel/ChannelManager.cpp\
@@ -22,15 +22,6 @@ all : $(NAME)
 
 $(NAME) : $(OBJS)
 	$(CC) $(CXXFLAGS) $(OBJS) -o $(NAME)
-
-tcpflow :
-	tcpflow -i lo port 6667 -c
-
-connect :
-	nc 127.0.0.1 6667
-	PASS 6667
-	NICK test
-	USER test 0 * :realname
 
 %.o : %.cpp
 	$(CC) $(CXXFLAGS) -o $@ -c $<

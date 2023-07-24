@@ -206,6 +206,11 @@ void PacketMaker::RplWelcome(struct Packet& packet)
 
 	struct Packet pkt = {client->getSocket(), message};
 	sendPacket(pkt);
+
+	message.setTrailing("Our server doesn't support message that has more than 512 bytes.");
+
+	struct Packet warning = {client->getSocket(), message};
+	sendPacket(warning);
 }
 
 void PacketMaker::RplNoTopic(struct Packet& packet)

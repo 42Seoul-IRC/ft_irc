@@ -6,7 +6,7 @@ std::vector<Message> Message::parse(std::string str)
 	std::vector<std::string> messages;
 
 	str.erase(str.find_last_not_of(" \n\r\t") + 1);
-	str.erase(0, str.find_first_not_of(" \n\r\t"));
+	str.erase(0, str.find_first_not_of(" \r\t"));
 
 	messages = split(str, "\r\n");
 	for (std::vector<std::string>::iterator it = messages.begin(); it != messages.end(); it++)
