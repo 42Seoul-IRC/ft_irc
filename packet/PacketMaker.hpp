@@ -102,6 +102,10 @@ class PacketMaker
 		void ErrNeedMoreParamsKey(struct Packet& packet);
 		void ErrNeedMoreParamsLimit(struct Packet& packet);
 		void ErrUnknownMode(struct Packet& packet, char unknown_mode_char);
+
+
+		//DCC 
+		void RplDcc(struct Packet& packet);
 };
 
 #endif

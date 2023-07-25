@@ -828,3 +828,20 @@ void PacketMaker::ErrUnknownMode(struct Packet& packet, char unknown_mode_char)
 	struct Packet pkt = {client->getSocket(), message};
 	sendPacket(pkt);
 }
+
+
+//DCC 
+
+void PacketMaker::RplDcc(struct Packet& packet)
+{
+	Message message;
+	Client *client = client_manager_.getClientBySocket(packet.client_socket);
+
+	message.setPrefix(SERVER_NAME);
+	message.setCommand(packet.message.getCommand());
+	message.addParam(packet.message.getParams()[0]);
+	message.setTrailing(packet.message.getTrailing());
+
+	struct Packet pkt = {client->getSocket(), message};
+	sendPacket(pkt);
+}
