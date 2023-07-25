@@ -6,6 +6,7 @@
 #include <iostream>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <sstream>
 
 class Client {
 	private:
@@ -23,6 +24,8 @@ class Client {
 		Client(int socket);
 		~Client();
 		
+		std::stringstream buffer_;
+
 		int	getSocket(void) const;
 		std::string	getNickName(void);
 		const std::string&	getUserName(void) const;
