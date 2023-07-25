@@ -22,6 +22,9 @@ bool    ModeManager::canUpdate(char mode)
     //check when mode_switch is +, there don't exists mode
     //check when mode_switch is -, there exists mode
     
+    if (mode == 'o')
+        return true;
+
     if (!channel_->isOnChannelMode(mode) && mode_switch == '+' )
         return true;
     else if (channel_->isOnChannelMode(mode) && mode_switch == '-' )
@@ -258,9 +261,13 @@ void    ModeManager::opMode()
         return ;
     }
 
+    // chcck can't update mode
+    if (!((mode_switch == '+' && !channel_->checkClientIsOperator(nick)) || (mode_switch == '-' && channel_->checkClientIsOperator(nick))))
+        return ;
+
     if (mode_switch == '+')
     {
-        channel_->setChannelMode('o');
+        // channel_->setChannelMode('o');
         channel_->setOperator(nick);
 
         pushBackChangedBuffer("o");
@@ -268,7 +275,7 @@ void    ModeManager::opMode()
     }
     else if (mode_switch == '-')
     {
-        channel_->unsetChannelMode('o');
+        // channel_->unsetChannelMode('o');
         channel_->unsetOperator(nick);
 
         pushBackChangedBuffer("o");
