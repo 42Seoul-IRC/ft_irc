@@ -187,7 +187,15 @@ void	PacketManager::privmsg(struct Packet& packet)
 				return ;
 			}
 
-			packet_maker_->PrivmsgToChannel(packet, *it);
+			if (packet.message.getTrailing() == "$DICE")
+			{
+				Message message = packet_maker_->dice(*it);
+
+				packet_maker_->sendPacket(message, *it);
+				return ;
+			}
+			else
+				packet_maker_->PrivmsgToChannel(packet, *it);
 		}
 		else
 		{
@@ -197,8 +205,18 @@ void	PacketManager::privmsg(struct Packet& packet)
 				packet_maker_->ErrNoSuchNick(packet, *it);
 				return ;
 			}
+			//if dice in trainling -> DICE
+			if (packet.message.getTrailing() == "$DICE")
+			{
+				Message message = packet_maker_->dice(*it);
 
-			packet_maker_->PrivmsgToUser(packet, *it);
+				struct Packet pkt = {target_client->getSocket(), message};
+				packet_maker_->sendPacket(pkt);
+
+				return ;
+			}
+			else
+				packet_maker_->PrivmsgToUser(packet, *it);
 		}
 	}
 }
