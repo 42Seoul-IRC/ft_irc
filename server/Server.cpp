@@ -87,19 +87,29 @@ void Server::successHandler(int socket)
 		Client * client = packet_manager_.client_manager_.getClientBySocket(socket);
 		if (client)
 		{
-			char buffer[512];
+			char tmp[512];
 
-			memset(buffer, 0, sizeof(buffer));
-			int size = recv(socket, buffer, sizeof(buffer) - 1, 0);
+			memset(tmp, 0, sizeof(tmp));
+			int size = recv(socket, tmp, sizeof(tmp) - 1, 0);
 			if (size < 1)
 			{
 				packet_manager_.removeClientBySocket(socket);
 				close(socket);
 				return ;
 			}
-			buffer[size] = '\0';
+			tmp[size] = '\0';
 
-			std::vector<Message> messages = Message::parse(buffer);
+			std::string str(tmp);
+			std::string::size_type idx = str.rfind("\r\n");
+			if (idx == std::string::npos)
+			{
+				client->buffer_ << tmp;
+				return ;
+ 	        }
+
+			std::vector<Message> messages = Message::parse(client->buffer_.str() + str.substr(0, idx + 2));
+			client->buffer_.str(str.substr(idx + 2));
+
 			for (std::vector<Message>::iterator it = messages.begin(); it != messages.end(); it++)
 			{
 				std::cout << "[LOG] {" << socket << " -> irc.webserv} - " << (*it).toString();
