@@ -21,15 +21,9 @@ bool    ModeManager::canUpdate(char mode)
 {
     //check when mode_switch is +, there don't exists mode
     //check when mode_switch is -, there exists mode
+    
     if (mode == 'o')
-    {
-        if (mode_switch == '+' && !channel_->checkClientIsOperator(client_->getNick()))
-            return true;
-        else if (mode_switch == '-' && channel_->checkClientIsOperator(client_->getNick()))
-            return true;
-        else
-            return false;
-    }
+        return true;
 
     if (!channel_->isOnChannelMode(mode) && mode_switch == '+' )
         return true;
@@ -266,6 +260,10 @@ void    ModeManager::opMode()
         packet_maker_->ErrUserNotInChannel(packet);
         return ;
     }
+
+    // chcck can't update mode
+    if (!((mode_switch == '+' && !channel_->checkClientIsOperator(nick)) || (mode_switch == '-' && channel_->checkClientIsOperator(nick))))
+        return ;
 
     if (mode_switch == '+')
     {
