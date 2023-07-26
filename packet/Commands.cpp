@@ -189,7 +189,7 @@ void	PacketManager::privmsg(struct Packet& packet)
 
 			if (packet.message.getTrailing() == "$DICE")
 			{
-				Message message = packet_maker_->dice(*it);
+				Message message = packet_maker_->dice(client->getNickName(), *it);
 
 				packet_maker_->sendPacket(message, *it);
 				return ;
@@ -208,7 +208,7 @@ void	PacketManager::privmsg(struct Packet& packet)
 			//if dice in trainling -> DICE
 			if (packet.message.getTrailing() == "$DICE")
 			{
-				Message message = packet_maker_->dice(*it);
+				Message message = packet_maker_->dice(client->getNickName(), *it);
 
 				struct Packet pkt = {target_client->getSocket(), message};
 				packet_maker_->sendPacket(pkt);

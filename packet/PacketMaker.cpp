@@ -59,35 +59,40 @@ void PacketMaker::sendPacket(Message& message, const std::string& channel_name, 
 }
 
 // Bot
-Message PacketMaker::dice(std::string& target)
+Message PacketMaker::dice(std::string sender, std::string& target)
 {
-	srand(0);
-	// int num = rand() % 6 + 1;
+	srand(time(NULL));
 
 	Message message;
 
-	std::string file_name = "../ascii/1.txt";
-	std::ifstream file;
-	std::string line;
-
-	file.open(file_name.c_str());
-	message.setPrefix(SERVER_NAME);
+	message.setPrefix("DICE_BOT_" + sender);
 	message.setCommand("PRIVMSG");
-	if (file.is_open())
+	message.addParam(target);
+	
+	int num = rand() % 6 + 1;
+	std::cout << num << std::endl;
+	switch (num)
 	{
-		while (getline(file, line))
-		{
-			line += "\n";
-		}
-		message.setTrailing(line);
-		file.close();
-	}
-	else
-	{
-		message.setTrailing("Error: Unable to open file");
+		case 1:
+			message.setTrailing("1️⃣");
+			break;
+		case 2:
+			message.setTrailing("2️⃣");
+			break;
+		case 3:
+			message.setTrailing("3️⃣");
+			break;
+		case 4:
+			message.setTrailing("4️⃣");
+			break;
+		case 5:
+			message.setTrailing("5️⃣");
+			break;
+		case 6:
+			message.setTrailing("6️⃣");
+			break;
 	}
 
-	message.addParam(target);
 	
 	return (message);
 }
@@ -240,11 +245,6 @@ void PacketMaker::RplWelcome(struct Packet& packet)
 
 	struct Packet pkt = {client->getSocket(), message};
 	sendPacket(pkt);
-
-	message.setTrailing("Our server doesn't support message that has more than 512 bytes.");
-
-	struct Packet warning = {client->getSocket(), message};
-	sendPacket(warning);
 }
 
 void PacketMaker::RplNoTopic(struct Packet& packet)
