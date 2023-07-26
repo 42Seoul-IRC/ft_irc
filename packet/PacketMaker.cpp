@@ -363,6 +363,23 @@ void PacketMaker::RplInviting(struct Packet& packet)
 	sendPacket(pkt);
 }
 
+void PacketMaker::RplDcc(struct Packet& packet, std::string& target)
+{
+	Message message;
+	Client *client = client_manager_.getClientBySocket(packet.client_socket);
+
+	message.setPrefix(SERVER_NAME);
+	message.setCommand(packet.message.getCommand());
+	message.addParam(target);
+	message.setTrailing(packet.message.getTrailing());
+
+	struct Packet pkt = {client->getSocket(), message};
+	if (target[0] == '#')
+		sendPacket(message, target);
+	else
+		sendPacket(pkt);
+}
+
 // PASS
 void PacketMaker::ErrAlreadyRegistered(struct Packet& packet)
 {
@@ -858,23 +875,6 @@ void PacketMaker::ErrUnknownMode(struct Packet& packet, char unknown_mode_char)
 	ss << unknown_mode_char;
 	message.addParam(ss.str());
 	message.setTrailing(ERR_UNKNOWNMODE_MSG);
-
-	struct Packet pkt = {client->getSocket(), message};
-	sendPacket(pkt);
-}
-
-
-//DCC 
-
-void PacketMaker::RplDcc(struct Packet& packet)
-{
-	Message message;
-	Client *client = client_manager_.getClientBySocket(packet.client_socket);
-
-	message.setPrefix(SERVER_NAME);
-	message.setCommand(packet.message.getCommand());
-	message.addParam(packet.message.getParams()[0]);
-	message.setTrailing(packet.message.getTrailing());
 
 	struct Packet pkt = {client->getSocket(), message};
 	sendPacket(pkt);

@@ -194,6 +194,12 @@ void	PacketManager::privmsg(struct Packet& packet)
 				packet_maker_->sendPacket(message, *it);
 				return ;
 			}
+			//check if string is start with ".DCC"
+			else if (packet.message.getTrailing().find(".DCC") == 0)
+			{
+				dccSend(packet, *it);
+				return ;
+			}
 			else
 				packet_maker_->PrivmsgToChannel(packet, *it);
 		}
@@ -682,20 +688,8 @@ void	PacketManager::topic(struct Packet& packet)
 
 }
 
-void	PacketManager::dccSend(struct Packet& packet)
+void	PacketManager::dccSend(struct Packet& packet, std::string& target)
 {
-	std::string cmd = packet.message.getCommand();
-	if (cmd != "PRIVMSG")
-		return ;
-
-	std::string target = packet.message.getParams()[0];
-
-	if (!client_manager_.clientIsInServer(target))
-	{
-		packet_maker_->ErrNoSuchNick(packet);
-		return ;
-	}
-
 	std::string trail = packet.message.getTrailing();
 
 	std::stringstream line(trail);	
@@ -715,5 +709,5 @@ void	PacketManager::dccSend(struct Packet& packet)
 			return ;
 	}
 
-	packet_maker_->RplDcc(packet);
+	packet_maker_->RplDcc(packet, target);
 }
