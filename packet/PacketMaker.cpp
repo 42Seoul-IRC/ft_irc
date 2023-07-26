@@ -65,35 +65,36 @@ Message PacketMaker::dice(std::string sender, std::string& target)
 
 	Message message;
 
-	message.setPrefix("DICE_BOT_" + sender);
+	message.setPrefix("DICE_BOT🤖");
 	message.setCommand("PRIVMSG");
 	message.addParam(target);
 	
+	std::string msg(sender);
 	int num = rand() % 6 + 1;
 	std::cout << num << std::endl;
 	switch (num)
 	{
 		case 1:
-			message.setTrailing("1️⃣");
+			msg += " rolled the dice! 🎲 result : 1️⃣ ";
 			break;
 		case 2:
-			message.setTrailing("2️⃣");
+			msg += " rolled the dice! 🎲 result : 2️⃣ ";
 			break;
 		case 3:
-			message.setTrailing("3️⃣");
+			msg += " rolled the dice! 🎲 result : 3️⃣ ";
 			break;
 		case 4:
-			message.setTrailing("4️⃣");
+			msg += " rolled the dice! 🎲 result : 4️⃣ ";
 			break;
 		case 5:
-			message.setTrailing("5️⃣");
+			msg += " rolled the dice! 🎲 result : 5️⃣ ";
 			break;
 		case 6:
-			message.setTrailing("6️⃣");
+			msg += " rolled the dice! 🎲 result : 6️⃣ ";
 			break;
 	}
 
-	
+	message.setTrailing(msg);
 	return (message);
 }
 
