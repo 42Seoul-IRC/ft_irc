@@ -45,6 +45,7 @@ class PacketMaker
 		void RplInviting(struct Packet& packet);
 		void RplChannelModeIs(struct Packet& packet, Channel *channel, std::string cur_mode_status);
 		void RplCreationTime(struct Packet& packet, Channel *channel);
+		void RplDcc(struct Packet& packet, std::string& target);
 
 		// PASS Error
 		void ErrAlreadyRegistered(struct Packet& packet);
@@ -105,9 +106,6 @@ class PacketMaker
 		void ErrNeedMoreParamsLimit(struct Packet& packet);
 		void ErrUnknownMode(struct Packet& packet, char unknown_mode_char);
 
-
-		//DCC 
-		void RplDcc(struct Packet& packet);
 };
 
 #endif

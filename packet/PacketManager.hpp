@@ -49,7 +49,7 @@ class PacketManager
 		void	topic(struct Packet& packet);
 		void	mode(struct Packet& packet);
 
-		void	dccSend(struct Packet& packet);
+		void	dccSend(struct Packet& packet, std::string& target);
 };
 
 #endif
