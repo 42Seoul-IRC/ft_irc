@@ -58,6 +58,40 @@ void PacketMaker::sendPacket(Message& message, const std::string& channel_name, 
 	}
 }
 
+// Bot
+Message PacketMaker::dice(std::string& target)
+{
+	srand(0);
+	// int num = rand() % 6 + 1;
+
+	Message message;
+
+	std::string file_name = "../ascii/1.txt";
+	std::ifstream file;
+	std::string line;
+
+	file.open(file_name.c_str());
+	message.setPrefix(SERVER_NAME);
+	message.setCommand("PRIVMSG");
+	if (file.is_open())
+	{
+		while (getline(file, line))
+		{
+			line += "\n";
+		}
+		message.setTrailing(line);
+		file.close();
+	}
+	else
+	{
+		message.setTrailing("Error: Unable to open file");
+	}
+
+	message.addParam(target);
+	
+	return (message);
+}
+
 // Connection
 void PacketMaker::CapLs(struct Packet& packet)
 {

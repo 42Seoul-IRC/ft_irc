@@ -19,6 +19,8 @@ class PacketMaker
 		void sendPacket(Message& message, const std::string& channel_name);
 		void sendPacket(Message& message, const std::string& channel_name, const std::string& exclude_nick);
 
+		// Bot
+		Message dice(std::string& name);
 		// Connection
 		void CapLs(struct Packet& packet);
 

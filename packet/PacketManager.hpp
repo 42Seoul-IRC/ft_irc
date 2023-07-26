@@ -3,6 +3,8 @@
 
 #include <sys/socket.h>
 #include <map>
+#include <fstream>
+#include <cstdlib>
 
 #include "../message/Message.hpp"
 #include "../client/ClientManager.hpp"
@@ -40,19 +42,14 @@ class PacketManager
 		void	privmsg(struct Packet& packet);
 		void	ping(struct Packet& packet);
 		void	quit(struct Packet& packet);
-
 		void	join(struct Packet& packet);
 		void	part(struct Packet& packet);
 		void	kick(struct Packet& packet);
-
 		void	invite(struct Packet& packet);
 		void	topic(struct Packet& packet);
-
-		// void	printPacket(struct Packet& packet);
 		void	mode(struct Packet& packet);
 
 		void	dccSend(struct Packet& packet);
-
 };
 
 #endif
