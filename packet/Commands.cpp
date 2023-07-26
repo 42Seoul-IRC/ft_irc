@@ -681,3 +681,39 @@ void	PacketManager::topic(struct Packet& packet)
 	//3. send message success
 
 }
+
+void	PacketManager::dccSend(struct Packet& packet)
+{
+	std::string cmd = packet.message.getCommand();
+	if (cmd != "PRIVMSG")
+		return ;
+
+	std::string target = packet.message.getParams()[0];
+
+	if (!client_manager_.clientIsInServer(target))
+	{
+		packet_maker_->ErrNoSuchNick(packet);
+		return ;
+	}
+
+	std::string trail = packet.message.getTrailing();
+
+	std::stringstream line(trail);	
+	std::string tmp;
+
+	line >> tmp;
+	if (tmp != ".DCC")
+		return ;
+	
+	line >> tmp;
+	if (tmp != "SEND")
+		return ;
+
+	for (int i = 0; i < 4; i++)
+	{	
+		if (!(line >> tmp))
+			return ;
+	}
+
+	packet_maker_->RplDcc(packet);
+}
