@@ -59,36 +59,42 @@ void PacketMaker::sendPacket(Message& message, const std::string& channel_name, 
 }
 
 // Bot
-Message PacketMaker::dice(std::string& target)
+Message PacketMaker::dice(std::string sender, std::string& target)
 {
-	srand(0);
-	// int num = rand() % 6 + 1;
+	srand(time(NULL));
 
 	Message message;
 
-	std::string file_name = "../ascii/1.txt";
-	std::ifstream file;
-	std::string line;
-
-	file.open(file_name.c_str());
-	message.setPrefix(SERVER_NAME);
+	message.setPrefix("DICE_BOT🤖");
 	message.setCommand("PRIVMSG");
-	if (file.is_open())
-	{
-		while (getline(file, line))
-		{
-			line += "\n";
-		}
-		message.setTrailing(line);
-		file.close();
-	}
-	else
-	{
-		message.setTrailing("Error: Unable to open file");
-	}
-
 	message.addParam(target);
 	
+	std::string msg(sender);
+	int num = rand() % 6 + 1;
+	std::cout << num << std::endl;
+	switch (num)
+	{
+		case 1:
+			msg += " rolled the dice! 🎲 result : 1️⃣ ";
+			break;
+		case 2:
+			msg += " rolled the dice! 🎲 result : 2️⃣ ";
+			break;
+		case 3:
+			msg += " rolled the dice! 🎲 result : 3️⃣ ";
+			break;
+		case 4:
+			msg += " rolled the dice! 🎲 result : 4️⃣ ";
+			break;
+		case 5:
+			msg += " rolled the dice! 🎲 result : 5️⃣ ";
+			break;
+		case 6:
+			msg += " rolled the dice! 🎲 result : 6️⃣ ";
+			break;
+	}
+
+	message.setTrailing(msg);
 	return (message);
 }
 
