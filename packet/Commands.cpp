@@ -211,18 +211,7 @@ void	PacketManager::privmsg(struct Packet& packet)
 				packet_maker_->ErrNoSuchNick(packet, *it);
 				return ;
 			}
-			//if dice in trainling -> DICE
-			if (packet.message.getTrailing() == "$DICE")
-			{
-				Message message = packet_maker_->dice(client->getNickName(), *it);
-
-				struct Packet pkt = {target_client->getSocket(), message};
-				packet_maker_->sendPacket(pkt);
-
-				return ;
-			}
-			else
-				packet_maker_->PrivmsgToUser(packet, *it);
+			packet_maker_->PrivmsgToUser(packet, *it);
 		}
 	}
 }
@@ -345,7 +334,7 @@ void	PacketManager::join(struct Packet& packet)
 		}
 		channel_manager_.addClientToChannel(*it1, client_name);
 		client_manager_.addChannelToClient(client_name, *it1);
-		if (channel_manager_.getChannelByName(*it1)->isOnChannelMode(MODE_TOPIC))
+		if (channel_manager_.getChannelByName(*it1)->getTopic().empty() == false)
 		{
 			Packet temp = packet;
 			temp.message.setCommand(*it1);
@@ -520,14 +509,12 @@ void	PacketManager::invite(struct Packet& packet)
 		return ;
 	}
 
-	
 	//target is autu?
 	if (!client_manager_.getClientByNick(target_nick)->getIsAuthenticated())
 	{
 		packet_maker_->ErrNotRegistered(packet);
 		return ;
 	}
-
 
 	//chennel exits?
 	if (!channel_manager_.getChannelByName(channel_name))
@@ -562,15 +549,12 @@ void	PacketManager::invite(struct Packet& packet)
 
 	// - invited 리스트에 추가하고
 	channel_manager_.getChannelByName(channel_name)->inviteClient(target_nick);
-
-	
 	// - 메시지를 보낸다.
 
 
 	//3. send message
 
 	// - RPL_INVITING
-
 	packet_maker_->RplInviting(packet);
 	packet_maker_->msgToUser(packet, "INVITE",target_nick);
 	
@@ -585,7 +569,6 @@ void	PacketManager::topic(struct Packet& packet)
 	
 	// **오류 메시지 형식**: **`<client> <command> :Not enough parameters`오류 이유**: 클라이언트 명령을 구문 분석할 수 없는 이유는 충분한 매개 변수가 제공되지 않았기 때문입니다.
 	// **오류 코드**: **`461`**
-
 	Message message;
 	
 	std::string client_nick = getNickBySocket(packet.client_socket);
@@ -628,12 +611,6 @@ void	PacketManager::topic(struct Packet& packet)
 		return ;
 	}
 
-
-	
-
-
-
-
 	//2. business logic
 
 	std::string topic = packet.message.getTrailing();
@@ -652,10 +629,7 @@ void	PacketManager::topic(struct Packet& packet)
 
 		channel->setTopic(topic);
 		channel->setTopicSetter(client_nick);
-		channel->setTopicSetTime();
-		
-		// packet_maker_->RplTopic(packet);
-		// packet_maker_->RplTopicWhoTime(packet);		
+		channel->setTopicSetTime();	
 		
 		packet_maker_->BroadcastTopic(packet);
 		return ;
@@ -673,19 +647,6 @@ void	PacketManager::topic(struct Packet& packet)
 			packet_maker_->RplNoTopic(packet);
 		}
 	}
-
-	// ### **응답 331: RPL_NOTOPIC**
-	// **응답 메시지 형식**: **`<client> <channel> :No topic is set`응답 설명**: 클라이언트가 채널에 가입할 때 해당 채널에 설정된 주제가 없음을 알립니다.
-	
-	// ### **응답 332: RPL_TOPIC**
-	// **응답 메시지 형식**: **`<client> <channel> :<topic>`응답 설명**: 클라이언트가 채널에 가입할 때 해당 채널의 현재 주제를 알려줍니다.
-
-	// ### **응답 333: RPL_TOPICWHOTIME**
-
-	// **응답 메시지 형식**: **`<client> <channel> <nick> <setat>`응답 설명**: 주제를 설정한 사람(<nick>)과 주제를 설정한 시간(<setat>은 유닉스 타임스탬프)을 알려줍니다. 이는 RPL_TOPIC(332) 이후에 전송됩니다.
-
-	//3. send message success
-
 }
 
 void	PacketManager::dccSend(struct Packet& packet, std::string& target)
