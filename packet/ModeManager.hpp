@@ -19,7 +19,6 @@ class ModeManager
         PacketMaker *packet_maker_;
         struct Packet packet;
 
-
     public:
         ModeManager();
 		~ModeManager();
@@ -33,7 +32,6 @@ class ModeManager
         std::vector<std::string>::iterator getItParam();
         void    incrementItParam();
 
-
         void    pushBackChangedBuffer(std::string buffer);
         void    pushBackChangedParamBuffer(std::string param);
 
@@ -44,7 +42,6 @@ class ModeManager
 
         void    sendSuccessMsg();
         std::string makeCurModeStatus();
-
 
         void    executeMode(char mode);
         bool    canUpdate(char mode);

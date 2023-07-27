@@ -75,9 +75,7 @@ class PacketMaker
 		// PING Success
 		Message Ping(struct Packet& packet);
 		
-		
 		void BroadcastTopic(struct Packet& packet);
-
 
 		// JOIN Error
 		void ErrBadChannelKey(struct Packet& packet);
@@ -105,7 +103,6 @@ class PacketMaker
 		void ErrNeedMoreParamsKey(struct Packet& packet);
 		void ErrNeedMoreParamsLimit(struct Packet& packet);
 		void ErrUnknownMode(struct Packet& packet, char unknown_mode_char);
-
 };
 
 #endif

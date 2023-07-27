@@ -16,7 +16,7 @@ class Channel {
 
 		std::string password_;
 		std::set<std::string> operators_;
-		std::set<std::string> clients_; // 필요한  경우, 바로 map<std::string, *client> 사용할 것!
+		std::set<std::string> clients_;
 		std::set<std::string> invited_clients_;
 		
 		std::string mode_;
@@ -70,7 +70,6 @@ class Channel {
 		std::string	getChannelModeString(void);
 
 		void	changeClientInfo(const std::string& client_name, const std::string& new_name);
-
 };
 
 #endif

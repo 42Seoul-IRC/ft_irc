@@ -26,8 +26,6 @@ void	Channel::setChannelCreatedTime()
 	channel_created_time_ = tv.tv_sec;
 }
 
-//getChannelCreatedTime()
-
 unsigned long	Channel::getChannelCreatedTime(void)
 {
 	return channel_created_time_;

@@ -75,7 +75,6 @@ void    ModeManager::pushBackChangedBuffer(std::string buffer)
     // -가 있는데, mode_switch가 +이면, +를 추가한다.
     // -가 있는데, mode_switch가 -이면, 그냥 추가한다.
 
-    // 뒤에서 부터 한 글자씩, 확인하며 +나 -가 있는지 확인하는 if문 작성해줘
     int i = changed_mode_buffer.size() - 1;
     for (; i >= 0; i--)
     {
@@ -138,8 +137,6 @@ void    ModeManager::sendSuccessMsg()
     packet_maker_->BroadcastMode(packet, changed_mode_buffer, changed_param_buffer);
 }
 
-//modeisgchanged
-
 bool    ModeManager::modeIsChanged()
 {
     if (changed_mode_buffer.size() != 0)
@@ -188,7 +185,6 @@ void    ModeManager::inviteMode()
         channel_->unsetChannelMode('i');
         pushBackChangedBuffer("i");
     }
-    
 }
 
 void    ModeManager::topicMode()
@@ -219,11 +215,7 @@ void    ModeManager::keyMode()
 
         //check space in key
         if (key.find(' ') != std::string::npos)
-        {
-            //ERR_INVAlid key 525
-
             return ;
-        }
 
         channel_->setChannelMode('k');
         channel_->setPassword(key);
@@ -240,13 +232,10 @@ void    ModeManager::keyMode()
         
         pushBackChangedBuffer("k");
     }
-
-    
 }
 
 void    ModeManager::opMode()
 {
-
     if (it_param == params->end())
     {
         packet_maker_->ErrNeedMoreParamsOp(packet);
@@ -282,8 +271,6 @@ void    ModeManager::opMode()
         pushBackChangedParamBuffer(nick);   
     }
     incrementItParam();
-
-    
 }
 
 void    ModeManager::limitMode()
@@ -295,7 +282,7 @@ void    ModeManager::limitMode()
             packet_maker_->ErrNeedMoreParamsLimit(packet);
             return ;
         }
- 
+
         std::string limit = *it_param; 
         std::stringstream ss;
         
@@ -328,7 +315,6 @@ void    ModeManager::limitMode()
         
         pushBackChangedBuffer("l");
     }
-
 }
 
 
@@ -336,7 +322,6 @@ void    ModeManager::limitMode()
 void    ModeManager::executeMode(char mode)
 {
     //check mode is invalid
-    
     if (mode != 'i' && mode != 't' && mode != 'k' && mode != 'l' && mode != 'o')
     {
         if (mode == 'n')
@@ -366,7 +351,6 @@ void	PacketManager::mode(struct Packet& packet)
     std::string client_nick = getNickBySocket(packet.client_socket);
 	Client *client = client_manager_.getClientByNick(client_nick);
 
-
     //check channel error 
     //use iterator for params
 	
@@ -375,7 +359,6 @@ void	PacketManager::mode(struct Packet& packet)
     std::vector<std::string> params = packet.message.getParams();
     mode_manager.setParams(&params);
     mode_manager.setItParam(params.begin());
-    
 
     //check params[0] exist?
     if (mode_manager.getItParam() == params.end())
@@ -385,18 +368,14 @@ void	PacketManager::mode(struct Packet& packet)
         return ;
     }
 
-
     std::string channel_name = *mode_manager.getItParam();
     Channel *channel = channel_manager_.getChannelByName(channel_name);
     mode_manager.incrementItParam();
     mode_manager.setChannel(channel);
-
     
     // check if channel start with #
     if (channel_name[0] != '#')
-    {
         return ;
-    }
 
     //check there is no chnnel in server
     if (channel == NULL)
@@ -405,8 +384,6 @@ void	PacketManager::mode(struct Packet& packet)
         packet_maker_->ErrNoSuchChannel(packet);
         return ;
     }
-
-  
 
     //check client is in channel
     // ERR_NOTONCHANNEL (442)
@@ -437,7 +414,6 @@ void	PacketManager::mode(struct Packet& packet)
     mode_manager.setPacketMaker(packet_maker_);
     mode_manager.setPacket(packet);
 
-
 	//business logic
 
     std::string mode_string = *mode_manager.getItParam();
@@ -448,14 +424,12 @@ void	PacketManager::mode(struct Packet& packet)
     char mode;
     while (ss >> mode)
     {
-
         if (mode == '+' || mode == '-')
         {
             mode_manager.setModeSwitch(mode);
             continue;
         }
         mode_manager.executeMode(mode);
-        // mode_manager.printMode();
     }
     if (mode_manager.modeIsChanged())
         mode_manager.sendSuccessMsg();

@@ -1,7 +1,5 @@
 #ifndef CHANNEL_MODE_HPP
 #define CHANNEL_MODE_HPP
-
-
 //define channel mode to macro
 
 #define MODE_INVITE 'i'

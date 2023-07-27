@@ -48,8 +48,6 @@ class Client {
 		void deleteChannel(const std::string& channel);
 
 		void removeClient(void);
-
-		//bool client exists
 };
 
 #endif

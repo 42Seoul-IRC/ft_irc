@@ -60,8 +60,6 @@ void	ChannelManager::deleteChannelByName(const std::string& channel_name)
 
 void	ChannelManager::deleteClientFromChannel(const std::string& channel_name, const std::string& client_name)
 {
-	// delete client_name from channel
-	// if channel->clients_.length() == 0 : delete channel
 	if (channels_.find(channel_name) == channels_.end())
 		return ;
 	channels_.find(channel_name)->second->deleteClient(client_name);
@@ -75,13 +73,6 @@ int		ChannelManager::getChannelOnClientCount(const std::string& channel_name)
 		return (-1);
 	return (channels_.find(channel_name)->second->clients_.size());
 }
-
-// int		ChannelManager::getChannelMode(const std::string& channel_name)
-// {
-// 	if (channels_.find(channel_name) == channels_.end())
-// 		return (-1);
-// 	return (channels_.find(channel_name)->second->getChannelMode());
-// }
 
 std::vector<Channel *> ChannelManager::getChannelsByClientName(const std::string& clientName)
 {

@@ -69,4 +69,4 @@
 #define ERR_BADCHANMASK "476"
 #define ERR_BADCHANMASK_MSG "Bad channel mask"
 
-#endif // MACRO_H
+#endif

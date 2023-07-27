@@ -11,7 +11,6 @@ class Socket {
 	private:
 		int socket_;
 
-
 	public:
 		Socket(void);
 		void bind(char* port);

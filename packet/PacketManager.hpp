@@ -16,7 +16,7 @@ class PacketMaker;
 
 class PacketManager
 {
-	protected:
+	private:
 		char* password_;
 		typedef void (PacketManager::*RecvPacketFunction)(struct Packet&);
 		std::map<std::string, RecvPacketFunction> recv_function_map_;

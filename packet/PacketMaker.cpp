@@ -2,12 +2,10 @@
 
 PacketMaker::PacketMaker(ClientManager& client_manager_, ChannelManager& channel_manager_) : client_manager_(client_manager_), channel_manager_(channel_manager_)
 {
-
 }
 
 PacketMaker::~PacketMaker()
 {
-	
 }
 
 void PacketMaker::log(struct Packet &packet)
@@ -93,7 +91,6 @@ Message PacketMaker::dice(std::string sender, std::string& target)
 			msg += " rolled the dice! 🎲 result : 6️⃣ ";
 			break;
 	}
-
 	message.setTrailing(msg);
 	return (message);
 }
@@ -306,9 +303,8 @@ void PacketMaker::RplTopicWhoTime(struct Packet& packet)
 	message.addParam(client->getNickName());
 	message.addParam(channel_name);
 	message.addParam(channel->getTopicSetter());
-
 	
-	std::stringstream	ss;
+	std::stringstream ss;
 	ss << channel->getTopicSetTime();
 	std::string time_str = ss.str();
 
@@ -323,7 +319,7 @@ void PacketMaker::RplNamReply(struct Packet& packet)
 	Message message;
 	std::string channel_name = packet.message.getTrailing();
 	Client *client = client_manager_.getClientBySocket(packet.client_socket);
-  
+
 	message.setPrefix(SERVER_NAME);
 	message.setCommand(RPL_NAMREPLY);
 	message.addParam(client->getNickName());
@@ -362,8 +358,6 @@ void PacketMaker::RplInviting(struct Packet& packet)
 	message.addParam(client->getNickName());
 	message.addParam(target_nick);
 	message.setTrailing(channel_name);
-	// message.addParam(channel_name);
-	// message.setTrailing("Inviting " + target_nick + " to " + channel_name);
 
 	struct Packet pkt = {client->getSocket(), message};
 	sendPacket(pkt);
@@ -753,7 +747,6 @@ void PacketMaker::msgToUser(struct Packet& packet, const std::string command, st
 
 //MODE
 //RPL_CHANNELMODEIS (324)
-
 void	PacketMaker::RplChannelModeIs(struct Packet& packet, Channel *channel, std::string cur_mode_stat)
 {
 	Message message;
@@ -773,7 +766,6 @@ void	PacketMaker::RplChannelModeIs(struct Packet& packet, Channel *channel, std:
 
 
 // RPL_CREATIONTIME (329)
-
 void	PacketMaker::RplCreationTime(struct Packet& packet, Channel *channel)
 {
 	Message message;
@@ -810,7 +802,6 @@ void	PacketMaker::BroadcastMode(struct Packet& packet, std::string changed_mode_
 }
 
 //696 :irc.local 696 one #a l * :You must specify a parameter for the limit mode. Syntax: <limit>.
-
 void	PacketMaker::ErrNeedMoreParamsLimit(struct Packet& packet)
 {
 	Message message;
@@ -829,7 +820,6 @@ void	PacketMaker::ErrNeedMoreParamsLimit(struct Packet& packet)
 }
 
 //696 :irc.local 696 one #a k * :You must specify a parameter for the key mode. Syntax: <key>.
-
 void	PacketMaker::ErrNeedMoreParamsKey(struct Packet& packet)
 {
 	Message message;
@@ -849,7 +839,6 @@ void	PacketMaker::ErrNeedMoreParamsKey(struct Packet& packet)
 
 
 //696 one #a o * :You must specify a parameter for the op mode. Syntax: <nick>.
-
 void	PacketMaker::ErrNeedMoreParamsOp(struct Packet& packet)
 {
 	Message message;

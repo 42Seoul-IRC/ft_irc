@@ -2,7 +2,6 @@
 
 Server::Server()
 {
-
 }
 
 void Server::init(char* port, char* password)
@@ -105,7 +104,7 @@ void Server::successHandler(int socket)
 			{
 				client->buffer_ << tmp;
 				return ;
- 	        }
+			}
 
 			std::vector<Message> messages = Message::parse(client->buffer_.str() + str.substr(0, idx + 2));
 			client->buffer_.str(str.substr(idx + 2));

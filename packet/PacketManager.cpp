@@ -47,7 +47,6 @@ void	PacketManager::removeClientBySocket(int socket)
 			channel->invited_clients_.erase(nick);
 		}
 	}
-	
 	client_manager_.socket_clients_.erase(socket);
 	client_manager_.nick_clients_.erase(nick);
 }
@@ -58,26 +57,14 @@ void PacketManager::execute(struct Packet& packet)
 	if (it != recv_function_map_.end())
 	{
 		(this->*(it->second))(packet);
-		// channel(packet); // print channel's info
 	}
 }
 
 std::string PacketManager::getNickBySocket(int socket)
 {
-	//find socket in socket_clients_
-	//send nick
-
 	if (client_manager_.socket_clients_.find(socket) != client_manager_.socket_clients_.end())
 	{
 		return client_manager_.socket_clients_[socket]->getNickName();
 	}
 	return (std::string(""));
 }
-
-// void	PacketManager::printPacket(struct Packet& packet)
-// {
-// 	std::cout << "PacketManager::printPacket" << std::endl;
-// 	std::cout << "client_socket: " << packet.client_socket << std::endl;
-// 	std::cout << "message: " << packet.message.toString() << std::endl;
-
-// }

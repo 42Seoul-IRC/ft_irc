@@ -1,6 +1,5 @@
 #include "server/Server.hpp"
 
-
 void signalHandler(int signum) {
     (void) signum;
 }
